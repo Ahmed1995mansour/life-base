@@ -117,7 +117,7 @@ function watch(p, tag){
   // a fresh phone: restore from the file
   const ctx2 = await b.newContext({viewport:{width:390,height:844}, serviceWorkers:'block'});
   const q = await ctx2.newPage(); watch(q,'B');
-  await q.goto(URL); await q.waitForTimeout(700); await q.click('#obGo');
+  await q.goto(URL); await q.waitForTimeout(700); await q.click('[data-su-skip]'); await q.waitForTimeout(200); await q.click('#obGo');
   out.freshEmpty = await q.evaluate(() => money.entries.length);
   await q.evaluate(() => go('settings'));
   await q.setInputFiles('#importFile', bpath); await q.waitForTimeout(300);

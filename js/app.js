@@ -6,19 +6,19 @@ const PAGES = {
   sched:{scr:"sched", grp:"plan", t:"الجدول"}, tasks:{scr:"tasks", grp:"plan", t:"المهام"}, rem:{scr:"rem", grp:"plan", t:"التذكيرات"}, week:{scr:"progress", seg:"week", grp:"plan", t:"الأسبوع"},
   train:{scr:"train", grp:"health", t:"التمرين"}, food:{scr:"food", grp:"health", t:"الأكل"}, weight:{scr:"progress", seg:"weight", grp:"health", t:"الوزن"},
   money:{scr:"money", grp:"money", t:"الرئيسية"}, mstats:{scr:"money", grp:"money", t:"التحليل"}, mgoals:{scr:"money", grp:"money", t:"الأهداف"}, mcats:{scr:"money", grp:"money", t:"الفئات"},
-  quran:{scr:"progress", seg:"quran", grp:"me", t:"القرآن"}, ref:{scr:"ref", grp:"me", t:"المرجع"}, settings:{scr:"settings", grp:"me", t:"الإعدادات"}
+  quran:{scr:"progress", seg:"quran", grp:"me", t:"القرآن"}, myplan:{scr:"myplan", grp:"me", t:"خطتي"}, ref:{scr:"ref", grp:"me", t:"المرجع"}, settings:{scr:"settings", grp:"me", t:"الإعدادات"}
 };
 const GROUPS_NAV = {
   today:{t:"النهارده", p:["today"]}, plan:{t:"الخطة", p:["sched","tasks","rem","week"]}, health:{t:"الصحة", p:["train","food","weight"]},
-  money:{t:"الفلوس", p:["money","mstats","mgoals","mcats"]}, me:{t:"أنا", p:["quran","ref","settings"]}
+  money:{t:"الفلوس", p:["money","mstats","mgoals","mcats"]}, me:{t:"أنا", p:["quran","myplan","ref","settings"]}
 };
-const SCREENS = ["today","sched","tasks","train","food","progress","ref","settings","money","rem"];
+const SCREENS = ["today","sched","tasks","train","food","progress","ref","settings","myplan","money","rem"];
 const DAY_PAGES = ["today","sched","train","food"];
 const lastIn = LS.get("lb:last") || {};
 
 function updateDayNav(){
   const day = curDay(), dt = dateOf(current);
-  $("dayName").textContent = day.d;
+  $("dayName").textContent = WEEKDAYS[ORDER.indexOf(day.id)];
   $("dayDate").textContent = isToday() ? `النهارده · ${short(dt)}` : `${short(dt)} · ارجع للنهارده`;
   $("dayLbl").classList.toggle("not-today", !isToday());
   $("dayNav").hidden = !DAY_PAGES.includes(page);
@@ -35,12 +35,17 @@ function renderScreen(){
   else if (screen === "rem") renderRem();
   else if (screen === "money") renderMoney();
   else if (screen === "settings") renderRef();
+  else if (screen === "myplan") renderMyPlan();
+  else if (screen === "ref") renderTargets();
   updateRemBadge();
 }
 function go(name, opts){
   opts = opts || {};
   if (name === "progress") name = opts.seg || "weight";
   if (!PAGES[name]) name = "today";
+  const on = state.profile.modules, grpOn = {plan:on.plan, health:on.health, money:on.money};
+  if (grpOn[PAGES[name].grp] === false || (name === "quran" && !on.quran)) name = "today";
+  if (name !== "myplan") editDay = null;
   const P = PAGES[name], G = GROUPS_NAV[P.grp];
   page = name; screen = P.scr;
   SCREENS.forEach(s => { const el = $("scr-"+s); el.hidden = s !== screen; if (s !== screen && !["progress","ref","settings"].includes(s)) el.innerHTML = ""; });
@@ -100,6 +105,8 @@ document.querySelector("main").addEventListener("touchend", e => {
   current = ORDER[today.getDay()];
   applyTheme(theme);
   await loadAll();
+  if (needsSetup) await openSetup(true);
+  applyModules();
   rollover();
   const fromHash = (location.hash || "").slice(1), last = LS.get("lb:page") || LS.get("fit:screen");
   go(PAGES[fromHash] ? fromHash : (PAGES[last] ? last : "today"));

@@ -1,7 +1,7 @@
 // LifeBase service worker.
 // The page is network-first so updates arrive; css/js carry ?v=N and are cache-first (a new version means new URLs).
 // Fonts and how-to videos are cached the first time they load. Run tools/release.py to bump the version.
-const VERSION = "lifebase-v6";
+const VERSION = "lifebase-v10";
 const SHELL = [
   "./",
   "index.html",
@@ -10,28 +10,33 @@ const SHELL = [
   "icons/icon-512.png",
   "icons/maskable-512.png",
   "icons/apple-touch-icon.png",
-  "css/tokens.css?v=6",
-  "css/base.css?v=6",
-  "css/components.css?v=6",
-  "css/screens.css?v=6",
-  "js/core.js?v=6",
-  "js/data/plan.js?v=6",
-  "js/data/training.js?v=6",
-  "js/data/recipes.js?v=6",
-  "js/store.js?v=6",
-  "js/modules/today.js?v=6",
-  "js/modules/todos.js?v=6",
-  "js/modules/train.js?v=6",
-  "js/modules/food.js?v=6",
-  "js/modules/weight.js?v=6",
-  "js/modules/quran.js?v=6",
-  "js/modules/week.js?v=6",
-  "js/modules/plan.js?v=6",
-  "js/modules/quickadd.js?v=6",
-  "js/modules/reminders.js?v=6",
-  "js/modules/money.js?v=6",
-  "js/modules/settings.js?v=6",
-  "js/app.js?v=6"
+  "css/tokens.css?v=10",
+  "css/base.css?v=10",
+  "css/components.css?v=10",
+  "css/screens.css?v=10",
+  "js/core.js?v=10",
+  "js/data/plan.js?v=10",
+  "js/data/training.js?v=10",
+  "js/vendor/adhan.js?v=10",
+  "js/data/programs.js?v=10",
+  "js/data/recipes.js?v=10",
+  "js/store.js?v=10",
+  "js/modules/today.js?v=10",
+  "js/modules/todos.js?v=10",
+  "js/modules/train.js?v=10",
+  "js/modules/food.js?v=10",
+  "js/modules/weight.js?v=10",
+  "js/modules/quran.js?v=10",
+  "js/modules/week.js?v=10",
+  "js/modules/plan.js?v=10",
+  "js/modules/quickadd.js?v=10",
+  "js/modules/prayer.js?v=10",
+  "js/modules/setup.js?v=10",
+  "js/modules/myplan.js?v=10",
+  "js/modules/reminders.js?v=10",
+  "js/modules/money.js?v=10",
+  "js/modules/settings.js?v=10",
+  "js/app.js?v=10"
 ];
 
 self.addEventListener("install", e => {

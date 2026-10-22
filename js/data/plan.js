@@ -1,9 +1,14 @@
 "use strict";
-/* The weekly plan: daily habits, prayers, and each day's schedule, meals and workout. */
-const HABITS = [["h1","اتوزنت الصبح على الريق"],["h2","3 لتر مية"],["h3","8–10 آلاف خطوة"],["h4","بروتين 160 جم"],["h5","غسلت سناني الصبح"],["h6","غسلت سناني قبل النوم"],["h7","راجعت المحفوظ في الصلاة"]];
+/* Mans's original weekly plan. It is the starting plan for his data (and for anyone who picks "خطة مانس").
+   The live plan is state.plan (editable in أنا ← خطتي); DAYS and HABITS point at it once data is loaded.
+   Timeline items here use the old compact form [time, kind, title, sub, menu, recipes] with 12-hour times;
+   planFromLegacy() turns them into {id, s:"HH:MM", e, k, t, sub, m, r} with 24-hour times (25:15 = 1:15 after midnight). */
+const WEEKDAYS = ["الأحد","الاتنين","التلات","الأربع","الخميس","الجمعة","السبت"];
+let DAYS = [], HABITS = [];
+const DEFAULT_HABITS = [["h1","اتوزنت الصبح على الريق"],["h2","3 لتر مية"],["h3","8–10 آلاف خطوة"],["h4","بروتين 160 جم"],["h5","غسلت سناني الصبح"],["h6","غسلت سناني قبل النوم"],["h7","راجعت المحفوظ في الصلاة"]];
 const PRAYERS = [["p1","الفجر"],["p2","الضهر"],["p3","العصر"],["p4","المغرب"],["p5","العشا"]];
 
-const DAYS = [
+const DEFAULT_DAYS = [
   {id:"sun", d:"الأحد", k:"Upper A", badge:"جيم 12 الضهر: الجزء العلوي + بطن",
    note:"أول يوم في الأسبوع. الوزن اللي تختاره النهارده هو اللي هتبني عليه.",
    tl:[
@@ -216,3 +221,35 @@ const DAYS = [
 
 const BREAD = {"رغيف":"رغيف بلدي (أو 3 توست أسمر)","رغيف بلدي":"رغيف بلدي (أو 3 توست أسمر)","نص رغيف":"نص رغيف (أو 2 توست أسمر)"};
 const ORDER = ["sun","mon","tue","wed","thu","fri","sat"];
+
+/* ---------- old compact days → editable plan ---------- */
+const hhmm = m => `${pad(Math.floor(m/60))}:${pad(m%60)}`;
+function legacyTimes(tl){
+  const toMin12 = s => { const m = String(s).match(/(\d{1,2}):(\d{2})/); return m ? (+m[1] % 12) * 60 + +m[2] : null; };
+  let last = -1;
+  return tl.map(it => {
+    const parts = String(it[0]).split("–");
+    let s = toMin12(parts[0]), e = parts[1] != null ? toMin12(parts[1]) : null;
+    if (s != null){
+      while (s < last - 45) s += 720;
+      last = s;
+      if (e != null){ e += Math.floor(s / 720) * 720; while (e <= s) e += 720; }
+    }
+    return {s, e};
+  });
+}
+function dayFromLegacy(d){
+  const T = legacyTimes(d.tl);
+  return {
+    id:d.id, k:d.k||"", badge:d.badge||"", note:d.note||"",
+    tl:d.tl.map((it, i) => ({id:"t"+i, s:T[i].s != null ? hhmm(T[i].s) : "", e:T[i].e != null ? hhmm(T[i].e) : "", free:T[i].s == null ? String(it[0]) : "",
+      k:it[1], t:it[2], sub:it[3]||"", m:it[4]||[], r:it[5]||[]})),
+    wu:d.wu||null, cd:d.cd||null, ex:JSON.parse(JSON.stringify(d.ex||[])), abs:JSON.parse(JSON.stringify(d.abs||[])),
+    routines:JSON.parse(JSON.stringify(d.routines||[])), tread:d.id !== "thu"
+  };
+}
+function planFromLegacy(){
+  return {v:1, days:DEFAULT_DAYS.map(dayFromLegacy), habits:JSON.parse(JSON.stringify(DEFAULT_HABITS)),
+    targets:{kcal:"2100–2200", protein:"160", water:"3", steps:"8–10 آلاف", sleep:"7+", quran:"نص جزء"},
+    body:{start:100, goalLo:80, goalHi:83, height:176}};
+}

@@ -8,7 +8,7 @@ const isToday = () => curDate() === iso(today);
 function countItems(day){
   let n = HABITS.length + PRAYERS.length + day.tl.length;
   if (day.wu) n += Array.isArray(day.wu) ? day.wu.length : 1;
-  n += day.ex.length + (day.ex.length && day.id!=="thu" ? 1 : 0);
+  n += day.ex.length + (day.ex.length && day.tread ? 1 : 0);
   n += day.abs.length;
   (day.routines||[]).forEach(r=>{ n += r.items.length; });
   if (day.cd) n++;
@@ -23,21 +23,21 @@ function mosqueCount(date){
   return Object.keys(c).filter(k=>c[k] && /^m\d$/.test(k)).length;
 }
 
-/* ---------- times: "5:50–7:10" in a 12-hour day → minutes since midnight, in order ---------- */
-const toMin = s => { const m = String(s).match(/(\d{1,2}):(\d{2})/); return m ? (+m[1] % 12) * 60 + +m[2] : null; };
+/* ---------- times: items keep "HH:MM" (24-hour; 25:15 = 1:15 after midnight) ---------- */
+const toMin = s => { const m = String(s||"").match(/^(\d{1,2}):(\d{2})$/); return m ? +m[1] * 60 + +m[2] : null; };
+const t12 = m => { const h = Math.floor(m / 60) % 24; return `${(h % 12) || 12}:${pad(m % 60)}`; };
+function timeText(it){
+  const s = toMin(it.s), e = toMin(it.e);
+  if (s == null) return it.free || "";
+  return e != null ? `${t12(s)}–${t12(e)}` : t12(s);
+}
+/* the day's items in time order (untimed ones first) with minutes since midnight */
 function timed(day){
-  let last = -1;
-  return day.tl.map((it, i) => {
-    const parts = String(it[0]).split("–");
-    let s = toMin(parts[0]), e = parts[1] != null ? toMin(parts[1]) : null;
-    if (s != null){
-      while (s < last - 45) s += 720;
-      last = s;
-      if (e != null){ e += Math.floor(s / 720) * 720; while (e <= s) e += 720; }
-    }
-    const g = s == null || s < 720 ? 0 : s < 1020 ? 1 : 2;
-    return {i, s, e, g, it};
-  });
+  return day.tl.map((it, n) => {
+    const s = toMin(it.s); let e = toMin(it.e);
+    if (s != null && e != null && e <= s) e += 1440;
+    return {i:it.id, s, e, n, it};
+  }).sort((x, y) => (x.s == null ? -1 : x.s) - (y.s == null ? -1 : y.s) || x.n - y.n);
 }
 function nowNext(day){
   const T = timed(day), c = checksOf(curDate());
@@ -49,7 +49,7 @@ function nowNext(day){
     const end = x.e != null ? x.e : Math.min(x.s + 30, nextS != null ? nextS : x.s + 30);
     if (now < end && (!cur || x.s >= cur.s)) cur = x;
   });
-  const next = T.find(x => x.s != null && x.s > now && !c["t"+x.i]);
+  const next = T.find(x => x.s != null && x.s > now && !c[x.i]);
   return {cur, next};
 }
 
@@ -72,29 +72,39 @@ function heroHTML(){
   let lines = "";
   if (isToday()){
     const {cur, next} = nowNext(day), d = new Date(), now = d.getHours()*60 + d.getMinutes();
-    if (cur) lines += `<div class="nowline"><span class="k">دلوقتي</span><span class="v">${esc(cur.it[2])}</span><span class="t">${esc(cur.it[0])}</span></div>`;
-    if (next) lines += `<div class="nowline"><span class="k">الجاي</span><span class="v">${esc(next.it[2])}</span><span class="t">${esc(String(next.it[0]).split("–")[0])}</span><span class="in">بعد ${minsWord(next.s - now)}</span></div>`;
+    if (cur) lines += `<div class="nowline"><span class="k">دلوقتي</span><span class="v">${esc(cur.it.t)}</span><span class="t">${esc(timeText(cur.it))}</span></div>`;
+    if (next) lines += `<div class="nowline"><span class="k">الجاي</span><span class="v">${esc(next.it.t)}</span><span class="t">${t12(next.s)}</span><span class="in">بعد ${minsWord(next.s - now)}</span></div>`;
     if (!cur && !next) lines += `<div class="nowline"><span class="v">خلّصت جدول النهارده</span></div>`;
+    const np = nextPrayer();
+    if (np) lines += `<div class="nowline"><span class="k">الصلاة</span><span class="v">${np.name}</span><span class="t">${clock(np.at)}</span><span class="in">بعد ${minsWord(Math.max(1, Math.round((np.at - d) / 60000)))}</span></div>`;
   } else {
-    lines += `<div class="nowline"><span class="v">${esc(day.d)} ${short(dateOf(current))}</span></div>`;
+    lines += `<div class="nowline"><span class="v">${WEEKDAYS[ORDER.indexOf(day.id)]} ${short(dateOf(current))}</span></div>`;
   }
   return `<div class="card hero hero-today" id="hero">
     <div class="ring" aria-label="خلّصت ${done} من ${total}"><svg viewBox="0 0 76 76"><circle cx="38" cy="38" r="32" fill="none" stroke="rgba(255,255,255,.25)" stroke-width="7"/><circle cx="38" cy="38" r="32" fill="none" stroke="#FFFFFF" stroke-width="7" stroke-linecap="round" stroke-dasharray="${circ}" stroke-dashoffset="${circ*(1-pct/100)}"/></svg><span class="rv">${pct}%</span></div>
-    <div class="hero-txt"><div class="hero-badge">${esc(day.badge)}</div>${lines}</div></div>`;
+    <div class="hero-txt"><div class="hero-date">${hijri(dateOf(current))}</div><div class="hero-badge">${esc(day.badge)}</div>${lines}</div></div>`;
 }
+
+const hijri = d => { try { return new Intl.DateTimeFormat("ar-EG-u-ca-islamic-umalqura-nu-latn", {day:"numeric", month:"long", year:"numeric"}).format(d); } catch(e){ return ""; } };
 
 /* things that need you now; the card only shows when there is something */
 function attentionHTML(){
   if (!isToday()) return "";
-  const rows = [];
-  activeRem().filter(r => daysTo(r.due) <= 1).forEach(r => {
+  const rows = [], on = state.profile.modules;
+  const dp = duePrayer();
+  if (dp) rows.push(`<div class="att"><span class="att-ic" style="color:var(--gold)">${ICO.moon}</span><span><b>صليت ${dp.name}؟</b><small>الأذان كان ${clock(dp.at)}</small></span>
+    <span class="actrow"><button type="button" class="btn sm soft" data-prdue="${dp.n}">صليت</button><button type="button" class="btn sm" data-prdue="${dp.n}" data-mosque="1">في المسجد ★</button></span></div>`);
+  if (!state.profile.loc && !state.prefs.noLoc)
+    rows.push(`<div class="att"><span class="att-ic" style="color:var(--gold)">${ICO.clock}</span><span><b>حدد مدينتك</b><small>عشان مواقيت الصلاة تظهر هنا</small></span>
+    <span class="actrow"><button type="button" class="btn sm primary" data-locsheet>حدد</button><button type="button" class="btn sm ghost" data-noloc>بعدين</button></span></div>`);
+  if (on.plan) activeRem().filter(r => daysTo(r.due) <= 1).forEach(r => {
     const w = whenText(r);
     rows.push(`<button type="button" class="att" data-go="rem"><span class="att-ic" style="color:var(--rem)">${ICO.bell}</span><span><b>${esc(r.title)}</b><small>${w.dl}</small></span><span class="rwhen ${w.c}">${w.t}</span></button>`);
   });
   const t0 = today.getTime(), mk = monthKey(today), d = monthData(mk);
   const spentToday = money.entries.filter(e => e.type !== "in" && e.ts >= t0 && e.ts < t0 + 864e5).reduce((a,e) => a + e.amount, 0);
   const pastDays = new Date().getDate() - 1, before = d.spent - spentToday, avg = pastDays > 0 ? before / pastDays : 0;
-  if (avg > 0 && spentToday > avg * 1.5 && spentToday - avg > 100)
+  if (on.money && avg > 0 && spentToday > avg * 1.5 && spentToday - avg > 100)
     rows.push(`<button type="button" class="att" data-go="money"><span class="att-ic" style="color:var(--spend)">${ICO.wallet}</span><span><b>صرفت النهارده ${mfmt(spentToday)}</b><small>متوسطك في اليوم الشهر ده ${mfmt(avg)}</small></span>${CHEV.replace('class="chev"','class="chev att-go"')}</button>`);
   if (backupDue())
     rows.push(`<div class="att"><span class="att-ic" style="color:var(--accent)">${ICO.list}</span><span><b>خد نسخة احتياطية</b><small>${meta.lastBackup ? "آخر نسخة من أكتر من أسبوعين" : "لسه ماخدتش ولا نسخة"}</small></span><button class="btn sm primary" type="button" data-backup="export">احفظ</button></div>`);
@@ -129,24 +139,24 @@ function routineCard(){
 
 /* the next few things in today's schedule */
 function nextCard(){
-  const day = curDay(), T = timed(day).slice().sort((x, y) => (x.s == null ? -1 : x.s) - (y.s == null ? -1 : y.s) || x.i - y.i);
+  const day = curDay(), T = timed(day);
   const c = checksOf(curDate()), d = new Date(), now = d.getHours()*60 + d.getMinutes();
-  let list = T.filter(x => !c["t"+x.i]);
+  let list = T.filter(x => !c[x.i]);
   if (isToday()){ const cur = nowNext(day).cur; list = list.filter(x => x.s == null || x.s >= now || (cur && x.i === cur.i)); }
   list = list.slice(0, 3);
-  const body = list.length ? `<ol class="tl tl-mini">${list.map(({i, it}) => schedRow(day, i, it, false)).join("")}</ol>` : `<p class="small" style="margin:0">مفيش حاجة فاضلة في جدول اليوم.</p>`;
+  const body = list.length ? `<ol class="tl tl-mini">${list.map(({it}) => schedRow(day, it, false)).join("")}</ol>` : `<p class="small" style="margin:0">مفيش حاجة فاضلة في جدول اليوم.</p>`;
   return {t:"الجاي في جدولك", meta:"", body, link:`<button type="button" class="golink" data-go="sched">الجدول كله ←</button>`};
 }
 
 /* one row of the schedule (used here and on the schedule page) */
-function schedRow(day, i, it, full, nowI){
-  const [t,k,a,b,m,r] = it, id = "t"+i;
+function schedRow(day, it, full, nowI){
+  const t = timeText(it), k = it.k, a = it.t, b = it.sub, m = it.m && it.m.length ? it.m : null, r = it.r, id = it.id;
   let extra = "";
   if (full && m) extra += `<details class="more"><summary>${r&&r.length?"المكونات والوصفة":"المكونات"}</summary>${menuList(m)}${recipeCards(r)}</details>`;
   if (k === "gym" && hasWorkout(day)) extra += `<button type="button" class="golink" data-go="train">افتح التمرين ←</button>`;
   if (full && k === "deen" && /حفظ/.test(a)) extra += `<button type="button" class="golink" data-go="quran">افتح الحفظ ←</button>`;
   if (full && k === "deen" && /ورد/.test(a)) extra += `<button type="button" class="golink" data-go="quran">سجّل الصفحة ←</button>`;
-  return `<li data-row="${id}" class="${i===nowI?"now":""}">${box(id)}<span class="t">${esc(t)}</span><div class="body">
+  return `<li data-row="${id}" class="${id===nowI?"now":""}">${box(id)}<span class="t">${esc(t)}</span><div class="body">
     <label for="ck-${id}"><span class="tdot d-${k}"></span><span class="ttl">${esc(a)}</span></label>${b?`<span class="sub">${esc(b)}</span>`:""}${extra}</div></li>`;
 }
 
@@ -175,7 +185,8 @@ function cardHTML(key){
 function renderToday(){
   const p = todayPrefs();
   let h = heroHTML() + attentionHTML() + summaryHTML();
-  p.order.forEach(k => { if (!p.hidden.includes(k)) h += cardHTML(k); });
+  const on = state.profile.modules, need = {tasks:"plan", next:"plan", soon:"plan", money:"money"};
+  p.order.forEach(k => { if (!p.hidden.includes(k) && (!need[k] || on[need[k]])) h += cardHTML(k); });
   h += `<button type="button" class="btn ghost" data-arrange style="align-self:center">${ICO.sliders} رتّب الشاشة</button>`;
   $("scr-today").innerHTML = h;
   refreshMarks();
@@ -194,6 +205,7 @@ document.addEventListener("click", e => {
   if (f){ const p = todayPrefs(), k = f.dataset.fold; p.folded = p.folded.includes(k) ? p.folded.filter(x => x !== k) : p.folded.concat(k);
     save(); const card = f.closest(".tcard"); card.classList.toggle("folded"); f.setAttribute("aria-expanded", !p.folded.includes(k)); return; }
   if (e.target.closest("[data-arrange]")){ openArrange(); return; }
+  if (e.target.closest("[data-noloc]")){ state.prefs.noLoc = true; save(); renderScreen(); return; }
   const a = e.target.closest("[data-arr]"); if (!a) return;
   const p = todayPrefs(), k = a.dataset.k, i = p.order.indexOf(k);
   if (a.dataset.arr === "up" && i > 0) [p.order[i-1], p.order[i]] = [p.order[i], p.order[i-1]];
@@ -215,7 +227,8 @@ function refreshMarks(){
   document.querySelectorAll(".pr").forEach(b => {
     const n = b.dataset.pr, p = !!c["p"+n], m = !!c["m"+n];
     b.classList.toggle("done", p && !m); b.classList.toggle("mosque", m);
-    b.querySelector(".st").textContent = m ? "★ المسجد" : p ? "✓ صليت" : "—";
+    const pt = prayerTimes(new Date(curDate() + "T12:00"));
+    b.querySelector(".st").textContent = m ? "★ المسجد" : p ? "✓ صليت" : (pt ? clock(pt["p"+n]) : "—");
     b.setAttribute("aria-pressed", p ? "true" : "false");
   });
   const mw = $("mWeek");

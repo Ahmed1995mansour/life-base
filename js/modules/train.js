@@ -73,7 +73,7 @@ function trainIds(day){
   const wus = day.wu ? (Array.isArray(day.wu) ? day.wu : [day.wu]) : [];
   if (wus[0]) ids.push("wu");
   day.ex.forEach((_,i)=>ids.push("e"+i));
-  if (day.ex.length && day.id!=="thu") ids.push("tr");
+  if (day.ex.length && day.tread) ids.push("tr");
   day.abs.forEach((_,i)=>ids.push("a"+i));
   wus.slice(1).forEach((_,i)=>ids.push("wu"+(i+2)));
   if (day.cd) ids.push("cd");
@@ -82,20 +82,20 @@ function trainIds(day){
 function renderTrain(){
   const day = curDay(), el = document.getElementById("scr-train");
   if (!hasWorkout(day)){
-    el.innerHTML = `<div class="card"><p class="empty">مفيش تمرين ${isToday()?"النهارده":"اليوم ده"}. يوم راحة، والمشي اللي في الجدول كفاية.</p></div>`; return;
+    el.innerHTML = emptyState("target", `مفيش تمرين ${isToday()?"النهارده":"اليوم ده"}`, "يوم راحة. لو عايز تضيف تمرين لليوم ده، عدّله من خطتك.", `<button type="button" class="btn primary" data-editday="${day.id}">ضيف تمرين</button>`); return;
   }
   const ids = trainIds(day);
-  const gymT = day.tl.find(t => t[1]==="gym") || [];
+  const gymT = day.tl.find(t => t.k === "gym");
   let h = `<div class="card"><div class="wo-head"><div><h2 class="en">${esc(day.k)}</h2><div class="small">${esc(day.badge)}</div></div><span class="small" data-cnt="${ids.join(",")}"></span></div>
-    <div class="bar"><i id="trBar"></i></div>${gymT[0]?`<p class="small" style="margin:8px 0 0">المعاد: <span class="num" dir="ltr">${esc(gymT[0])}</span></p>`:""}</div>`;
+    <div class="bar"><i id="trBar"></i></div><div class="actrow" style="justify-content:space-between;margin-top:8px">${gymT ? `<p class="small" style="margin:0">المعاد: <span class="num" dir="ltr">${esc(timeText(gymT))}</span></p>` : "<span></span>"}<button type="button" class="golink" data-editday="${day.id}">عدّل التمرين</button></div></div>`;
   (day.routines||[]).forEach(r => {
-    h += `<h3 class="sect-title">${r.title} · ${r.time}</h3>` + r.items.map((e,i)=>exCard(Object.assign({k:"hold"}, e), r.id+"-"+i)).join("");
+    h += `<h3 class="sect-title">${esc(r.title)}${r.time ? " · " + esc(r.time) : ""}</h3>` + r.items.map((e,i)=>exCard(Object.assign({k:"hold"}, e), r.id+"-"+i)).join("");
   });
   const wus = day.wu ? (Array.isArray(day.wu) ? day.wu : [day.wu]) : [];
   if (wus[0]) h += `<h3 class="sect-title">الإحماء</h3>` + phaseCard("wu", W[wus[0]]);
   if (day.ex.length){
     h += `<h3 class="sect-title">التمارين</h3>` + day.ex.map((e,i)=>exCard(e, "e"+i)).join("");
-    if (day.id !== "thu") h += exCard(TREAD, "tr");
+    if (day.tread) h += exCard(TREAD, "tr");
   }
   if (day.abs.length) h += `<h3 class="sect-title">البطن · 8–10 دقايق</h3>` + day.abs.map((e,i)=>exCard(Object.assign({k:"hold", rest:"راحة 45 ث"}, e), "a"+i)).join("");
   wus.slice(1).forEach((w,i)=>{ h += `<h3 class="sect-title">قبل الماتش</h3>` + phaseCard("wu"+(i+2), W[w]); });

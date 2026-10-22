@@ -12,7 +12,7 @@ const TEMPLATES = [
 let remEdit = null, remDel = null;
 const dOf = s => new Date(s+"T00:00");
 const daysTo = s => Math.round((dOf(s) - today) / 86400000);
-const DNAME = d => (DAYS.find(x=>x.id===ORDER[d.getDay()])||{}).d || "";
+const DNAME = d => WEEKDAYS[d.getDay()];
 function addInterval(dateStr, n, u){
   const d = dOf(dateStr);
   if (u==="d") d.setDate(d.getDate()+n); else if (u==="w") d.setDate(d.getDate()+7*n);

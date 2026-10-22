@@ -1,7 +1,7 @@
 "use strict";
 /* ===================== TASKS: per-day to-dos. Unfinished ones from past days move to today.
    Swipe a task right to finish it, left to delete it (with undo). ===================== */
-const DAYNAME = id => (DAYS.find(d=>d.id===id)||{}).d || "";
+const DAYNAME = id => WEEKDAYS[ORDER.indexOf(id)] || "";
 function dayLabel(dateStr){
   const d = new Date(dateStr+"T00:00");
   const diff = Math.round((d - today) / 86400000);

@@ -5,7 +5,8 @@
    The first time, data from the old Fourma (fit:v2) and مصاريفي (masrouf) apps is copied in; the old copies are left untouched. */
 
 const DB_NAME = "lifebase", MIRROR = "lb:data", DOC_KEY = "doc";
-const state = {checks:{}, weights:{}, body:{w:{}, waist:{}}, quran:{page:null, hifz:{}}, todos:{}, rem:[], prefs:{}};
+const state = {checks:{}, weights:{}, body:{w:{}, waist:{}}, quran:{page:null, hifz:{}}, todos:{}, rem:[], prefs:{}, plan:null, profile:null};
+let needsSetup = false;
 let money = {entries:[], goals:[], cats:[]};
 const meta = {updatedAt:0, lastBackup:0, migrated:null, persisted:null};
 
@@ -41,11 +42,34 @@ function normalizeCore(c){
     quran: {page: (c.quran && c.quran.page) || null, hifz: (c.quran && c.quran.hifz) || {}},
     todos: c.todos || {},
     rem: Array.isArray(c.rem) ? c.rem : [],
-    prefs: c.prefs && typeof c.prefs === "object" ? c.prefs : {}
+    prefs: c.prefs && typeof c.prefs === "object" ? c.prefs : {},
+    plan: normalizePlan(c.plan),
+    profile: normalizeProfile(c.profile)
   };
 }
+const MODULES = {plan:"الخطة: الجدول والمهام والتذكيرات", health:"الصحة: التمرين والأكل والوزن", money:"الفلوس", quran:"القرآن"};
+function normalizeProfile(p){
+  p = p && typeof p === "object" ? p : {};
+  const mods = Object.assign({plan:true, health:true, money:true, quran:true}, p.modules || {});
+  return {name:p.name || "", goal:p.goal || "cut", modules:mods, loc:p.loc || null, method:p.method || "Egyptian", setup:!!p.setup};
+}
+function normalizePlan(pl){
+  if (!pl || !Array.isArray(pl.days) || pl.days.length !== 7) return null;
+  pl.days.forEach(d => { d.tl = Array.isArray(d.tl) ? d.tl : []; d.ex = d.ex || []; d.abs = d.abs || []; d.routines = d.routines || []; if (d.tread == null) d.tread = !!d.ex.length; });
+  pl.habits = Array.isArray(pl.habits) ? pl.habits : [];
+  pl.targets = pl.targets || {}; pl.body = pl.body || {};
+  return pl;
+}
+/* point the global DAYS / HABITS at the live plan */
+function bindPlan(){ DAYS = state.plan.days; HABITS = state.plan.habits; }
 function applyDoc(doc){
   Object.assign(state, normalizeCore(doc.core));
+  if (!state.plan){
+    const used = doc.migrated || (doc.core && (Object.keys(doc.core.checks || {}).length || (doc.core.rem || []).length)) || (doc.money && (doc.money.entries || []).length);
+    if (used){ state.plan = planFromLegacy(); state.profile.setup = true; }   // Mans's own data: his plan
+    else { state.plan = planFromLegacy(); needsSetup = true; }                // a new person: setup will replace it
+  }
+  bindPlan();
   money = moneyNormalize(doc.money);
   meta.updatedAt = +doc.updatedAt || 0;
   meta.lastBackup = +doc.lastBackup || 0;
@@ -152,7 +176,13 @@ function importBackup(text){
   else if ("checks" in x){ core = x; }                                                          // Fourma
   else if (Array.isArray(x.entries)){ mon = x; mergeMoney = true; }                              // مصاريفي
   else throw new Error("bad");
-  if (core) Object.assign(state, normalizeCore(core));
+  if (core){
+    const keepProfile = state.profile;
+    Object.assign(state, normalizeCore(core));
+    if (!state.plan) state.plan = planFromLegacy();   // backups from before plans were editable came from Mans's plan
+    if (!core.profile) state.profile = keepProfile;
+    bindPlan();
+  }
   let added = 0;
   if (mon && Array.isArray(mon.entries)){
     const m = moneyNormalize(mon);

@@ -1,14 +1,14 @@
 "use strict";
 /* ===================== QUICK ADD: the + button on every screen ===================== */
 const QUICK = [
-  {k:"out", t:"مصروف", ic:"wallet", c:"var(--spend)"},
-  {k:"in", t:"دخل", ic:"income", c:"var(--money)"},
-  {k:"todo", t:"مهمة", ic:"list", c:"var(--accent)"},
-  {k:"rem", t:"تذكير", ic:"bell", c:"var(--rem)"},
-  {k:"weight", t:"وزن", ic:"scale", c:"var(--sleep)"}
+  {k:"out", t:"مصروف", ic:"wallet", c:"var(--spend)", m:"money"},
+  {k:"in", t:"دخل", ic:"income", c:"var(--money)", m:"money"},
+  {k:"todo", t:"مهمة", ic:"list", c:"var(--accent)", m:"plan"},
+  {k:"rem", t:"تذكير", ic:"bell", c:"var(--rem)", m:"plan"},
+  {k:"weight", t:"وزن", ic:"scale", c:"var(--sleep)", m:"health"}
 ];
 function openQuick(){
-  openSheet(`<h2 class="sheet-t">تضيف إيه؟</h2><div class="quick">${QUICK.map(q => `<button type="button" class="qk" data-quick="${q.k}"><span class="qk-ic" style="color:${q.c};background:color-mix(in srgb,${q.c} 14%,transparent)">${ICO[q.ic]}</span>${q.t}</button>`).join("")}</div>`, "إضافة سريعة");
+  openSheet(`<h2 class="sheet-t">تضيف إيه؟</h2><div class="quick">${QUICK.filter(q => state.profile.modules[q.m]).map(q => `<button type="button" class="qk" data-quick="${q.k}"><span class="qk-ic" style="color:${q.c};background:color-mix(in srgb,${q.c} 14%,transparent)">${ICO[q.ic]}</span>${q.t}</button>`).join("")}</div>`, "إضافة سريعة");
 }
 function openWeightSheet(){
   const t = iso(today), v = state.body.w[t];

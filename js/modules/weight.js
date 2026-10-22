@@ -1,6 +1,8 @@
 "use strict";
 /* ---------- weight tracker ---------- */
-const START_KG = 100, GOAL_LO = 80, GOAL_HI = 83;
+/* start and goal come from the plan (أنا ← خطتي) */
+let START_KG = 100, GOAL_LO = 80, GOAL_HI = 83;
+function loadBodyGoals(){ const b = state.plan.body || {}; START_KG = +b.start || 0; GOAL_LO = +b.goalLo || 0; GOAL_HI = +b.goalHi || GOAL_LO; }
 const fmt = n => (Math.round(n*10)/10).toFixed(1).replace(/\.0$/,"");
 function sundayOf(dateStr){ const d = new Date(dateStr+"T00:00"); d.setDate(d.getDate()-d.getDay()); return iso(d); }
 
@@ -21,6 +23,12 @@ function weeklySeries(){
 
 function statusOf(ch){
   if (ch == null) return "";
+  if ((state.profile.goal || "cut") === "bulk"){
+    if (ch >= 0.6) return `<span class="st st-warn">! أسرع من اللازم</span>`;
+    if (ch >= 0.1) return `<span class="st st-good">✓ ممتاز</span>`;
+    if (ch > -0.25) return `<span class="st st-warn">– ثابت</span>`;
+    return `<span class="st st-bad">↓ نزل</span>`;
+  }
   if (ch <= -1.3) return `<span class="st st-warn">! أسرع من اللازم</span>`;
   if (ch <= -0.4) return `<span class="st st-good">✓ ممتاز</span>`;
   if (ch < 0.25)  return `<span class="st st-warn">– ثابت</span>`;
@@ -28,6 +36,9 @@ function statusOf(ch){
 }
 
 function renderTracker(){
+  loadBodyGoals();
+  if (!START_KG){ const firstW = Object.keys(state.body.w).sort()[0]; START_KG = firstW ? +state.body.w[firstW] : 0; }
+  if (!GOAL_HI) GOAL_HI = GOAL_LO = START_KG;
   const series = weeklySeries();
   const pts = series.filter(p=>p.avg!=null);
   const last = pts.length ? pts[pts.length-1].avg : null;
@@ -35,7 +46,7 @@ function renderTracker(){
     [`${START_KG}`, "البداية (كجم)"],
     [last!=null?fmt(last):"—", "متوسط آخر أسبوع"],
     [last!=null?(last-START_KG<=0?"":"+")+fmt(last-START_KG):"—", "التغيير من البداية"],
-    [last!=null?(last<=GOAL_HI?"وصلت":fmt(last-GOAL_HI)):fmt(START_KG-GOAL_HI), "فاضل لحد 83 كجم"]
+    [last!=null?(last<=GOAL_HI?"وصلت":fmt(last-GOAL_HI)):fmt(START_KG-GOAL_HI), `فاضل لحد ${GOAL_HI} كجم`]
   ];
   document.getElementById("trkTiles").innerHTML = tiles.map(([v,l])=>`<div class="tile"><div class="v">${v}</div><div class="l">${l}</div></div>`).join("");
 
@@ -94,7 +105,9 @@ function renderTracker(){
   // plateau note: last two measured weeks both flat or up
   const chs = rows.filter(r=>r.ch!=null).map(r=>r.ch);
   const note = document.getElementById("trkNote");
-  if (chs.length >= 2 && chs.slice(-2).every(c=>c > -0.25)){
+  const cutting = (state.profile.goal || "cut") === "cut";
+  if (!cutting) note.innerHTML = "";
+  else if (chs.length >= 2 && chs.slice(-2).every(c=>c > -0.25)){
     note.innerHTML = `<div class="trk-note"><b>الوزن ثابت أسبوعين.</b> قلّل نص كوباية رز أو نص رغيف في اليوم، وشوف مقاس الوسط كمان: لو بينزل، يبقى بتخس دهون وبتبني عضل.</div>`;
   } else if (chs.length && chs[chs.length-1] <= -1.3){
     note.innerHTML = `<div class="trk-note"><b>نزلت أسرع من اللازم الأسبوع ده.</b> لو اتكرر، زوّد نص كوباية رز في اليوم عشان متخسرش عضل. أول أسبوعين طبيعي ينزلوا أسرع بسبب المية.</div>`;
