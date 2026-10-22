@@ -4,6 +4,7 @@
   "description": "يومك وصحتك وفلوسك وتذكيراتك في مكان واحد.",
   "lang": "ar",
   "dir": "rtl",
+  "id": "lifebase-app",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",

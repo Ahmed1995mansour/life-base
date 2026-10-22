@@ -1,5 +1,5 @@
 // LifeBase service worker: app shell cached for offline use, fonts cached on first load.
-const VERSION = "lifebase-v1";
+const VERSION = "lifebase-v2";
 const SHELL = ["./", "index.html", "money/index.html", "manifest.webmanifest",
   "icons/icon-192.png", "icons/icon-512.png", "icons/maskable-512.png", "icons/apple-touch-icon.png"];
 
