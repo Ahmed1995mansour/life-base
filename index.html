@@ -1,0 +1,2242 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>LifeBase</title>
+<meta name="description" content="يومك وصحتك وفلوسك وتذكيراتك في مكان واحد.">
+<meta name="theme-color" content="#F2F4FA" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0D1220" media="(prefers-color-scheme: dark)">
+<script>try{var t=JSON.parse(localStorage.getItem("fit:theme")||"null");if(t==="light"||t==="dark")document.documentElement.setAttribute("data-theme",t);}catch(e){}</script>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/icon-192.png" type="image/png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="LifeBase">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alexandria:wght@500;600;700&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap">
+<style>
+:root{
+  --bg:#F2F4FA; --surface:#FFFFFF; --surface-2:#F6F7FC; --ink:#11162A; --muted:#5F6782; --line:#E3E6F0;
+  --pitch:#3550F0; --pitch-soft:#E9EDFF; --on-pitch:#FFFFFF;
+  --hero1:#3550F0; --hero2:#7B4DFF; --hero-ink:#FFFFFF;
+  --food:#E07B12; --food-soft:#FFF3E3;
+  --work:#6B7590; --work-soft:#EEF0F5;
+  --home:#D9468F; --home-soft:#FDEBF4;
+  --sleep:#7B6CF0; --sleep-soft:#F0EDFF;
+  --self:#0E9F8E; --self-soft:#E2F6F3;
+  --gold:#B8860B; --gold-soft:#FBF2D9;
+  --done:#A3AAC0;
+  --chart:#3550F0; --band:#E6F6EF; --grid:#E8EBF3;
+  --good:#12805C; --good-soft:#E1F5EC; --warn:#A16207; --warn-soft:#FDF2DC; --bad:#C2413A; --bad-soft:#FDE7E5;
+  --shadow:0 1px 2px rgba(17,22,42,.04),0 6px 20px rgba(17,22,42,.05);
+  --dock:color-mix(in srgb,#FFFFFF 82%,transparent);
+  --tabbar:64px;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme:dark;
+    --bg:#0D1220; --surface:#151B2D; --surface-2:#1A2136; --ink:#E9EDF8; --muted:#94A0BE; --line:#252D45;
+    --pitch:#7088FF; --pitch-soft:#1F2850; --on-pitch:#0D1220;
+    --hero1:#3D4FE0; --hero2:#7A3FF2; --hero-ink:#FFFFFF;
+    --food:#F4A54A; --food-soft:#2E2414;
+    --work:#A3ADC8; --work-soft:#1D2335;
+    --home:#F07AB4; --home-soft:#341A2B;
+    --sleep:#A79BFF; --sleep-soft:#231F42;
+    --self:#3DD2BF; --self-soft:#112E2C;
+    --gold:#E9BE55; --gold-soft:#2F2713;
+    --done:#4E5873;
+    --chart:#7088FF; --band:#16302A; --grid:#232B42;
+    --good:#4CD6A0; --good-soft:#12302A; --warn:#F2BE55; --warn-soft:#2F2611; --bad:#FF8A80; --bad-soft:#3A1C1F;
+    --shadow:0 1px 0 rgba(255,255,255,.02);
+    --dock:color-mix(in srgb,#151B2D 82%,transparent);
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --bg:#0D1220; --surface:#151B2D; --surface-2:#1A2136; --ink:#E9EDF8; --muted:#94A0BE; --line:#252D45;
+  --pitch:#7088FF; --pitch-soft:#1F2850; --on-pitch:#0D1220;
+  --hero1:#3D4FE0; --hero2:#7A3FF2; --hero-ink:#FFFFFF;
+  --food:#F4A54A; --food-soft:#2E2414;
+  --work:#A3ADC8; --work-soft:#1D2335;
+  --home:#F07AB4; --home-soft:#341A2B;
+  --sleep:#A79BFF; --sleep-soft:#231F42;
+  --self:#3DD2BF; --self-soft:#112E2C;
+  --gold:#E9BE55; --gold-soft:#2F2713;
+  --done:#4E5873;
+  --chart:#7088FF; --band:#16302A; --grid:#232B42;
+  --good:#4CD6A0; --good-soft:#12302A; --warn:#F2BE55; --warn-soft:#2F2611; --bad:#FF8A80; --bad-soft:#3A1C1F;
+  --shadow:0 1px 0 rgba(255,255,255,.02);
+  --dock:color-mix(in srgb,#151B2D 82%,transparent);
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"IBM Plex Sans Arabic",Tahoma,"Segoe UI",sans-serif;font-size:15px;line-height:1.65;-webkit-tap-highlight-color:transparent}
+[hidden]{display:none!important}
+img,video{max-width:100%}
+button,input,select{font:inherit;color:inherit}
+input,button{touch-action:manipulation}
+:focus-visible{outline:2px solid var(--pitch);outline-offset:2px}
+h1,h2,h3,h4{margin:0;line-height:1.3;text-wrap:balance}
+.en{direction:ltr;unicode-bidi:isolate}
+.num{font-variant-numeric:tabular-nums}
+.small{font-size:13px;color:var(--muted)}
+.muted{color:var(--muted)}
+
+/* ---------- app shell ---------- */
+.topbar{position:sticky;top:0;z-index:20;background:color-mix(in srgb,var(--bg) 92%,transparent);backdrop-filter:saturate(1.4) blur(10px);-webkit-backdrop-filter:saturate(1.4) blur(10px);padding:calc(env(safe-area-inset-top,0px) + 10px) 16px 10px;border-bottom:1px solid var(--line)}
+.topbar-in{max-width:720px;margin:0 auto;display:flex;align-items:center;gap:10px}
+.topbar h1{font-family:"Alexandria","IBM Plex Sans Arabic",sans-serif;font-size:21px;flex:1}
+.daynav{display:flex;align-items:center;gap:4px}
+.iconbtn{width:36px;height:36px;border-radius:10px;border:1px solid var(--line);background:var(--surface);display:grid;place-items:center;cursor:pointer;color:var(--ink)}
+.iconbtn svg{width:18px;height:18px}
+.daylbl{min-width:96px;text-align:center;border:0;background:transparent;cursor:pointer;line-height:1.2;padding:2px 4px;border-radius:8px}
+.daylbl b{display:block;font-size:15px}
+.daylbl span{font-size:11.5px;color:var(--muted);font-variant-numeric:tabular-nums}
+.daylbl.not-today span{color:var(--pitch);font-weight:600}
+
+main{max-width:720px;margin:0 auto;padding:14px 16px calc(var(--tabbar) + env(safe-area-inset-bottom,0px) + 90px)}
+.screen{display:flex;flex-direction:column;gap:14px}
+
+.tabbar{position:fixed;inset-inline:0;bottom:0;z-index:30;background:var(--surface);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom,0px)}
+.tabbar-in{max-width:720px;margin:0 auto;display:grid;grid-template-columns:repeat(5,1fr);height:var(--tabbar)}
+.tabbtn{border:0;background:transparent;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;cursor:pointer;color:var(--muted);font-size:11.5px;font-weight:600;position:relative}
+.tabbtn svg{width:23px;height:23px}
+.tabbtn[aria-current="page"]{color:var(--pitch)}
+.tabbtn[aria-current="page"]::before{content:"";position:absolute;top:0;width:32px;height:3px;border-radius:0 0 3px 3px;background:var(--pitch)}
+
+/* ---------- cards ---------- */
+.card{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:14px 16px;box-shadow:var(--shadow)}
+.card-h{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px}
+.card-h h2{font-size:16.5px}
+.card-h .small{white-space:nowrap}
+.sect-title{font-size:13px;font-weight:700;color:var(--muted);margin:6px 2px -4px;letter-spacing:.2px}
+
+/* hero */
+.hero{display:grid;grid-template-columns:auto 1fr;gap:14px;align-items:center}
+.ring{width:76px;height:76px;position:relative}
+.ring svg{width:100%;height:100%;transform:rotate(-90deg)}
+.ring .rv{position:absolute;inset:0;display:grid;place-items:center;font-weight:700;font-size:17px;font-variant-numeric:tabular-nums}
+.hero-txt{min-width:0}
+.hero-badge{font-size:12.5px;font-weight:600;color:var(--pitch)}
+.nowline{display:flex;gap:8px;align-items:baseline;margin-top:4px;font-size:14px}
+.nowline .k{font-size:11.5px;font-weight:700;color:var(--muted);min-width:42px}
+.nowline .v{font-weight:600}
+.nowline .t{font-variant-numeric:tabular-nums;color:var(--muted);font-size:12.5px;direction:ltr}
+.hero-note{grid-column:1/-1;margin:2px 0 0;font-size:13px;color:var(--muted)}
+
+/* checkbox */
+.ck{appearance:none;-webkit-appearance:none;flex:none;width:24px;height:24px;border:2px solid var(--line);border-radius:7px;background:var(--surface);cursor:pointer;display:grid;place-items:center;margin:0}
+.ck::after{content:"";width:6px;height:11px;border:solid var(--on-pitch);border-width:0 2.5px 2.5px 0;transform:rotate(45deg) translate(-1px,-1px);opacity:0}
+.ck:checked{background:var(--pitch);border-color:var(--pitch)}
+.ck:checked::after{opacity:1}
+.is-done .ttl{text-decoration:line-through;text-decoration-color:var(--done);color:var(--muted)}
+
+/* habit + prayer chips */
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.hchip{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--line);border-radius:999px;padding:7px 12px 7px 14px;background:var(--surface-2);cursor:pointer;font-size:13.5px;user-select:none}
+.hchip input{position:absolute;opacity:0;width:1px;height:1px}
+.hchip .dot{width:18px;height:18px;border-radius:50%;border:2px solid var(--line);display:grid;place-items:center;flex:none}
+.hchip.on{background:var(--pitch-soft);border-color:transparent;color:var(--pitch);font-weight:600}
+.hchip.on .dot{background:var(--pitch);border-color:var(--pitch)}
+.hchip.on .dot::after{content:"";width:4px;height:8px;border:solid var(--on-pitch);border-width:0 2px 2px 0;transform:rotate(45deg) translate(-.5px,-1px)}
+.hchip:focus-within{outline:2px solid var(--pitch);outline-offset:2px}
+.weighrow{display:flex;align-items:center;gap:10px;margin-bottom:10px;flex-wrap:wrap}
+.weighrow label{font-weight:600;font-size:14px}
+.field{width:96px;padding:7px 10px;border:1px solid var(--line);border-radius:10px;background:var(--surface-2);font-variant-numeric:tabular-nums}
+.prayers{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px}
+.pr{border:1px solid var(--line);background:var(--surface-2);border-radius:12px;padding:8px 2px;display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;font-size:13.5px;font-weight:600}
+.pr .st{font-size:10.5px;font-weight:600;color:var(--muted);line-height:1.3}
+.pr.done{background:var(--pitch-soft);border-color:transparent;color:var(--pitch)}
+.pr.done .st{color:var(--pitch)}
+.pr.mosque{background:var(--gold-soft);border-color:transparent;color:var(--gold)}
+.pr.mosque .st{color:var(--gold)}
+.legend{margin-top:8px;font-size:12px;color:var(--muted);display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap}
+.legend b{color:var(--gold)}
+
+/* timeline groups */
+details.grp{background:var(--surface);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow);overflow:hidden}
+details.grp>summary{list-style:none;cursor:pointer;display:flex;align-items:center;gap:10px;padding:13px 16px;font-weight:700}
+details.grp>summary::-webkit-details-marker{display:none}
+details.grp>summary .cnt{margin-inline-start:auto;font-size:12.5px;font-weight:600;color:var(--muted);font-variant-numeric:tabular-nums}
+details.grp>summary .chev{width:18px;height:18px;color:var(--muted);transition:transform .2s}
+details.grp[open]>summary .chev{transform:rotate(180deg)}
+details.grp>summary .gico{width:20px;height:20px;color:var(--pitch)}
+.tl{list-style:none;margin:0;padding:0}
+.tl>li{display:grid;grid-template-columns:24px 64px 1fr;gap:10px;padding:11px 16px;border-top:1px solid var(--line);align-items:start}
+.tl>li.now{background:var(--pitch-soft)}
+.tl .t{font-variant-numeric:tabular-nums;font-weight:600;font-size:12.5px;direction:ltr;text-align:right;white-space:nowrap;padding-top:2px;color:var(--muted)}
+.tl .body{min-width:0}
+.tl label{cursor:pointer;display:flex;align-items:center;gap:7px}
+.tdot{width:8px;height:8px;border-radius:50%;flex:none}
+.d-food{background:var(--food)} .d-gym{background:var(--pitch)} .d-work{background:var(--work)} .d-home{background:var(--home)} .d-sleep{background:var(--sleep)} .d-self{background:var(--self)} .d-deen{background:var(--gold)}
+.tl .ttl{font-weight:600}
+.sub{display:block;color:var(--muted);font-size:12.5px;margin-top:1px}
+.golink{margin-top:6px;display:inline-flex;align-items:center;gap:4px;border:0;background:transparent;color:var(--pitch);font-weight:700;font-size:13px;padding:0;cursor:pointer}
+details.more{margin-top:5px}
+details.more>summary{cursor:pointer;font-size:12.5px;font-weight:700;color:var(--food);list-style:none;display:inline-flex;align-items:center;gap:4px}
+details.more>summary::-webkit-details-marker{display:none}
+details.more>summary::after{content:"▾";font-size:11px}
+details.more[open]>summary::after{content:"▴"}
+.menu{margin:6px 0 0;padding:8px 12px;background:var(--food-soft);border-radius:10px;list-style:none;font-size:13.5px}
+.menu li::before{content:"· ";color:var(--food);font-weight:700}
+
+/* recipes */
+.rc{border:1px solid var(--line);border-radius:12px;padding:9px 12px;margin-top:8px;background:var(--surface)}
+.rc-h{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;font-size:14px}
+.rc-h span{font-size:12px;color:var(--muted)}
+.rc ol{margin:4px 0 0;padding-inline-start:20px;font-size:13.5px}
+.rc ol li{margin:2px 0}
+.rc-tip{margin:6px 0 0;font-size:12.5px;color:var(--food)}
+
+/* workout */
+.wo-head{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.wo-head h2{font-size:18px}
+.wo-head .en{font-weight:600}
+.bar{height:6px;border-radius:99px;background:var(--line);overflow:hidden;margin-top:10px}
+.bar i{display:block;height:100%;width:0;background:var(--pitch);transition:width .25s}
+details.exc{background:var(--surface);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow)}
+details.exc[open]{border-color:var(--pitch)}
+details.exc>summary{list-style:none;cursor:pointer;display:grid;grid-template-columns:24px 1fr auto;gap:12px;align-items:center;padding:12px 14px}
+details.exc>summary::-webkit-details-marker{display:none}
+.exc .nm{font-weight:700;font-size:14.5px;line-height:1.35}
+.exc .nm small{display:block;font-weight:500;color:var(--muted);font-size:12px;margin-top:1px}
+.exc .chev{width:18px;height:18px;color:var(--muted);transition:transform .2s}
+.exc[open] .chev{transform:rotate(180deg)}
+.exc .inner{padding:0 14px 14px;display:flex;flex-direction:column;gap:8px;border-top:1px dashed var(--line);padding-top:12px;margin:0 14px 0;padding-inline:0}
+.exc.is-done{opacity:.72}
+.pills{display:flex;flex-wrap:wrap;gap:6px}
+.pill{font-size:12px;padding:2px 9px;border-radius:7px;background:var(--surface-2);border:1px solid var(--line);font-variant-numeric:tabular-nums}
+.pill.sets{background:var(--pitch-soft);border-color:transparent;color:var(--pitch);font-weight:700}
+.kv{display:grid;grid-template-columns:auto 1fr;gap:3px 10px;font-size:13px;margin:0}
+.kv dt{color:var(--muted);font-weight:600}
+.kv dd{margin:0}
+.eq{font-size:11.5px;font-weight:700;padding:1px 8px;border-radius:6px;background:var(--surface-2);border:1px solid var(--line)}
+.eq-d{font-size:12px;color:var(--muted)}
+.cue{font-size:13.5px;margin:0}
+.warm{font-size:12.5px;color:var(--muted);margin:0}
+.warm b{color:var(--ink)}
+.logrow{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;font-size:13px;color:var(--muted)}
+.logrow input{width:92px;padding:7px 10px;border:1px solid var(--line);border-radius:10px;background:var(--surface-2);font-size:15px;font-variant-numeric:tabular-nums}
+.last{font-variant-numeric:tabular-nums}
+.actrow{display:flex;gap:8px;flex-wrap:wrap}
+.btn{border:1px solid var(--line);background:var(--surface);border-radius:10px;padding:8px 14px;font-weight:700;font-size:13.5px;cursor:pointer;display:inline-flex;align-items:center;gap:6px}
+.btn.primary{background:var(--pitch);border-color:var(--pitch);color:var(--on-pitch)}
+.btn svg{width:16px;height:16px}
+details.how>summary,details.info>summary{cursor:pointer;font-size:13px;font-weight:700;color:var(--pitch);list-style:none}
+details.how>summary::-webkit-details-marker,details.info>summary::-webkit-details-marker{display:none}
+details.how>summary::before{content:"▶  ";font-size:10px}
+details.how[open]>summary::before{content:"▼  "}
+.how-body{margin-top:6px}
+.how-body video,.how-body img{display:block;width:100%;max-width:420px;border-radius:12px;background:var(--bg)}
+.yt{display:inline-block;margin-top:4px;font-size:13px;font-weight:700;color:var(--pitch)}
+.plain{margin:0;padding-inline-start:18px}
+.plain li{margin:3px 0}
+.phase-list{font-size:13.5px}
+
+/* rest timer */
+.timer{position:fixed;inset-inline:12px;bottom:calc(var(--tabbar) + env(safe-area-inset-bottom,0px) + 10px);z-index:40;max-width:560px;margin:0 auto;background:var(--ink);color:var(--bg);border-radius:18px;padding:12px 14px;display:flex;align-items:center;gap:12px;box-shadow:0 8px 30px rgba(0,0,0,.25)}
+.timer .tv{font-size:30px;font-weight:700;font-variant-numeric:tabular-nums;direction:ltr;min-width:84px;text-align:center}
+.timer .tl2{flex:1;font-size:13px;line-height:1.35}
+.timer .tl2 b{display:block;font-size:14px}
+.timer button{border:0;border-radius:10px;padding:8px 12px;font-weight:700;cursor:pointer;background:color-mix(in srgb,var(--bg) 16%,transparent);color:var(--bg)}
+.timer.end{background:var(--pitch);color:var(--on-pitch)}
+.timer.end button{color:var(--on-pitch)}
+.tbar{position:absolute;inset-inline:14px;bottom:6px;height:3px;border-radius:3px;background:color-mix(in srgb,var(--bg) 20%,transparent);overflow:hidden}
+.tbar i{display:block;height:100%;background:var(--bg);width:0}
+
+/* segmented */
+.seg{display:grid;grid-auto-flow:column;grid-auto-columns:1fr;background:var(--surface-2);border:1px solid var(--line);border-radius:12px;padding:3px;gap:3px}
+.seg button{border:0;background:transparent;border-radius:9px;padding:8px 6px;font-weight:700;font-size:13.5px;cursor:pointer;color:var(--muted)}
+.seg button[aria-pressed="true"]{background:var(--surface);color:var(--ink);box-shadow:var(--shadow)}
+
+/* tracker (weight) */
+.tiles{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.tile{background:var(--surface-2);border:1px solid var(--line);border-radius:12px;padding:10px 12px}
+.tile .v{font-family:"Alexandria","IBM Plex Sans Arabic",sans-serif;font-size:22px;font-variant-numeric:tabular-nums;line-height:1.2;direction:ltr;text-align:right;unicode-bidi:plaintext}
+.tile .l{font-size:12px;color:var(--muted)}
+.chartbox{position:relative;margin-top:10px}
+.chartbox svg{display:block;width:100%;height:auto;direction:ltr}
+.chartbox .ax{fill:var(--muted);font-size:11.5px;font-family:"IBM Plex Sans Arabic",sans-serif;font-variant-numeric:tabular-nums}
+.chartbox .lbl{fill:var(--ink);font-size:12px;font-weight:600;font-family:"IBM Plex Sans Arabic",sans-serif}
+.tip{position:absolute;pointer-events:none;background:var(--ink);color:var(--bg);font-size:12.5px;padding:5px 9px;border-radius:8px;white-space:nowrap;transform:translate(-50%,-100%);margin-top:-10px}
+.trk-note{margin-top:10px;padding:10px 12px;border-radius:10px;font-size:13.5px;background:var(--warn-soft)}
+.tablewrap{overflow-x:auto;margin-top:10px;border:1px solid var(--line);border-radius:12px}
+table.wk{width:100%;border-collapse:collapse;font-size:13.5px;font-variant-numeric:tabular-nums}
+table.wk th,table.wk td{padding:8px 10px;text-align:right;border-top:1px solid var(--line);white-space:nowrap}
+table.wk th{font-weight:600;color:var(--muted);font-size:12.5px;border-top:0}
+.st{display:inline-block;font-size:11.5px;font-weight:700;padding:0 8px;border-radius:99px}
+.st-good{background:var(--good-soft);color:var(--good)}
+.st-warn{background:var(--warn-soft);color:var(--warn)}
+.st-bad{background:var(--bad-soft);color:var(--bad)}
+.trk-in{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;font-size:13.5px}
+.trk-in label{font-weight:600}
+.trk-in input{width:96px;padding:7px 10px;border:1px solid var(--line);border-radius:10px;background:var(--surface-2);font-variant-numeric:tabular-nums}
+.progress{display:flex;align-items:center;gap:10px;font-size:13px;color:var(--muted);margin-top:10px}
+.progress .track{flex:1;height:8px;border-radius:99px;background:var(--line);overflow:hidden}
+.progress .track i{display:block;height:100%;width:0;background:var(--pitch)}
+.progress b{color:var(--ink);font-variant-numeric:tabular-nums}
+table.hz td{white-space:normal}
+table.hz td:nth-child(1),table.hz td:nth-child(2){white-space:nowrap}
+table.hz tr.cur td{background:var(--pitch-soft)}
+table.hz .ck{width:22px;height:22px}
+
+/* week */
+.wkdays{display:flex;flex-direction:column;gap:8px}
+.wkday{display:grid;grid-template-columns:72px 1fr 44px;gap:10px;align-items:center;border:0;background:transparent;padding:4px 0;cursor:pointer;text-align:right;width:100%}
+.wkday b{font-size:14px}
+.wkday small{display:block;font-size:11.5px;color:var(--muted)}
+.wkday .pct{font-size:12.5px;color:var(--muted);font-variant-numeric:tabular-nums;text-align:left}
+.wkday.today b{color:var(--pitch)}
+.cells{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.cell{background:var(--surface-2);border:1px solid var(--line);border-radius:12px;padding:9px 10px}
+.cell .v{font-family:"Alexandria","IBM Plex Sans Arabic",sans-serif;font-size:19px;font-variant-numeric:tabular-nums}
+.cell .l{font-size:12px;color:var(--muted)}
+
+/* reference */
+details.ref{background:var(--surface);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow)}
+details.ref>summary{cursor:pointer;list-style:none;display:flex;align-items:center;gap:10px;padding:13px 16px;font-weight:700}
+details.ref>summary::-webkit-details-marker{display:none}
+details.ref>summary .chev{width:18px;height:18px;color:var(--muted);margin-inline-start:auto;transition:transform .2s}
+details.ref[open]>summary .chev{transform:rotate(180deg)}
+details.ref>div{padding:0 16px 14px;font-size:14px}
+details.ref p{margin:6px 0}
+.targets{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.sync{font-size:12.5px;color:var(--muted);display:flex;align-items:center;gap:6px}
+.sync::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--done)}
+.sync.on::before{background:var(--pitch)}
+
+/* onboarding */
+.ob{position:fixed;inset:0;z-index:60;background:color-mix(in srgb,var(--ink) 45%,transparent);display:grid;place-items:end center;padding:16px}
+.ob-card{background:var(--surface);border-radius:22px;max-width:520px;width:100%;padding:20px 18px calc(18px + env(safe-area-inset-bottom,0px));max-height:90vh;overflow:auto}
+.ob-card h2{font-family:"Alexandria","IBM Plex Sans Arabic",sans-serif;font-size:22px}
+.ob-list{list-style:none;padding:0;margin:14px 0;display:flex;flex-direction:column;gap:12px}
+.ob-list li{display:grid;grid-template-columns:38px 1fr;gap:10px;align-items:start;font-size:14px}
+.ob-list .ic{width:38px;height:38px;border-radius:11px;background:var(--pitch-soft);color:var(--pitch);display:grid;place-items:center}
+.ob-list .ic svg{width:21px;height:21px}
+.ob-list b{display:block}
+.empty{font-size:14px;color:var(--muted);text-align:center;padding:10px 0}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+@media (min-width:560px){ .tiles{grid-template-columns:repeat(4,minmax(0,1fr))} }
+
+/* ---------- look: floodlight hero, floating dock, softer cards ---------- */
+.topbar{border-bottom:0}
+.topbar h1{font-weight:700;letter-spacing:-.2px}
+.card,details.grp,details.exc,details.ref{border-radius:20px}
+.hero{background:linear-gradient(135deg,var(--hero1),var(--hero2));border:0;color:var(--hero-ink);box-shadow:0 10px 30px color-mix(in srgb,var(--hero1) 30%,transparent);position:relative;overflow:hidden}
+.hero::after{content:"";position:absolute;inset:-40% -20% auto auto;width:220px;height:220px;border-radius:50%;background:radial-gradient(closest-side,rgba(255,255,255,.22),transparent);pointer-events:none}
+.hero .hero-badge{color:rgba(255,255,255,.85)}
+.hero .nowline .k,.hero .nowline .t,.hero .hero-note{color:rgba(255,255,255,.75)}
+.hero .ring .rv{font-family:"Alexandria",sans-serif;font-size:18px}
+.tabbar{inset-inline:12px;bottom:calc(10px + env(safe-area-inset-bottom,0px));padding:0;border:1px solid var(--line);border-radius:22px;background:var(--dock);backdrop-filter:saturate(1.6) blur(16px);-webkit-backdrop-filter:saturate(1.6) blur(16px);box-shadow:0 10px 30px rgba(17,22,42,.12);max-width:560px;margin:0 auto}
+.tabbar-in{height:var(--tabbar)}
+.tabbtn[aria-current="page"]::before{top:auto;bottom:7px;width:5px;height:5px;border-radius:50%}
+.tabbtn[aria-current="page"] svg{transform:translateY(-2px)}
+main{padding-bottom:calc(var(--tabbar) + env(safe-area-inset-bottom,0px) + 110px)}
+.timer{bottom:calc(var(--tabbar) + env(safe-area-inset-bottom,0px) + 22px)}
+.pill.sets,.hchip.on,.pr.done{background:var(--pitch-soft);color:var(--pitch)}
+.btn.primary{background:linear-gradient(135deg,var(--hero1),var(--hero2));border:0;color:#fff}
+.ck:checked{background:var(--pitch);border-color:var(--pitch)}
+.ck::after{border-color:#fff}
+.hchip.on .dot::after{border-color:#fff}
+.tile .v,.cell .v{font-weight:600}
+.seg button[aria-pressed="true"]{color:var(--pitch)}
+.themebtn svg{width:18px;height:18px}
+
+.ob-brand{display:flex;align-items:center;gap:14px;margin-bottom:14px}
+.ob-logo{width:64px;height:64px;flex:none;border-radius:16px;box-shadow:0 8px 24px rgba(17,22,42,.35)}
+.ob-word{display:block;font-family:"Alexandria","IBM Plex Sans Arabic",sans-serif;font-weight:700;font-size:28px;letter-spacing:-.5px;line-height:1.1;text-align:right}
+.ob-brand .small{display:block;margin-top:2px}
+
+.sched{padding:14px 0 4px}
+.sched .card-h{padding:0 16px}
+.sched .tl>li:first-child{border-top:1px solid var(--line)}
+
+.tdl{list-style:none;margin:0 0 10px;padding:0}
+.td{display:grid;grid-template-columns:24px 1fr 32px;gap:10px;align-items:start;padding:9px 0;border-top:1px solid var(--line)}
+.td:first-child{border-top:0;padding-top:2px}
+.td label{cursor:pointer;min-width:0;overflow-wrap:anywhere}
+.td .ttl{font-weight:500}
+.tdx{width:32px;height:28px;border:0;background:transparent;color:var(--muted);border-radius:8px;cursor:pointer;display:grid;place-items:center}
+.tdx svg{width:16px;height:16px}
+.tdx:hover{background:var(--surface-2);color:var(--bad)}
+.tdform{display:flex;gap:8px}
+.tdform .field{flex:1;width:auto;min-width:0}
+
+/* ---------- LifeBase: sub navigation, money frame, reminders, today extras ---------- */
+.subnav{max-width:720px;margin:10px auto 0;display:flex;gap:6px;overflow-x:auto;scrollbar-width:none}
+.subnav::-webkit-scrollbar{display:none}
+.subnav button{flex:none;border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:6px 14px;font-weight:600;font-size:13.5px;color:var(--muted);cursor:pointer}
+.subnav button[aria-current="page"]{background:var(--ink);border-color:var(--ink);color:var(--bg)}
+#scr-progress>.seg{display:none}
+main.full{padding:0;max-width:none}
+#moneyFrame{display:block;width:100%;border:0;background:var(--bg)}
+.tabbtn{position:relative}
+.tbadge{position:absolute;top:8px;inset-inline-start:calc(50% + 6px);min-width:17px;height:17px;padding:0 4px;border-radius:9px;background:var(--rem);color:#fff;font-size:10.5px;font-weight:700;display:grid;place-items:center;font-variant-numeric:tabular-nums}
+:root{--money:#0FA37F;--money-soft:#E0F5EE;--rem:#E8730C;--rem-soft:#FFF0E0}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){--money:#3DD6A6;--money-soft:#11302A;--rem:#FFA24D;--rem-soft:#33240F} }
+:root[data-theme="dark"]{--money:#3DD6A6;--money-soft:#11302A;--rem:#FFA24D;--rem-soft:#33240F}
+.rlist{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:10px}
+.ritem{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:12px 14px;box-shadow:var(--shadow);display:flex;flex-direction:column;gap:6px}
+.ritem.over{border-color:color-mix(in srgb,var(--bad) 45%,var(--line))}
+.ritem .rh{display:flex;align-items:flex-start;gap:10px}
+.ritem .rt{flex:1;min-width:0}
+.ritem .rt b{display:block;font-size:15px;overflow-wrap:anywhere}
+.ritem .rt small{display:block;color:var(--muted);font-size:12.5px}
+.rwhen{flex:none;font-size:12px;font-weight:700;padding:2px 10px;border-radius:999px;background:var(--surface-2);color:var(--muted);white-space:nowrap}
+.rwhen.soon{background:var(--rem-soft);color:var(--rem)}
+.rwhen.now{background:var(--rem);color:#fff}
+.rwhen.over{background:var(--bad-soft);color:var(--bad)}
+.ritem .acts{display:flex;flex-wrap:wrap;gap:6px}
+.ritem .acts .btn{padding:6px 11px;font-size:12.5px;border-radius:9px}
+.btn.done{background:var(--money);border-color:var(--money);color:#fff}
+.btn.warn{color:var(--bad);border-color:color-mix(in srgb,var(--bad) 40%,var(--line))}
+.rdot{width:10px;height:10px;border-radius:50%;flex:none;margin-top:6px}
+.rform{display:grid;gap:10px}
+.rform label{display:flex;flex-direction:column;gap:4px;font-size:13px;font-weight:600;color:var(--muted)}
+.rform input,.rform select,.rform textarea{font:inherit;color:var(--ink);background:var(--surface-2);border:1px solid var(--line);border-radius:12px;padding:9px 12px;width:100%}
+.rform .row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.rform .row3{display:grid;grid-template-columns:auto 80px 1fr;gap:8px;align-items:end}
+.tpl{display:flex;flex-wrap:wrap;gap:6px}
+.tpl button{border:1px dashed var(--line);background:transparent;border-radius:999px;padding:5px 12px;font-size:12.5px;cursor:pointer;color:var(--ink)}
+.rsum{display:flex;gap:8px;flex-wrap:wrap}
+.rsum span{font-size:12.5px;font-weight:700;padding:3px 11px;border-radius:999px;background:var(--surface-2);border:1px solid var(--line)}
+.rsum .o{background:var(--bad-soft);color:var(--bad);border-color:transparent}
+.rsum .w{background:var(--rem-soft);color:var(--rem);border-color:transparent}
+.mini{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.mini .cell .v{color:var(--money)}
+.mini .cell.sp .v{color:var(--ink)}
+.soonrow{display:grid;grid-template-columns:10px 1fr auto;gap:10px;align-items:center;padding:8px 0;border-top:1px solid var(--line)}
+.soonrow:first-child{border-top:0;padding-top:0}
+.soonrow b{font-weight:600;font-size:14px;display:block;overflow-wrap:anywhere}
+.soonrow small{color:var(--muted);font-size:12px}
+.lb-mark{width:44px;height:44px;flex:none}
+</style>
+</head>
+<body>
+<header class="topbar">
+  <div class="topbar-in">
+    <h1 id="scrTitle">النهارده</h1>
+    <button class="iconbtn themebtn" id="themeBtn" type="button" aria-label="المظهر"></button>
+    <div class="daynav" id="dayNav">
+      <button class="iconbtn" id="prevDay" type="button" aria-label="اليوم اللي قبله"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 6l6 6-6 6"/></svg></button>
+      <button class="daylbl" id="dayLbl" type="button" aria-label="ارجع للنهارده"><b id="dayName"></b><span id="dayDate"></span></button>
+      <button class="iconbtn" id="nextDay" type="button" aria-label="اليوم اللي بعده"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M15 6l-6 6 6 6"/></svg></button>
+    </div>
+  </div>
+  <nav class="subnav" id="subnav" aria-label="أقسام فرعية" hidden></nav>
+</header>
+
+<main>
+  <section class="screen" id="scr-today" data-title="النهارده"></section>
+  <section class="screen" id="scr-train" data-title="التمرين" hidden></section>
+  <section class="screen" id="scr-food" data-title="الأكل" hidden></section>
+
+  <section class="screen" id="scr-progress" data-title="التقدّم" hidden>
+    <div class="seg" role="group" aria-label="التقدّم">
+      <button type="button" data-seg="weight" aria-pressed="true">الوزن</button>
+      <button type="button" data-seg="quran" aria-pressed="false">القرآن</button>
+      <button type="button" data-seg="week" aria-pressed="false">الأسبوع</button>
+    </div>
+
+    <div data-pane="weight" class="screen">
+      <div class="card">
+        <div class="card-h"><h2>وزنك أسبوع بأسبوع</h2><span class="small">متوسط كل أسبوع</span></div>
+        <div class="tiles" id="trkTiles"></div>
+        <div class="chartbox" id="trkChart"></div>
+        <div id="trkNote"></div>
+      </div>
+      <div class="card">
+        <div class="card-h"><h2>كل أسبوع</h2></div>
+        <div class="tablewrap" style="margin-top:0"><table class="wk"><thead><tr><th>الأسبوع</th><th>أيام الوزن</th><th>المتوسط</th><th>التغيير</th><th>الحالة</th></tr></thead><tbody id="trkRows"></tbody></table></div>
+      </div>
+      <div class="card">
+        <div class="card-h"><h2>مقاس الوسط</h2><span class="small">كل أسبوعين عند السُرة</span></div>
+        <div class="trk-in"><label for="waistIn">النهارده</label><input id="waistIn" inputmode="decimal" placeholder="سم"><span class="small" id="waistInfo"></span></div>
+      </div>
+    </div>
+
+    <div data-pane="quran" class="screen" hidden>
+      <div class="card">
+        <div class="card-h"><h2>الختمة</h2><span class="small">نص جزء يوميًا = ختمة كل شهرين</span></div>
+        <div class="trk-in"><label for="qPage">آخر صفحة وصلتلها</label><input id="qPage" inputmode="numeric" placeholder="1–604"></div>
+        <div class="progress"><div class="track"><i id="qBar"></i></div><b id="qPct"></b></div>
+        <p class="small" id="qInfo" style="margin:6px 0 0"></p>
+      </div>
+      <div class="card">
+        <div class="card-h"><h2>حفظ سورة يوسف</h2><span class="small" id="hInfo"></span></div>
+        <p class="small" style="margin:0">مقطع كل أسبوع من القصة. الجمعة: تفسير ونطق وحفظ النص الأول. السبت: النص التاني وتسميع المقطع كله. وكل يوم راجعه في الصلاة.</p>
+        <div class="tablewrap"><table class="wk hz"><thead><tr><th>#</th><th>الآيات</th><th>المقطع</th><th>فهمت</th><th>حفظت</th><th>سمّعت</th></tr></thead><tbody id="hRows"></tbody></table></div>
+        <details class="how" style="margin-top:12px"><summary>طريقة الحفظ بفهم ونطق صح</summary><div class="how-body">
+          <ol class="plain">
+            <li><b>اسمع الأول:</b> شغّل المقطع بصوت قارئ واضح زي الحصري مرتّل أو المنشاوي (المصحف المعلّم)، وتابع في المصحف 3 مرات قبل ما تحفظ. ده بيظبط النطق والمدود من الأول.</li>
+            <li><b>افهم:</b> اقرا تفسير المقطع، التفسير الميسّر للمعنى السريع، والسعدي لو عايز عمق أكتر. اعرف المشهد ده فين في القصة، وإيه الكلمات الغريبة ومعناها.</li>
+            <li><b>احفظ آية آية:</b> كرر كل آية 5–10 مرات من المصحف، وبعدها من غير مصحف. وبعد كل 3 آيات اربطهم ببعض.</li>
+            <li><b>سمّع:</b> سمّع المقطع لحد، أو سجّل صوتك وقارنه بالقارئ. أحسن حاجة إنك تسمّع لشيخ أو في مقرأة أونلاين مرة في الأسبوع، عشان حد يصحّح النطق والتجويد.</li>
+            <li><b>راجع:</b> كل يوم اقرا المقطع الجديد في صلاتك، ومعاه مقطع قديم بالتناوب، فالحفظ يثبت.</li>
+          </ol>
+          <a class="yt" href="https://quran.com/12" target="_blank" rel="noopener">افتح سورة يوسف (قراءة وتفسير وتلاوة)</a>
+        </div></details>
+      </div>
+    </div>
+
+    <div data-pane="week" class="screen" hidden>
+      <div class="card">
+        <div class="card-h"><h2 id="wkTitle">الأسبوع ده</h2><span class="small" id="wkMosque"></span></div>
+        <div class="wkdays" id="wkDays"></div>
+      </div>
+      <div class="card">
+        <div class="card-h"><h2>وقتك في الأسبوع</h2></div>
+        <div class="cells">
+          <div class="cell"><div class="v">4</div><div class="l">أيام جيم</div></div>
+          <div class="cell"><div class="v">3</div><div class="l">مرات بطن</div></div>
+          <div class="cell"><div class="v">1</div><div class="l">ماتش كورة</div></div>
+          <div class="cell"><div class="v">7¾ س</div><div class="l">مذاكرة</div></div>
+          <div class="cell"><div class="v">7¾ س</div><div class="l">بلايستيشن</div></div>
+          <div class="cell"><div class="v">~20 س</div><div class="l">أسرة</div></div>
+          <div class="cell"><div class="v">3½ جزء</div><div class="l">ورد قرآن</div></div>
+          <div class="cell"><div class="v">1</div><div class="l">مقطع حفظ</div></div>
+          <div class="cell"><div class="v">3</div><div class="l">وقاية وليونة</div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="screen" id="scr-money" data-title="الفلوس" hidden>
+    <iframe id="moneyFrame" title="الفلوس" loading="lazy"></iframe>
+  </section>
+
+  <section class="screen" id="scr-rem" data-title="التذكيرات" hidden></section>
+
+  <section class="screen" id="scr-ref" data-title="المرجع" hidden>
+    <div class="card">
+      <div class="card-h"><h2>أهدافك كل يوم</h2></div>
+      <div class="targets">
+        <div class="cell"><div class="v">2100–2200</div><div class="l">سعر</div></div>
+        <div class="cell"><div class="v">160 جم</div><div class="l">بروتين</div></div>
+        <div class="cell"><div class="v">3 لتر</div><div class="l">مية</div></div>
+        <div class="cell"><div class="v">8–10 آلاف</div><div class="l">خطوة</div></div>
+        <div class="cell"><div class="v">7 س+</div><div class="l">نوم</div></div>
+        <div class="cell"><div class="v">نص جزء</div><div class="l">قرآن</div></div>
+      </div>
+    </div>
+    <h3 class="sect-title">التمرين</h3>
+    <details class="ref"><summary><span>طريقة المجموعات</span><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></summary><div>
+        <p><b>التمارين المركّبة</b> (<span class="en">Squat, Deadlift, Bench, Row, RDL</span> وأمثالها):</p>
+        <ul class="plain">
+          <li>تسخين على مراحل. أول تمرين في اليوم: 40% × 8، بعدها 60% × 5، بعدها 80% × 3. التمارين المركّبة اللي بعده: 50% × 8، بعدها 75% × 4.</li>
+          <li>مجموعة تقيلة: أكبر وزن تقدر عليه وأنت سايب 1–2 عدة في الاحتياطي.</li>
+          <li>مجموعة تانية بنفس الوزن.</li>
+          <li>مجموعة تالتة أخف 10% بنفس العدات.</li>
+          <li>متوصلش للفشل هنا. أغلب الإصابات بتحصل في آخر عدة لما الفورمة تبوظ.</li>
+        </ul>
+        <p><b>التمارين المعزولة والأجهزة:</b> مجموعة تسخين 50–70% × 10، وبعدها مجموعتين تقيلتين. هنا عادي توصل لقرب الفشل.</p>
+        <p><b>إمتى تزوّد:</b> لما تكمّل العدات المطلوبة في المجموعتين التقيلتين بفورمة نضيفة، زوّد المرة الجاية 2.5 كيلو في الجزء العلوي و5 كيلو في الرجل.</p>
+      </div></details>
+    <details class="ref"><summary><span>الوقاية من الإصابات في الكورة</span><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></summary><div>
+        <p>أكتر إصابات الكورة: شد الهامسترنج، والتواء الكاحل، والضامة، وأربطة الركبة. كل واحدة ليها حاجة في الأسبوع بتحميها:</p>
+        <ul class="plain">
+          <li><b>الهامسترنج:</b> <span class="en">Nordic Curl</span> و <span class="en">RDL</span> (الاتنين)، و <span class="en">Single-leg RDL</span> (السبت).</li>
+          <li><b>الكاحل:</b> الوقوف على رجل واحدة و <span class="en">Y-Balance</span> و <span class="en">Tibialis Raise</span> والسمانة، وليونة الكاحل يوم الجمعة.</li>
+          <li><b>الضامة:</b> <span class="en">Copenhagen Plank</span> (الاتنين)، وليونة الضامة يوم الجمعة.</li>
+          <li><b>الركبة والأربطة:</b> <span class="en">Step-down</span> و <span class="en">Lateral Band Walk</span>، والنزول الصح من النط (<span class="en">Snap-down</span>). أغلب قطع الرباط الصليبي بيحصل والركبة داخلة لجوه في نزلة أو لفّة.</li>
+          <li><b>الكور:</b> البطن 3 مرات في الجيم، و <span class="en">Bird Dog</span> و <span class="en">Side Plank</span> يوم السبت. الكور القوي بيخلّي حركتك وأنت بتلف وبتشوط ثابتة.</li>
+          <li><b>الإحماء قبل الماتش:</b> مبني على برنامج <span class="en">FIFA 11+</span>. الدراسات عليه لقت إن الإصابات بتقل بشكل واضح لما اللاعبين يلتزموا بيه.</li>
+        </ul>
+        <p class="small">محتاج في البيت: أستك مقاومة صغير (mini band) وسلمة أو بوكس واطي.</p>
+      </div></details>
+    <details class="ref"><summary><span>هدف الـ V-shape</span><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></summary><div>
+        <p>الـ V-shape معمول من 3 حاجات: وسط صغير، وضهر عريض، وكتف عريض من الجنب.</p>
+        <ul class="plain">
+          <li><b>الوسط:</b> بيصغر من نزول الدهون، مش من تمارين البطن. الأكل هنا هو الأساس.</li>
+          <li><b>عرض الضهر (Lats):</b> حوالي 12 مجموعة في الأسبوع من Pulldown وPull-ups وتمرينين Row. الهدف الأهم إنك تعمل Pull-ups من غير مساعدة.</li>
+          <li><b>عرض الكتف:</b> Lateral Raise تلات مرات في الأسبوع، الأحد والأربع والخميس، يعني 9 مجموعات، وده غير تمارين الضغط.</li>
+        </ul>
+        <p>الشكل ده محتاج دهون حوالي 10–12% تقريبًا، وده غالبًا تحت 80 كيلو، أو إنك تبني عضل وأنت ثابت على الوزن. هدف 12–18 شهر مع الالتزام.</p>
+      </div></details>
+    <details class="ref"><summary><span>البطن (الـ Abs)</span><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></summary><div>
+        <p>البطن بتتمرّن 3 مرات في الأسبوع، 8–10 دقايق في آخر الجيم: الأحد والاتنين والأربع. الخميس مفيش بطن عشان الماتش.</p>
+        <p>التمارين بتقوّي عضلة البطن وتكبّرها، بس اللي هيخليها تبان هو نزول الدهون. غالبًا هتبدأ تظهر وأنت حوالي 83 كيلو، وتبقى واضحة أكتر لما توصل 80.</p>
+        <p>التمارين متنوعة عمدًا: ثني (<span class="en">Crunch</span>)، رفع رجل، ثبات (<span class="en">Plank</span>)، ومقاومة لف (<span class="en">Pallof</span>). النوع الأخير مهم في الكورة لأنه بيثبّت جسمك وأنت بتلف وبتشوط.</p>
+      </div></details>
+    <details class="ref"><summary><span>التفتيح والتمزيق: إيه اللي بيكبّر العضلة فعلًا؟</span><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></summary><div>
+        <p>العضلة مش بتكبر من "التمزيق". التمزيق البسيط بيحصل، بس هو مش السبب الأساسي، والدليل إن الشد والوجع بيقلّوا مع الوقت والعضلة بتفضل تكبر. السبب الأساسي هو إن العضلة تشتغل تحت وزن تقيل لحد قرب الفشل، وتزوّد الوزن مع الوقت.</p>
+        <p>اللي ثبت إنه بيزوّد النمو هو <b>التمطيط تحت الوزن</b>: إن العضلة تشيل وهي في أطول وضع ليها. عشان كده الجدول مختار فيه تمارين بتعمل كده لكل عضلة:</p>
+        <ul class="plain">
+          <li>البايسبس: <span class="en">Incline Dumbbell Curl</span>. التراي: <span class="en">Overhead Cable Extension</span>.</li>
+          <li>الصدر: <span class="en">Incline Dumbbell Press</span> بنزول كامل. الضهر: <span class="en">Lat Pulldown</span> و <span class="en">Pull-ups</span> بفرد كامل فوق.</li>
+          <li>الفخد الخلفي: <span class="en">RDL</span> و <span class="en">Nordic</span>. الفخد الأمامي والمقعدة: <span class="en">Squat</span> عميق و <span class="en">Bulgarian Split Squat</span>. السمانة: وقفة ثانيتين تحت.</li>
+        </ul>
+        <p><b>تمرين التفتيح في الآخر مش لازم.</b> الإطالة الثابتة بعد التمرين مش بتزوّد الحجم بشكل يفرق. اللي ممكن يفرق شوية هو <b>أنصاف العدات في الجزء المتمطّط</b>: في آخر مجموعة من تمارين الدراع، لما توصل للفشل، كمّل 4 أنصاف عدات في نص الحركة اللي تحت، والعضلة متمطّطة. ده مكتوب جنب التمارين دي.</p>
+        <p>الإطالات في آخر الجلسة موجودة عشان الليونة والكورة، مش عشان الحجم.</p>
+      </div></details>
+    <details class="ref"><summary><span>الكارديو ونزول الكرش</span><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></summary><div>
+        <ul class="plain">
+          <li>الأكل عليه حوالي 70% من النتيجة.</li>
+          <li>بعد كل جيم: 10–15 دقيقة مشاية، ميل 8–12، سرعة 4.5–5.5. لو الوقت ضيّق، خليها 10.</li>
+          <li>التلات: 35 دقيقة مشي سريع. الجمعة: 45 دقيقة مشي. وكل يوم: 8–10 آلاف خطوة.</li>
+          <li>الخميس: الكورة نفسها كارديو عالي الشدة.</li>
+          <li>مفيش تمرين بيحرق دهون البطن بالذات. الكرش آخر حاجة بتنزل.</li>
+        </ul>
+      </div></details>
+    <details class="ref"><summary><span>المتابعة والتعديل</span><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></summary><div>
+        <ul class="plain">
+          <li>اتوزن كل يوم الصبح على الريق، وتابع متوسط الأسبوع.</li>
+          <li>قيس وسطك عند السُرة كل أسبوعين.</li>
+          <li>لو الوزن والوسط ثابتين أسبوعين: قلّل نص كوباية رز أو نص رغيف في اليوم.</li>
+          <li>لو في ألم في الركبة أو الضهر، اكشف قبل الأوزان التقيلة.</li>
+        </ul>
+      </div></details>
+    <h3 class="sect-title">الأكل</h3>
+    <details class="ref" data-ref="food"><summary><span>الأكل: البدائل والتنويع</span><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></summary><div>
+        <p>الفول موجود كل يوم بطريقتك: معلقة زبدة وكمون وفلفل أسود وملح. الطبق المتوسط فيه حوالي 12–15 جم بروتين وألياف كتير بتشبّع. باقي الوجبات متغيّرة كل يوم عشان متزهقش.</p>
+        <ul class="plain">
+          <li>الزبدة معلقة واحدة مسطّحة، مش بالعين. كل معلقة زيادة حوالي 100 سعر.</li>
+          <li>الطحينة معلقة واحدة بس.</li>
+          <li>لو زهقت من وجبة، بدّلها بوجبة من يوم تاني في نفس الميعاد. البروتين والسعرات متقاربين.</li>
+          <li>بدائل البروتين: فراخ، كفتة، كبدة، سمك، تونة، بيض، قريش، زبادي يوناني.</li>
+          <li><b>تحضير الأكل للأسبوع (Meal Prep):</b> يوم السبت بعد الضهر، اعمل كيلو صدور فراخ وكفتة النص كيلو، واسلق 8–10 بيض، واعمل حلة رز. قسّمهم علب في التلاجة، وكده أيام الجيم الصبح تسخّن بس. الأكل المطبوخ بيقعد 3–4 أيام في التلاجة، فاللي هتاكله من الأربع وبعده خليه في الفريزر.</li>
+          <li><b>اللحمة:</b> 4 مرات في الأسبوع. ستيك (التلات)، قطع متشوّحة في زبدة (الخميس)، كفتة (الاتنين)، ولحمة مفرومة في المكرونة (الأربع). وفي كبدة يوم السبت.</li>
+          <li><b>أنهي قطعية:</b> وش الفخدة، الكلوتة، البوفتيك، الفيليه، أو التربيانكو. دول فيهم دهون قليلة وبروتين عالي. الريش والأنتركوت طعمهم أحلى بس دهونهم أعلى بكتير، فخليهم للوجبة الحرة.</li>
+          <li><b>الزبدة:</b> معلقة واحدة للتشويح تكفي 200 جم لحمة، وهي حوالي 100 سعر. الستيك اتشويه أو اعمله في طاسة من غير زيت.</li>
+          <li><b>طرق تانية تبدّل بيها:</b> برجر بيتي من لحمة مفرومة قليلة الدهن على الشواية، شاورما لحمة بيتي في الفرن بالبهارات والزبادي، فاهيتا لحمة بالفلفل الألوان والبصل، كباب حلة أو طاجن لحمة بالخضار والبسلة، ولحمة مشوية في الفرن بالبطاطس والجزر. أي واحدة منهم ينفع تحط 200 جم منها مكان اللحمة في أي يوم.</li>
+          <li><b>التونة:</b> 3 علب في الأسبوع (الاتنين والخميس والسبت). اختار "لايت" أو "قطع" بالمية مش بالزيت: العلبة فيها حوالي 25 جم بروتين و120 سعر بس، واللي بالزيت ممكن توصل للضعف. التونة اللايت الزئبق فيها قليل، و3 علب في الأسبوع في الأمان. لو عايز أكتر، بدّلها بسردين أو سلمون.</li>
+          <li><b>بديل الرغيف البلدي من السوبر ماركت:</b> توست أسمر حبوب كاملة. الرغيف = 3 شرايح تقريبًا، ونص الرغيف = شريحتين. تنفع كمان: عيش بلدي أسمر معبّأ (سن)، أو خبز شوفان، أو تورتيلا قمح كامل (واحدة كبيرة = نص رغيف).</li>
+          <li><b>إزاي تختار العيش:</b> أول مكوّن في الورقة يكون "دقيق قمح كامل" أو "حبوب كاملة"، والألياف 3 جم أو أكتر في الحصة. كلمة "أسمر" لوحدها مش كفاية، في أنواع بيبقى لونها بس غامق.</li>
+          <li><b>البطاطس المهروسة:</b> مسلوقة ومهروسة بشوية لبن خالي الدسم وملح وفلفل، من غير زبدة ولا كريمة. 200 جم = نفس سعرات كوباية رز تقريبًا.</li>
+          <li><b>الفاكهة:</b> حبة أو اتنين في اليوم. الموسم ده: جوافة، رمان، برتقال ويوسفي، تفاح، موز، وفراولة من الشتا. العنب والمانجا بكمية صغيرة لأن سكرهم عالي.</li>
+          <li><b>قبل الجيم:</b> بنبدّل بين الموزة و3 تمرات يوم ورا يوم، والاتنين نفس الطاقة تقريبًا.</li>
+        </ul>
+      </div></details>
+    <details class="ref" data-ref="drinks"><summary><span>المشروبات والسكر</span><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></summary><div>
+        <ul class="plain">
+          <li>القهوة: مرة واحدة الصبح، بعد الموزة أو التمر أو الفطار، مش على الريق.</li>
+          <li>القهوة والشاي بالـ <span class="en">monk fruit</span>: تمام، معلقة أو اتنين في الكوباية.</li>
+          <li>بدل العصير: ليمون بالنعناع، كركديه ساقع، تمر هندي بيتي، شاي مثلّج، مية بالخيار والنعناع، مية فوارة بليمون.</li>
+          <li>مشروبات الدايت: كوباية في اليوم بحد أقصى.</li>
+          <li>ابعد عن العصير الطبيعي والمعلّب والمشروبات الغازية العادية.</li>
+          <li>يوم الكورة: رشة ملح وعصرة ليمون على لتر مية.</li>
+        </ul>
+      </div></details>
+    <h3 class="sect-title">الأبلكيشن</h3>
+    <div class="card">
+      <div class="card-h"><h2>المظهر</h2></div>
+      <div class="seg" role="group" aria-label="المظهر">
+        <button type="button" data-theme-pick="auto">تلقائي</button>
+        <button type="button" data-theme-pick="light">فاتح</button>
+        <button type="button" data-theme-pick="dark">غامق</button>
+      </div>
+      <p class="small" style="margin:8px 0 0">تلقائي يعني الأبلكيشن هيمشي مع إعداد الموبايل. وتقدر تغيّره بسرعة من الزرار اللي فوق.</p>
+    </div>
+    <div class="card">
+      <div class="card-h"><h2>بياناتك</h2></div>
+      <div class="sync" id="sync"></div>
+      <p class="small">كل حاجة محفوظة على الموبايل ده بس. اعمل نسخة احتياطية كل أسبوع واحفظها على Drive.</p>
+      <div class="actrow">
+        <button class="btn primary" id="exportBtn" type="button">نسخة احتياطية</button>
+        <label class="btn" for="importFile">رجّع من نسخة</label>
+        <input type="file" id="importFile" accept="application/json,.json" hidden>
+      </div>
+      <p class="small" id="backupMsg" hidden></p>
+    </div>
+    <button class="btn" id="showGuide" type="button" style="align-self:flex-start">إزاي أستخدم الأبلكيشن</button>
+  </section>
+</main>
+
+<div class="timer" id="timer" hidden role="timer" aria-live="polite">
+  <div class="tv" id="tVal">0:00</div>
+  <div class="tl2" id="tLbl"><b>راحة</b><span></span></div>
+  <button type="button" id="tPlus">+15ث</button>
+  <button type="button" id="tStop">إيقاف</button>
+  <div class="tbar"><i id="tBar"></i></div>
+</div>
+
+<nav class="tabbar" aria-label="الأقسام">
+  <div class="tabbar-in">
+    <button class="tabbtn" type="button" data-tab="today" aria-current="page"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="4.5" width="17" height="16" rx="3"/><path d="M8 2.5v4M16 2.5v4M3.5 9.5h17M8.5 15l2.3 2.2L15.5 13"/></svg>النهارده</button>
+    <button class="tabbtn" type="button" data-tab="health"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6.5 7v10M17.5 7v10M3.5 9.5v5M20.5 9.5v5M6.5 12h11"/></svg>الصحة</button>
+    <button class="tabbtn" type="button" data-tab="money"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="13" rx="3"/><path d="M3 10h18M16.5 14.5h1"/><path d="M6 6l9.5-2.5a1.5 1.5 0 0 1 1.8 1L18 6"/></svg>الفلوس</button>
+    <button class="tabbtn" type="button" data-tab="rem"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 16.5V11a6 6 0 0 1 12 0v5.5l1.5 2h-15z"/><path d="M10 20.5a2 2 0 0 0 4 0"/></svg>التذكيرات<span class="tbadge" id="remBadge" hidden></span></button>
+    <button class="tabbtn" type="button" data-tab="more"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="6" cy="12" r="1.4"/><circle cx="12" cy="12" r="1.4"/><circle cx="18" cy="12" r="1.4"/></svg>المزيد</button>
+  </div>
+</nav>
+
+<div class="ob" id="guide" hidden>
+  <div class="ob-card" role="dialog" aria-modal="true" aria-labelledby="obT">
+    <div class="ob-brand"><svg class="ob-logo" viewBox="0 0 100 100" aria-hidden="true"><defs><linearGradient id="lbg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#161C3A"/><stop offset="1" stop-color="#0D1220"/></linearGradient></defs><rect width="100" height="100" rx="22.5" fill="url(#lbg)"/><rect x="51.25" y="22" width="26.75" height="26.75" rx="8" fill="#6F86FF"/><circle cx="35.4" cy="35.4" r="13.4" fill="#2FD3A1"/><path d="M51.25 51.25H78v13.4a13.4 13.4 0 0 1-26.75 0z" fill="#FFA24D"/><rect x="22" y="51.25" width="26.75" height="26.75" rx="8" fill="#B58CFF"/></svg><div><span class="ob-word" dir="ltr">LifeBase</span><span class="small">يومك، وصحتك، وفلوسك، وتذكيراتك. كله في مكان واحد.</span></div></div>
+    <h2 id="obT">أهلًا بيك</h2>
+    <p class="small" style="margin:4px 0 0">الأبلكيشن متقسّم 5 أجزاء من الشريط اللي تحت:</p>
+    <ul class="ob-list">
+      <li><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="3.5" y="4.5" width="17" height="16" rx="3"/><path d="M3.5 9.5h17M8.5 15l2.3 2.2L15.5 13"/></svg></span><span><b>النهارده</b>إنت فين في اليوم، والتذكيرات القريبة، ومهامك، وفلوس النهارده، والعادات والصلاة، وجدول اليوم.</span></li>
+      <li><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6.5 7v10M17.5 7v10M3.5 9.5v5M20.5 9.5v5M6.5 12h11"/></svg></span><span><b>الصحة</b>التمرين بعدّاد الراحة، والأكل بالوصفات، ومتابعة الوزن.</span></li>
+      <li><span class="ic" style="background:var(--money-soft);color:var(--money)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="3" y="6" width="18" height="13" rx="3"/><path d="M3 10h18"/></svg></span><span><b>الفلوس</b>سجّل مصروفك ودخلك أول بأول، وشوف راحت فين، وتابع أهداف الادخار.</span></li>
+      <li><span class="ic" style="background:var(--rem-soft);color:var(--rem)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6 16.5V11a6 6 0 0 1 12 0v5.5l1.5 2h-15z"/></svg></span><span><b>التذكيرات</b>زيت العربية، وشمعة الفلتر، والترخيص. بيفكّرك قبلها بأسبوع، وتقدر تضيفه لتقويم موبايلك.</span></li>
+      <li><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="6" cy="12" r="1.4"/><circle cx="12" cy="12" r="1.4"/><circle cx="18" cy="12" r="1.4"/></svg></span><span><b>المزيد</b>القرآن، وملخص الأسبوع، والمرجع، والإعدادات والنسخة الاحتياطية.</span></li>
+    </ul>
+    <p class="small">عايز تشوف يوم تاني؟ استخدم الأسهم فوق، ودوس على اسم اليوم ترجع للنهارده.</p>
+    <button class="btn primary" id="obGo" type="button" style="width:100%;justify-content:center;padding:12px">يلا نبدأ</button>
+  </div>
+</div>
+
+<script>
+(function(){
+  /* ---------- data ---------- */
+  const W = {
+    upper:{title:"إحماء الجزء العلوي", time:"8–10 دقايق", items:[
+      ["5 دقايق عجلة أو <span class='en'>Rowing</span>","خفيف، لحد ما تعرق سنة. الصبح طوّلها دقيقتين."],
+      ["<span class='en'>Arm Circles</span>","10 لقدّام و10 لورا"],
+      ["<span class='en'>Band Pull-Aparts</span>","2×15 بأستك خفيف","Band Pull-Aparts"],
+      ["<span class='en'>Band Dislocates</span>","10 عدات، الإيد واسعة","Band Dislocates"],
+      ["<span class='en'>Cat-Cow</span>","8 عدات ببطء","Cat-Cow"],
+      ["<span class='en'>Push-ups</span>","10 عدات عادية أو على الركب"]]},
+    lower:{title:"إحماء الرجل", time:"10 دقايق", items:[
+      ["5 دقايق عجلة","خفيف ومنتظم"],
+      ["<span class='en'>Hip Circles</span>","10 لكل اتجاه"],
+      ["<span class='en'>Leg Swings</span>","10 لقدّام و10 للجنب لكل رجل"],
+      ["<span class='en'>World's Greatest Stretch</span>","5 لكل ناحية"],
+      ["<span class='en'>Glute Bridge</span>","12 عدة، اقفل وسطك فوق"],
+      ["<span class='en'>Lateral Band Walk</span>","10 خطوات لكل ناحية بأستك فوق الركبة، وركبتك متدخلش لجوه"],
+      ["<span class='en'>Bodyweight Squat</span>","10 عدات بمدى كامل"],
+      ["<span class='en'>Ankle Rocks</span>","10 لكل رجل"]]},
+    football:{title:"إحماء الكورة (مبني على FIFA 11+)", time:"15 دقيقة", items:[
+      ["جري خفيف بتنويعات","عرض الملعب مرتين لكل واحدة: مستقيم، فتح الحوض لبرّه، قفله لجوه، جنب، قدّام وورا"],
+      ["<span class='en'>Leg Swings</span>","10 لقدّام و10 للجنب لكل رجل"],
+      ["<span class='en'>Plank</span>","2×20 ثانية"],
+      ["<span class='en'>Side Plank</span>","20 ثانية لكل ناحية"],
+      ["وقوف على رجل واحدة بالكورة","30 ثانية لكل رجل، ولف الكورة حوالين وسطك"],
+      ["<span class='en'>Squat</span> مع رفع على صوابعك","10 عدات"],
+      ["نط لفوق","2×6. انزل على الرجلين، ركبتك مثنية ومش داخلة لجوه"],
+      ["نط للجنب","2×6 لكل ناحية، واثبت ثانية بعد كل نزلة"],
+      ["<span class='en'>Bounding</span>","خطوات نط طويلة، عرض الملعب مرة"],
+      ["تغيير اتجاه (<span class='en'>Plant & Cut</span>)","3 مرات لكل ناحية بسرعة متوسطة"],
+      ["سرعات متدرجة","3 مرات 20 متر: 50%، بعدها 70%، بعدها 90%"]]}
+  };
+  const C = {
+    upper:{title:"إطالات آخر التمرين (اختياري)", time:"5 دقايق", items:[
+      ["إطالة الصدر على الباب","30 ثانية لكل ناحية. الفيديو فيه كمان طريقة على العمود وطريقة على البنش","Chest Stretch"],
+      ["إطالة الـ <span class='en'>Lats</span> على العمود","30 ثانية لكل ناحية","Lat Stretch"],
+      ["<span class='en'>Child's Pose</span>","45 ثانية","Childs Pose"]]},
+    lower:{title:"إطالات آخر التمرين (اختياري)", time:"5 دقايق", items:[
+      ["إطالة قدّام الحوض (<span class='en'>Hip Flexor</span>)","30 ثانية لكل رجل"],
+      ["إطالة الفخد الخلفي","30 ثانية لكل رجل"],
+      ["إطالة الفخد الأمامي واقف","30 ثانية لكل رجل"],
+      ["إطالة السمانة على الحيطة","30 ثانية لكل رجل"]]},
+    football:{title:"بعد الماتش", time:"5–8 دقايق", items:[
+      ["مشي خفيف","دقيقتين لحد ما نفسك يهدى"],
+      ["إطالة الفخد الخلفي والأمامي","30 ثانية لكل واحدة لكل رجل"],
+      ["إطالة الضامة (<span class='en'>Butterfly</span>)","45 ثانية"],
+      ["إطالة السمانة","30 ثانية لكل رجل"]]}
+  };
+  const WARM_MAIN = "<span dir='ltr' class='num'>40% × 8 → 60% × 5 → 80% × 3</span>";
+  const WARM_COMP = "<span dir='ltr' class='num'>50% × 8 → 75% × 4</span>";
+  const WARM_ISO  = "مجموعة واحدة <span dir='ltr' class='num'>50–70% × 10</span>";
+  const TREAD = {n:"Incline Treadmill Walk", k:"walk", sets:"10–15 دقيقة", c:"ميل 8–12، سرعة 4.5–5.5. تنهج بس تقدر تتكلم."};
+
+  const HABITS = [["h1","اتوزنت الصبح على الريق"],["h2","3 لتر مية"],["h3","8–10 آلاف خطوة"],["h4","بروتين 160 جم"],["h5","غسلت سناني الصبح"],["h6","غسلت سناني قبل النوم"],["h7","راجعت المحفوظ في الصلاة"]];
+  const PRAYERS = [["p1","الفجر"],["p2","الضهر"],["p3","العصر"],["p4","المغرب"],["p5","العشا"]];
+
+  const DAYS = [
+    {id:"sun", d:"الأحد", k:"Upper A", badge:"جيم 12 الضهر: الجزء العلوي + بطن",
+     note:"أول يوم في الأسبوع. الوزن اللي تختاره النهارده هو اللي هتبني عليه.",
+     tl:[
+      ["4:40","sleep","تصحى مع الفجر","صلاة الفجر، وكوباية مية. المعاد بيتغيّر مع السنة"],
+      ["5:00–7:50","work","شغل","أهدى وقت للتركيز"],
+      ["8:00","food","فطار","قبل الحضانة",["طبق فول بمعلقة زبدة وكمون وفلفل أسود وملح","2 بيض مسلوق","رغيف بلدي","خيار وطماطم","وبعده القهوة"],["foul","eggs"]],
+      ["8:30","home","توصيل ابنك الحضانة",""],
+      ["9:00–11:55","work","شغل",""],
+      ["11:00","food","سناك قبل الجيم","وأنت بتشتغل",["موزة","مية"]],
+      ["12:00–1:15","gym","الجيم: Upper A + بطن","التفاصيل في شاشة التمرين"],
+      ["1:15","deen","شاور + صلاة الضهر",""],
+      ["1:30","food","غدا","بعد الجيم على طول",["200 جم صدور فراخ متبّلة في الطاسة","كوباية ونص رز مطبوخ","سلطة خضرا بمعلقة زيت زيتون"],["chicken","rice","salad"]],
+      ["1:50–2:20","work","شغل",""],
+      ["2:30","home","تجيب ابنك من الحضانة",""],
+      ["2:45–4:30","work","شغل","كده الشغل 8 ساعات"],
+      ["4:30–7:00","home","وقت الأسرة",""],
+      ["5:00","food","سناك","",["زبادي يوناني 170 جم","كوباية رمان أو فراولة"],["yogurt"]],
+      ["7:00–7:20","deen","ورد القرآن","نص جزء (10 صفحات) بعد العشا"],
+      ["7:30","food","عشا","",["200 جم جبنة قريش بالطماطم والخيار والنعناع","نص رغيف","10 حبات لوز"],["qareesh"]],
+      ["7:45–9:15","self","مذاكرة","ساعة ونص"],
+      ["9:15–9:45","self","وقت حر","تهدى قبل النوم، ويا ريت من غير موبايل"],
+      ["9:45","sleep","نوم","عشان تصحى للفجر"]],
+     wu:"upper", cd:"upper",
+     ex:[
+      {n:"Bench Press", k:"main", reps:"6–8", rest:"راحة 2–3 د", c:"البار ينزل على نص صدرك، كتفك مشدود لورا، ورجلك ثابتة في الأرض."},
+      {n:"Chest-supported Row (Machine)", k:"comp", reps:"8–10", rest:"راحة 2 د", c:"صدرك لازق في المسند طول الوقت. اسحب بكوعك لورا واقفل لوحي كتفك، وارجع ببطء لحد ما ضهرك يتمطّ."},
+      {n:"Machine Shoulder Press", k:"comp", reps:"8–10", rest:"راحة 90 ث", c:"ظبّط الكرسي بحيث المقابض في مستوى كتفك. ضهرك لازق في المسند، ومتفردش كوعك على الآخر فوق."},
+      {n:"Lat Pulldown", k:"iso", reps:"10", rest:"راحة 90 ث", c:"اسحب لأعلى صدرك من غير ما تميل لورا كتير."},
+      {n:"Lateral Raise", k:"iso", sets:3, reps:"12–15", rest:"راحة 60 ث", c:"وزن خفيف، الكوع مثني سنة، ومترفعش أعلى من كتفك. ده أهم تمرين لعرض الكتف.", partial:true}],
+     abs:[
+      {n:"Cable Crunch", sets:"3×12", c:"الحركة من البطن، مش من الوسط. اثبت ثانية تحت."},
+      {n:"Dead Bug", sets:"3×8 لكل ناحية", c:"ضهرك لازق في الأرض طول الوقت، وحرّك دراع ورجل عكس بعض ببطء."}]},
+    {id:"mon", d:"الاتنين", k:"رجل", badge:"جيم 12 الضهر: الرجل + الوقاية + بطن",
+     note:"يوم الرجل الوحيد في الجيم، وقبل الماتش بـ 3 أيام ونص. تمرين طويل شوية، فلو الوقت ضاق اختصر المشاية. يوم الميتنج بالليل، فالعشا بدري والنوم بعده على طول.",
+     tl:[
+      ["4:40","sleep","تصحى مع الفجر","صلاة الفجر، وكوباية مية. المعاد بيتغيّر مع السنة"],
+      ["5:00–7:50","work","شغل","أهدى وقت للتركيز"],
+      ["8:00","food","فطار","قبل الحضانة",["أومليت 3 بيض + 2 بياض بالسبانخ والطماطم","50 جم قريش","رغيف","وبعده القهوة"],["omelette"]],
+      ["8:30","home","توصيل ابنك الحضانة",""],
+      ["9:00–11:55","work","شغل",""],
+      ["11:00","food","سناك قبل الجيم","وأنت بتشتغل",["3 تمرات","مية"]],
+      ["12:00–1:15","gym","الجيم: رجل + بطن","التفاصيل في شاشة التمرين"],
+      ["1:15","deen","شاور + صلاة الضهر",""],
+      ["1:30","food","غدا","بعد الجيم على طول",["200 جم كفتة مشوية","250 جم بطاطس مشوية بالروزماري","سلطة بلدي"],["kofta","roastpot","salad"]],
+      ["1:50–2:20","work","شغل",""],
+      ["2:30","home","تجيب ابنك من الحضانة",""],
+      ["2:45–4:30","work","شغل","كده الشغل 8 ساعات"],
+      ["4:30–7:00","home","وقت الأسرة",""],
+      ["5:00","food","سناك","",["زبادي يوناني","تفاحة"]],
+      ["7:00–7:20","deen","ورد القرآن","نص جزء (10 صفحات) بعد العشا"],
+      ["7:30","food","عشا","قبل الميتنج",["طبق صغير فول بمعلقة زبدة وكمون وفلفل أسود وملح","علبة تونة لايت بالمية، مصفّاة","نص رغيف"],["foul"]],
+      ["8:00–9:30","work","ميتنج",""],
+      ["10:00","sleep","نوم","بعد الميتنج على طول"]],
+     wu:"lower", cd:"lower",
+     ex:[
+      {n:"Back Squat", k:"main", reps:"6–8", rest:"راحة 2–3 د", c:"انزل لحد ما فخدك يبقى موازي للأرض، ركبتك مع اتجاه صوابعك، وكعبك في الأرض."},
+      {n:"Romanian Deadlift", k:"comp", reps:"8", rest:"راحة 2 د", c:"ادفع وسطك لورا لحد ما تحس بشد ورا الفخد، وضهرك مفرود طول الوقت."},
+      {n:"Bulgarian Split Squat", k:"comp", reps:"8 لكل رجل", rest:"راحة 90 ث", c:"الرجل اللي ورا على البنش، والنزول مستقيم."},
+      {n:"Leg Curl", k:"iso", reps:"12", rest:"راحة 60 ث", c:"انزل ببطء في 2–3 ثواني."},
+      {n:"Nordic Curl", k:"hold", sets:"2×4", rest:"راحة 2 د", c:"الأسبوع الأول مجموعتين بس، وبعدها 3. انزل ببطء على قد ما تقدر. أهم تمرين لحماية الهامسترنج."},
+      {n:"Copenhagen Plank", k:"hold", sets:"3×15 ث لكل ناحية", c:"ابدأ بركبتك على البنش. بتحمي منطقة الضامة."},
+      {n:"Standing Calf Raise", k:"iso", reps:"15", rest:"راحة 45 ث", c:"ثانيتين وأنت نازل، ووقفة تحت."},
+      {n:"Farmer's Carry", k:"hold", log:true, sets:"3 × 30–40 متر", rest:"راحة 60–90 ث", c:"امشي شايل دمبلتين تقال جنبك، ضهرك مفرود وكتفك لورا، وخطواتك قصيرة وثابتة. ابدأ بوزن تقدر تمشي بيه المسافة كلها من غير ما تسيبه، وزوّد كل أسبوع."}],
+     abs:[
+      {n:"Hanging Knee Raise", sets:"3×10", c:"من غير مرجحة، وانزل ببطء."},
+      {n:"Plank", sets:"3×40 ث", c:"جسمك خط مستقيم، واشفط بطنك. زوّد 5 ثواني كل أسبوع."}]},
+    {id:"tue", d:"التلات", k:"راحة", badge:"راحة + مشي",
+     note:"يوم الراحة في نص الأسبوع. نفس مواعيد الشغل، والساعة 12 مشي بدل الجيم. الشد في رجلك من امبارح طبيعي، والمشي بيخففه.",
+     tl:[
+      ["4:40","sleep","تصحى مع الفجر","صلاة الفجر، وكوباية مية. المعاد بيتغيّر مع السنة"],
+      ["5:00–7:50","work","شغل","أهدى وقت للتركيز"],
+      ["8:00","food","فطار","قبل الحضانة",["طبق فول بمعلقة زبدة وكمون وفلفل أسود وملح","2 بيض مسلوق","نص رغيف","جرجير","وبعده القهوة"],["foul","eggs"]],
+      ["8:30","home","توصيل ابنك الحضانة",""],
+      ["9:00–11:55","work","شغل",""],
+      ["12:00–12:40","gym","مشي سريع 35 دقيقة","وبعده 5 دقايق إطالات للرجل"],
+      ["12:45","deen","شاور + صلاة الضهر",""],
+      ["1:30","food","غدا","بعد الجيم على طول",["250 جم بلطي أو دنيس مشوي","كوباية رز صيادية","سلطة بمعلقة طحينة"],["fish","sayadeya","tahini"]],
+      ["1:50–2:20","work","شغل",""],
+      ["2:30","home","تجيب ابنك من الحضانة",""],
+      ["2:45–4:30","work","شغل","كده الشغل 8 ساعات"],
+      ["4:30–7:00","home","وقت الأسرة",""],
+      ["5:00","food","سناك","",["150 جم قريش بالخيار والنعناع","جوافة"],["qareesh"]],
+      ["7:00–7:20","deen","ورد القرآن","نص جزء (10 صفحات) بعد العشا"],
+      ["7:30","food","عشا","",["200 جم ستيك مشوي (وش فخدة أو كلوتة أو بوفتيك)","خضار سوتيه (كوسة وفلفل وجزر) بمعلقة زيت","150 جم بطاطس مسلوقة مهروسة"],["steak","sautee","mash"]],
+      ["7:45–9:30","self","بلايستيشن","ساعة و45 دقيقة، يوم الراحة"],
+      ["9:45","sleep","نوم","عشان تصحى للفجر"]],
+     wu:null, cd:"lower", ex:[], abs:[]},
+    {id:"wed", d:"الأربع", k:"Upper B", badge:"جيم 12 الضهر: الجزء العلوي + بطن",
+     note:"يوم الميتنج. النوم بعده على طول، عشان تصحى للفجر.",
+     tl:[
+      ["4:40","sleep","تصحى مع الفجر","صلاة الفجر، وكوباية مية. المعاد بيتغيّر مع السنة"],
+      ["5:00–7:50","work","شغل","أهدى وقت للتركيز"],
+      ["8:00","food","فطار","قبل الحضانة",["60 جم شوفان بـ 250 مل لبن خالي الدسم","معلقة صغيرة زبدة فول سوداني","2 بيض مسلوق","وبعده القهوة"],["oats","eggs"]],
+      ["8:30","home","توصيل ابنك الحضانة",""],
+      ["9:00–11:55","work","شغل",""],
+      ["11:00","food","سناك قبل الجيم","وأنت بتشتغل",["3 تمرات","مية"]],
+      ["12:00–1:15","gym","الجيم: Upper B + بطن","التفاصيل في شاشة التمرين"],
+      ["1:15","deen","شاور + صلاة الضهر",""],
+      ["1:30","food","غدا","بعد الجيم على طول",["مكرونة بولونيز: 200 جم لحمة مفرومة قليلة الدسم","250 جم مكرونة مطبوخة بصلصة طماطم","سلطة"],["bolognese","salad"]],
+      ["1:50–2:20","work","شغل",""],
+      ["2:30","home","تجيب ابنك من الحضانة",""],
+      ["2:45–4:30","work","شغل","كده الشغل 8 ساعات"],
+      ["4:30–7:00","home","وقت الأسرة",""],
+      ["5:00","food","سناك","",["طبق صغير فول بمعلقة زبدة وكمون وفلفل أسود وملح","نص رغيف"],["foul"]],
+      ["7:00–7:20","deen","ورد القرآن","نص جزء (10 صفحات) بعد العشا"],
+      ["7:30","food","عشا","قبل الميتنج",["200 جم قريش","خيار","تفاحة","10 حبات لوز"]],
+      ["8:00–9:30","work","ميتنج",""],
+      ["10:00","sleep","نوم","بعد الميتنج على طول"]],
+     wu:"upper", cd:"upper",
+     ex:[
+      {n:"Incline Dumbbell Press", k:"main", reps:"8–10", rest:"راحة 2 د", c:"زاوية البنش 30°، والدمبل ينزل لحد جنب صدرك."},
+      {n:"Assisted Pull-ups", k:"comp", reps:"6–8", rest:"راحة 2 د", c:"اكتب وزن المساعدة، والهدف إنه يقل كل أسبوع لحد ما تعملها من غير مساعدة. انزل لحد ما دراعك يتفرد خالص. لو صعبة، اعمل Negatives: 4×5 وانزل في 4 ثواني."},
+      {n:"Seated Cable Row", k:"comp", reps:"10", rest:"راحة 90 ث", c:"صدرك لقدّام، واقفل لوحي كتفك ورا في آخر الحركة."},
+      {n:"Arnold Press", k:"iso", reps:"10", rest:"راحة 90 ث", c:"لف الإيد وأنت طالع، ومتقوّسش ضهرك."},
+      {n:"Face Pull", k:"iso", reps:"15", rest:"راحة 60 ث", c:"اسحب الحبل ناحية وشك وافتح إيدك. مهم لصحة الكتف."},
+      {n:"Lateral Raise", k:"iso", sets:3, reps:"12–15", rest:"راحة 60 ث", c:"وزن خفيف، الكوع مثني سنة، ومترفعش أعلى من كتفك. ده أهم تمرين لعرض الكتف.", partial:true}],
+     abs:[
+      {n:"Hanging Leg Raise", sets:"3×8–10", c:"لو صعبة، اعملها بالركبة مثنية. من غير مرجحة."},
+      {n:"Pallof Press", sets:"3×10 لكل ناحية", c:"واقف جنب الكابل، ادفع الحبل لقدّام ومتسيبش جسمك يلف. بيثبّتك في الكورة."}]},
+    {id:"thu", d:"الخميس", k:"كتف ودراع", badge:"جيم 12 الضهر: كتف ودراع · ماتش 9 بالليل",
+     note:"الضهر كتف ودراع بس، تمارين خفيفة على الجسم ومش بتلمس رجلك. النشويات أعلى النهارده عشان الجيم والماتش، والنوم متأخر عادي لأن الجمعة إجازة.",
+     tl:[
+      ["4:40","sleep","تصحى مع الفجر","صلاة الفجر، وكوباية مية. المعاد بيتغيّر مع السنة"],
+      ["5:00–7:50","work","شغل","أهدى وقت للتركيز"],
+      ["8:00","food","فطار","قبل الحضانة",["طبق فول بمعلقة زبدة وكمون وفلفل أسود وملح","2 بيض مسلوق","رغيف","طماطم","خيار","وبعده القهوة"],["foul","eggs"]],
+      ["8:30","home","توصيل ابنك الحضانة",""],
+      ["9:00–11:55","work","شغل",""],
+      ["11:00","food","سناك قبل الجيم","وأنت بتشتغل",["موزة","مية"]],
+      ["12:00–1:00","gym","الجيم: كتف ودراع","مفيش رجل النهارده"],
+      ["1:00","deen","شاور + صلاة الضهر",""],
+      ["1:30","food","غدا","بعد الجيم على طول",["200 جم لحمة قطع صغيرة متشوّحة في معلقة زبدة بالبصل والفلفل الألوان","كوبايتين رز","سلطة"],["beefcubes","rice","salad"]],
+      ["1:50–2:20","work","شغل",""],
+      ["2:30","home","تجيب ابنك من الحضانة",""],
+      ["2:45–4:30","work","شغل","كده الشغل 8 ساعات"],
+      ["4:30–6:40","home","وقت الأسرة",""],
+      ["5:00","food","سناك","",["زبادي يوناني","موزة"],["yogurt"]],
+      ["6:40–7:00","deen","ورد القرآن","نص جزء"],
+      ["7:00","food","وجبة قبل الماتش","قبله بساعتين",["علبة تونة لايت بالمية","250 جم بطاطس مسلوقة مهروسة (بشوية لبن خالي الدسم وملح وفلفل)","خيار"],["mash"]],
+      ["7:15–8:30","self","مذاكرة","ساعة وربع"],
+      ["8:30","food","طاقة سريعة","",["3 تمرات","مية بملح وليمون"]],
+      ["8:45","gym","إحماء الكورة","15 دقيقة، التفاصيل في شاشة التمرين"],
+      ["9:00–11:00","gym","الكورة",""],
+      ["11:15","food","وجبة الاستشفاء","وبعدها الإطالات",["كوباية لبن خالي الدسم","موزة"]],
+      ["11:30–1:00","self","بلايستيشن","ساعة ونص، الجمعة إجازة"],
+      ["1:15","sleep","نوم","الجمعة صلي الفجر وكمّل نومك"]],
+     wu:["upper","football"], cd:"football",
+     ex:[
+      {n:"Cable Lateral Raise", k:"iso", sets:3, reps:"15", rest:"راحة 45 ث لكل ناحية", c:"البكرة تحت، والكابل معدّي من قدّام جسمك. ارفع لحد مستوى كتفك وانزل ببطء. الكابل بيشد الكتف وهو متمطّط تحت.", partial:true},
+      {n:"Reverse Pec Deck", k:"iso", sets:3, reps:"15", rest:"راحة 60 ث", c:"قاعد ووشك للجهاز، افتح دراعك لورا بكوع مثني سنة ووقف ثانية. بيعرّض الكتف من ورا ويكمّل شكل الـ V.", partial:true},
+      {n:"Incline Dumbbell Curl", k:"iso", sets:3, reps:"12", rest:"Superset مع اللي بعده", c:"قاعد على بنش مايل 45° ودراعك سايب لورا. البايسبس بيشتغل وهو متمطّط، وده من أقوى المحفزات للنمو.", partial:true},
+      {n:"Overhead Cable Triceps Extension", k:"iso", sets:3, reps:"12", rest:"راحة 60 ث بعد الاتنين", c:"ضهرك للكابل والحبل ورا راسك. بيمطّ الرأس الطويلة للتراي، وهي أكبر جزء فيه.", partial:true},
+      {n:"Hammer Curl", k:"iso", reps:"12", rest:"راحة 60 ث", c:"إيدك في وضع الشاكوش. بيتخن الدراع من الجنب وبيقوّي الساعد."},
+      {n:"Triceps Rope Pushdown", k:"iso", sets:3, reps:"12", rest:"راحة 60 ث", c:"افتح الحبل تحت، وارجع ببطء لحد ما التراي يتمطّ.", partial:true},
+      {n:"Dead Hang", k:"hold", sets:"2 × أطول وقت تقدر عليه", rest:"راحة 60 ث", c:"اتعلّق في العقلة ودراعك مفرود وكتفك مشدود لتحت شوية. بيقوّي المسكة والساعد وبيجهّزك للـ Pull-ups. عدّ الثواني وحاول تزوّد كل أسبوع."}],
+     abs:[]},
+    {id:"fri", d:"الجمعة", k:"ليونة", badge:"راحة + ليونة + الوجبة الحرة",
+     note:"اليوم اللي بيشحن فيه جسمك. الصبح الحفظ والجمعة، وبعدها بلايستيشن ساعتين، وبالعصر مشي وليونة مع الأسرة.",
+     tl:[
+      ["براحتك","sleep","تصحى","بعد الفجر كمّل نومك لو محتاج"],
+      ["10:00","food","فطار","",["طبق فول بمعلقة زبدة وكمون وفلفل أسود وملح","2 بيض","رغيف","وبعده القهوة"],["foul","eggs"]],
+      ["10:30–11:15","deen","حفظ: المقطع الجديد","تفسير ونطق وحفظ النص الأول، التفاصيل تحت"],
+      ["11:30–12:45","deen","صلاة الجمعة",""],
+      ["1:00–3:00","self","بلايستيشن","ساعتين"],
+      ["3:00","food","غدا الأسرة","الوجبة الحرة",["ابدأ بالبروتين والسلطة","كُل لحد ما تشبع مش لحد ما تتقل"]],
+      ["3:00–9:00","home","وقت الأسرة",""],
+      ["6:00","gym","مشي 45 دقيقة","ولو مع الأسرة أحسن"],
+      ["7:00","gym","روتين الليونة","15 دقيقة، التفاصيل تحت"],
+      ["8:20–8:40","deen","ورد القرآن","نص جزء"],
+      ["9:00","food","عشا خفيف","",["زبادي يوناني","100 جم قريش","برتقالة أو يوسفي"]],
+      ["9:15–11:15","self","مذاكرة","ساعتين"],
+      ["11:30","sleep","نوم",""]],
+     wu:null, cd:null, ex:[], abs:[],
+     routines:[{id:"r2", title:"روتين الليونة", time:"15 دقيقة", items:[
+      {n:"90/90 Hip Switch", sets:"2×8", c:"قاعد على الأرض ورجليك زاوية 90° الاتنين، ولفهم من ناحية للتانية. بيفك مفصل الحوض."},
+      {n:"Couch Stretch", sets:"45 ث لكل رجل", c:"ركبة على الأرض جنب الكنبة ورجلك لفوق عليها. أهم إطالة لقدّام الفخد والحوض، بيتقفلوا من القعدة ومن الشوط."},
+      {n:"Pigeon Stretch", sets:"45 ث لكل رجل", c:"بيفك الحوض من ورا والعضلة المقعدية."},
+      {n:"Adductor Rock-back", sets:"10 لكل ناحية", c:"على ركبك ورجل ممدودة للجنب، وارجع بوسطك لورا. ليونة الضامة."},
+      {n:"Half-kneeling Hamstring Stretch", sets:"45 ث لكل رجل", c:"ركبة على الأرض والتانية ممدودة لقدّام، وميل لقدّام وضهرك مفرود."},
+      {n:"Knee-to-Wall Ankle", sets:"10 لكل رجل", c:"صوابعك قدّام الحيطة، ودخّل ركبتك للحيطة من غير ما الكعب يرفع. ليونة الكاحل."},
+      {n:"Deep Squat Hold", sets:"2×30 ث", c:"انزل سكوات لآخره، واسند على حاجة لو محتاج."},
+      {n:"Thoracic Open Book", sets:"8 لكل ناحية", c:"نايم على جنبك وافتح دراعك للناحية التانية. ليونة نص الضهر."}]}]},
+    {id:"sat", d:"السبت", k:"وقاية", badge:"راحة + تمرين الكورة في البيت",
+     note:"مفيش جيم. 20 دقيقة في البيت للركبة والكاحل والكور، وينفعوا وأنت مسافر. محتاج أستك مقاومة صغير (mini band) وسلمة. النوم 9:45 عشان تصحى للفجر يوم الأحد.",
+     tl:[
+      ["8:00","sleep","تصحى",""],
+      ["8:30","food","فطار","",["طبق فول بمعلقة زبدة وكمون وفلفل أسود وملح","أومليت 3 بياض + بيضة","رغيف","وبعده القهوة"],["foul","omelette"]],
+      ["9:00–9:45","deen","حفظ: تكملة المقطع + تسميع","التفاصيل تحت"],
+      ["10:00–10:30","gym","تمرين الكورة في البيت","20 دقيقة، التفاصيل تحت"],
+      ["10:30–1:00","self","بلايستيشن","ساعتين ونص"],
+      ["1:00","food","غدا","",["200 جم كبدة إسكندراني بمعلقة زيت","200 جم بطاطس مسلوقة مهروسة","سلطة"],["liver","mash","salad"]],
+      ["1:30–4:30","self","مذاكرة","3 ساعات"],
+      ["4:30–8:00","home","وقت الأسرة","وفيه تحضير أكل الأسبوع"],
+      ["5:00","food","سناك","",["200 جم قريش","خيار","برتقالة أو تفاحة"]],
+      ["7:30–7:50","deen","ورد القرآن","نص جزء"],
+      ["8:00","food","عشا","",["كوباية شوربة عدس","سلطة تونة: علبة تونة لايت بالمية + خيار وطماطم وبصل وليمون","ربع رغيف"],["lentil","tunasalad"]],
+      ["8:30–9:30","home","وقت حر مع الأسرة",""],
+      ["9:45","sleep","نوم","عشان تصحى للفجر"]],
+     wu:null, cd:null, ex:[], abs:[],
+     routines:[{id:"r1", title:"تمرين الكورة في البيت", time:"20 دقيقة", items:[
+      {n:"Lateral Band Walk", sets:"2×12 لكل ناحية", c:"أستك فوق الركبة، نزّل وسطك سنة، والركبة متدخلش لجوه. بيقوّي جانب الحوض ويحمي الركبة."},
+      {n:"Single-leg Step-down", sets:"2×8 لكل رجل", c:"من على سلمة، انزل ببطء في 3 ثواني، وركبتك فوق صوابعك. بيقوّي ثبات الركبة."},
+      {n:"Single-leg RDL", sets:"2×8 لكل رجل", c:"من غير وزن. ميل لقدّام على رجل واحدة وضهرك مفرود. هامسترنج وتوازن مع بعض."},
+      {n:"Y-Balance Reach", sets:"2×6 لكل رجل", c:"واقف على رجل، ومد التانية لقدّام وللجنب ولورا من غير ما تلمس الأرض. بيحمي الكاحل."},
+      {n:"Tibialis Raise", sets:"2×15", c:"ضهرك على الحيطة، وارفع صوابع رجلك لفوق."},
+      {n:"Snap-down Landing", sets:"2×5", c:"اقفز خفيف وانزل ثابت: ركبك مثنية وفي اتجاه صوابعك، والنزلة من غير صوت. ده أساس حماية الرباط الصليبي."},
+      {n:"Single-leg Glute Bridge", sets:"2×10 لكل رجل", c:"اقفل وسطك فوق ثانية."},
+      {n:"Bird Dog", sets:"2×8 لكل ناحية", c:"دراع ورجل عكس بعض، ووسطك ثابت ميلفش. كور."},
+      {n:"Side Plank with Reach", sets:"2×8 لكل ناحية", c:"من وضع Side Plank، لف دراعك تحت جسمك وارجع. كور ومقاومة لف."}]}]}
+  ];
+
+  const BREAD = {"رغيف":"رغيف بلدي (أو 3 توست أسمر)","رغيف بلدي":"رغيف بلدي (أو 3 توست أسمر)","نص رغيف":"نص رغيف (أو 2 توست أسمر)"};
+  const CHIP = {food:["أكل","c-food"],gym:["رياضة","c-gym"],work:["شغل","c-work"],home:["أسرة","c-home"],sleep:["نوم","c-sleep"],self:["ليك","c-self"],deen:["عبادة","c-deen"]};
+  const ORDER = ["sun","mon","tue","wed","thu","fri","sat"];
+  const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+  const slug = s => s.toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"");
+
+  /* ---------- dates ---------- */
+  const pad = n => String(n).padStart(2,"0");
+  const iso = d => `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+  const short = d => `${d.getDate()}/${d.getMonth()+1}`;
+  const today = new Date(); today.setHours(0,0,0,0);
+  let weekOffset = 0;
+  function weekStart(){ const d = new Date(today); d.setDate(d.getDate() - d.getDay() + weekOffset*7); return d; }
+  function dateOf(id){ const d = weekStart(); d.setDate(d.getDate() + ORDER.indexOf(id)); return d; }
+
+  /* ---------- state + storage ---------- */
+  const state = { checks:{}, weights:{}, body:{w:{}, waist:{}} }; // body.w[date]=kg, body.waist[date]=cm
+  state.quran = {page:null, hifz:{}};
+  state.todos = {};   // todos[date] = [{id, text, done, from}]
+  let db = null;
+  const LS = {
+    get(k){ try{ return JSON.parse(localStorage.getItem(k)||"null"); }catch(e){ return null; } },
+    set(k,v){ try{ localStorage.setItem(k, JSON.stringify(v)); }catch(e){} }
+  };
+  const cached = LS.get("fit:v2");
+  if (cached){ state.checks = cached.checks||{}; state.weights = cached.weights||{}; if (cached.body) state.body = {w:cached.body.w||{}, waist:cached.body.waist||{}}; if (cached.quran) state.quran = {page:cached.quran.page||null, hifz:cached.quran.hifz||{}}; if (cached.todos) state.todos = cached.todos; }
+  const saveLocal = () => LS.set("fit:v2", state);
+
+  const chains = {};
+  function writeDoc(path, body){
+    if (!db) return;
+    chains[path] = (chains[path]||Promise.resolve())
+      .then(() => db.doc(path).set(body))
+      .catch(e => { if (e && e.code === "unavailable") return new Promise(r=>setTimeout(r,800+Math.random()*800)).then(()=>db.doc(path).set(body)).catch(()=>{}); setSync(false,"الحفظ على حسابك وقف، والعلامات بتتحفظ على الجهاز ده بس"); });
+  }
+  function setSync(on, text){
+    const el = document.getElementById("sync");
+    el.classList.toggle("on", on); el.textContent = text;
+  }
+
+  /* how to cook each dish: shown under the meal it belongs to */
+  const RECIPES = {
+    foul:{t:"فول بالزبدة", time:"5 دقايق", steps:[
+      "سخّن الفول المدمس في كسرولة صغيرة مع 2–3 معالق من ميّته على نار هادية.",
+      "اهرسه سنة بالشوكة، وسيبه يغلي دقيقة.",
+      "ضيف ملح وكمون وفلفل أسود، وقلّب.",
+      "حط معلقة الزبدة على الوش وهو سخن، وسيبها تسيح."],
+      tip:"معلقة مسطّحة بس (حوالي 10 جم). الزبدة الزيادة هي اللي بتزوّد السعرات."},
+    eggs:{t:"بيض مسلوق", time:"12 دقيقة", steps:[
+      "غلّي مية تغطي البيض، ونزّل البيض بالمعلقة وهي بتغلي.",
+      "9–10 دقايق للبيض الجامد، و7 دقايق لو بتحبه الصفار طري.",
+      "نزّله في مية ساقعة دقيقتين، فيتقشر بسهولة."],
+      tip:"اسلق 8–10 بيضات مرة واحدة، وهيقعدوا في التلاجة 5 أيام. وفّر وقت الصبح."},
+    omelette:{t:"أومليت بالخضار", time:"7 دقايق", steps:[
+      "اخفق البيض والبياض بملح وفلفل أسود.",
+      "طاسة تيفال على نار متوسطة برشة زيت أو بخّة سبراي.",
+      "شوّح السبانخ والطماطم دقيقة لحد ما السبانخ تدبل.",
+      "صب البيض، ووطّي النار، وسيبه 3–4 دقايق لحد ما الوش يجمد، واطبقه نصين."],
+      tip:"القريش ممكن تحطه جوه الأومليت قبل ما تطبقه."},
+    chicken:{t:"صدور فراخ في الطاسة", time:"20 دقيقة + تتبيلة", steps:[
+      "التتبيلة لكيلو صدور: 3 معالق زبادي، وعصير ليمونة، ومعلقة صغيرة من كل واحد: ملح، فلفل أسود، بصل بودرة، توم بودرة، بابريكا، زعتر.",
+      "افرد الصدور بالشاكوش لسمك واحد حوالي 1.5 سم، فتستوي بالتساوي ومتنشفش.",
+      "قلّبها في التتبيلة، وسيبها في التلاجة نص ساعة على الأقل، والأحسن من بالليل.",
+      "قبل الطبخ امسح التتبيلة الزيادة من على الوش، لأن الزبادي بيتحرق بسرعة على النار العالية.",
+      "سخّن الطاسة على نار عالية مع رشة زيت، وحط الصدور. سيبها 4–5 دقايق من غير ما تحركها لحد ما تتحمّر، وقلّبها 4–5 دقايق للوش التاني.",
+      "وطّي النار على هادية، وغطّي الطاسة 4–5 دقايق، فالجوه يستوي من غير ما البرّه يتحرق.",
+      "اتأكد إنها استوت: اقطع أتخن حتة، لازم تبقى بيضا من جوه والعصارة شفافة مش وردي. ولو معاك ترمومتر، 74°.",
+      "سيبها 5 دقايق قبل التقطيع، فتفضل طرية."],
+      tip:"7 دقايق متواصلة على أعلى نار بتحرق البرّه قبل ما الجوه يستوي، خصوصًا مع الزبادي. التحمير على نار عالية وبعدها نار هادية بغطا أحسن. اعمل كيلو مرة واحدة، وقسّمه علب 200 جم."},
+    rice:{t:"رز أبيض", time:"20 دقيقة", steps:[
+      "اغسل الرز لحد ما المية تبقى رايقة.",
+      "حطه في الحلة مع ملح، ومية بنسبة كوباية رز لكوباية وربع مية.",
+      "أول ما يغلي وطّي النار على الآخر، وغطّيه 15 دقيقة من غير ما تفتح."],
+      tip:"الكميات في الجدول للرز المطبوخ. كوباية رز ني بتطلع حوالي 3 كوبايات مطبوخ."},
+    salad:{t:"سلطة خضرا أو بلدي", time:"5 دقايق", steps:[
+      "خيار وطماطم وفلفل وخس أو جرجير، مقطعين.",
+      "معلقة زيت زيتون، وعصير ليمون، وملح وكمون."],
+      tip:"كُل السلطة الأول، بتشبّع وبتقلل اللي هتاكله من النشويات."},
+    yogurt:{t:"زبادي يوناني بالفاكهة", time:"دقيقة", steps:[
+      "حط الفاكهة مقطعة على الزبادي.",
+      "رشة قرفة، وmonk fruit لو محتاج تحلية."],
+      tip:"ممكن تحطه في علبة من بالليل وتاخده الشغل."},
+    qareesh:{t:"قريش بالخضار", time:"5 دقايق", steps:[
+      "اهرس القريش بالشوكة.",
+      "ضيف طماطم وخيار مقطعين صغير ونعناع مفروم.",
+      "رشة كمون وفلفل أسود، وممكن معلقة صغيرة زيت زيتون."]},
+    kofta:{t:"كفتة مشوية", time:"30 دقيقة", steps:[
+      "نص كيلو لحمة مفرومة قليلة الدهن، وبصلة مبشورة ومعصورة من ميّتها، وبقدونس مفروم، وملح وفلفل وبهارات كفتة.",
+      "اعجنهم كويس، وسيبهم في التلاجة ربع ساعة، فيتماسكوا.",
+      "شكّلهم أصابع، وحطهم على صينية بورق زبدة.",
+      "فرن جريل 220° لمدة 15–20 دقيقة، وقلّبهم في النص. أو على الشواية."],
+      tip:"النص كيلو بيطلع حوالي حصتين ونص. 200 جم حصتك، والباقي للعيلة أو ليوم تاني."},
+    roastpot:{t:"بطاطس مشوية بالروزماري", time:"35 دقيقة", steps:[
+      "قطّع البطاطس مكعبات أو أصابع بقشرها بعد ما تغسلها.",
+      "قلّبها مع معلقة زيت لكل نص كيلو، وروزماري وملح وفلفل وتوم بودرة.",
+      "افردها طبقة واحدة في صينية، وفرن 220° لمدة 30–35 دقيقة، وقلّبها مرة."]},
+    mash:{t:"بطاطس مهروسة", time:"25 دقيقة", steps:[
+      "قشّر البطاطس وقطّعها، واسلقها في مية بملح 15–20 دقيقة لحد ما الشوكة تدخل بسهولة.",
+      "صفّيها كويس، ورجّعها الحلة على النار دقيقة تنشف.",
+      "اهرسها مع 3–4 معالق لبن خالي الدسم سخن.",
+      "ملح وفلفل أسود ورشة جوزة الطيب."],
+      tip:"من غير زبدة ولا كريمة. لو عايزها أطرى زوّد لبن، مش زبدة."},
+    fish:{t:"سمك مشوي", time:"25 دقيقة", steps:[
+      "التتبيلة: توم مهروس، وكمون، وعصير ليمونة، وفلفل وملح، وكزبرة خضرا، ومعلقة زيت.",
+      "اعمل شقوق في السمكة، ودخّل التتبيلة جوه وبرّه، وسيبها ربع ساعة.",
+      "صينية بورق زبدة، وفرن 200° لمدة 20–25 دقيقة للسمكة الكاملة، أو 12–15 دقيقة للفيليه."],
+      tip:"السمك استوى لما يتفصّص بسهولة بالشوكة."},
+    sayadeya:{t:"رز صيادية", time:"25 دقيقة", steps:[
+      "شوّح نص بصلة شرائح رفيعة في معلقة زيت لحد ما تحمر غامق، ده اللي بيدي اللون.",
+      "ضيف معلقة صغيرة كمون، وبعدها الرز المغسول، وقلّب دقيقة.",
+      "مية بنسبة كوباية رز لكوباية وربع، وملح.",
+      "أول ما يغلي وطّي النار على الآخر، وغطّيه 15 دقيقة."]},
+    tahini:{t:"سلطة طحينة", time:"3 دقايق", steps:[
+      "معلقة طحينة، وعصير نص ليمونة، وفص توم مهروس، وكمون وملح.",
+      "ضيف مية معلقة معلقة وأنت بتقلّب لحد ما تبقى ناعمة.",
+      "صبها على الخيار والطماطم، أو كُلها جنب السمك."],
+      tip:"معلقة واحدة بس. الطحينة صحية بس سعراتها عالية."},
+    steak:{t:"ستيك", time:"15 دقيقة", steps:[
+      "طلّع اللحمة من التلاجة قبلها بنص ساعة، ونشّفها بمنديل.",
+      "ملح وفلفل أسود قبل الطبخ على طول.",
+      "طاسة حديد أو جريل سخنة جدًا، من غير زيت أو بنقطة صغيرة.",
+      "لسمك 2 سم: 3–4 دقايق كل ناحية للميديم. متقلّبهاش غير مرة واحدة.",
+      "سيبها 5 دقايق قبل ما تقطّعها، وقطّع شرايح عكس اتجاه الألياف."],
+      tip:"وش الفخدة والكلوتة بيبقوا ناشفين لو استووا زيادة. لو بتحبه مستوي خالص، تبّله من بالليل بعصير بصلة وزبادي، وقطّعه شرايح رفيعة."},
+    sautee:{t:"خضار سوتيه", time:"10 دقايق", steps:[
+      "كوسة وفلفل ألوان وجزر، شرائح رفيعة.",
+      "معلقة زيت في طاسة على نار عالية، وابدأ بالجزر لأنه بياخد وقت أطول.",
+      "ضيف الباقي وقلّب 5–6 دقايق، الخضار يفضل مقرمش سنة.",
+      "ملح وفلفل وتوم بودرة."]},
+    oats:{t:"شوفان باللبن", time:"5 دقايق", steps:[
+      "60 جم شوفان مع 250 مل لبن خالي الدسم.",
+      "على نار هادية 3–4 دقايق مع التقليب، أو ميكروويف دقيقتين وقلّب في النص.",
+      "معلقة صغيرة زبدة فول سوداني ورشة قرفة، وmonk fruit لو حابب."],
+      tip:"الأسرع: اعمله بارد من بالليل في برطمان في التلاجة (Overnight Oats)، وكُله على طول بعد الجيم."},
+    bolognese:{t:"مكرونة بولونيز", time:"35 دقيقة", steps:[
+      "شوّح بصلة مفرومة وفصين توم في معلقة زيت لحد ما يدبلوا.",
+      "ضيف اللحمة المفرومة، وفكّكها بالمعلقة لحد ما تحمر، وصفّي أي دهن يطلع.",
+      "صلصة طماطم وطماطمة مفرومة، وملح وفلفل وأوريجانو، وربع كوباية مية.",
+      "سيبها على نار هادية 15–20 دقيقة لحد ما تتسبّك.",
+      "اسلق المكرونة في مية بملح حسب الوقت المكتوب على الكيس، ووزّن 250 جم بعد السلق."],
+      tip:"اعمل كمية للعيلة كلها. الصلصة بتقعد في التلاجة 3 أيام، وفي الفريزر شهر."},
+    beefcubes:{t:"لحمة متشوّحة في زبدة", time:"15 دقيقة", steps:[
+      "قطّع اللحمة مكعبات صغيرة (2 سم) من وش الفخدة أو الفيليه، ونشّفها كويس.",
+      "ملح وفلفل أسود ورشة بابريكا.",
+      "طاسة على نار عالية جدًا، وفيها معلقة الزبدة.",
+      "حط اللحمة طبقة واحدة، ومتقلّبهاش أول دقيقتين عشان تحمر. لو الطاسة صغيرة، اعملها على مرتين.",
+      "ضيف البصل والفلفل الألوان شرائح، وقلّب دقيقتين. ممكن رشة صويا صوص أو فص توم في الآخر."],
+      tip:"لو القطعية ناشفة، تبّلها من بالليل بعصير بصلة. ولو مستعجل، الفيليه بيستوي في دقايق وبيفضل طري."},
+    liver:{t:"كبدة إسكندراني", time:"10 دقايق", steps:[
+      "قطّع الكبدة شرائح رفيعة، واغسلها ونشّفها.",
+      "طاسة سخنة جدًا بمعلقة زيت، وحط الكبدة.",
+      "ضيف فصين توم مفرومين، وفلفل حامي أخضر شرائح، وكمون وملح وفلفل أسود.",
+      "شوّح على نار عالية 3–4 دقايق بس. لو زادت عن كده الكبدة هتنشف وتبقى ناشفة.",
+      "عصرة ليمون في الآخر."]},
+    tunasalad:{t:"سلطة تونة", time:"5 دقايق", steps:[
+      "صفّي التونة كويس من المية.",
+      "قطّع خيار وطماطم وبصل صغير.",
+      "عصير ليمون، ورشة كمون وفلفل وملح.",
+      "لو عايزها كريمية، معلقة زبادي يوناني بدل المايونيز."]},
+    lentil:{t:"شوربة عدس", time:"35 دقيقة", steps:[
+      "كوباية عدس أصفر مغسول، وبصلة، وجزرة، وطماطمة، وفص توم، مقطعين.",
+      "5 كوبايات مية، ويغلوا وبعدها نار هادية 25–30 دقيقة لحد ما العدس يتهري.",
+      "اضربها في الخلاط.",
+      "ملح وكمون وفلفل أسود، وعصرة ليمون وأنت بتاكل."],
+      tip:"الكمية دي حوالي 5 كوبايات. خلّي الباقي في التلاجة، بيقعد 3 أيام."}
+  };
+  function recipeBlock(keys){
+    if (!keys || !keys.length) return "";
+    const cards = keys.map(k=>RECIPES[k]).filter(Boolean).map(r=>
+      `<div class="rc"><div class="rc-h"><b>${r.t}</b><span>${r.time}</span></div><ol>${r.steps.map(x=>`<li>${esc(x)}</li>`).join("")}</ol>${r.tip?`<p class="rc-tip">${esc(r.tip)}</p>`:""}</div>`).join("");
+    return `<details class="recipe"><summary>طريقة التحضير</summary>${cards}</details>`;
+  }
+
+  /* equipment per exercise: [type, detail] — type picks the chip color */
+  const EQ_LABEL = {bar:"بار", db:"دمبل", cable:"كابل", machine:"جهاز", bw:"وزن الجسم", band:"أستك", bar2:"عقلة", tread:"مشاية", wheel:"عجلة البطن"};
+  const EQUIP = {
+    "Bench Press":["bar","بنش مستوي"], "Chest-supported Row (Machine)":["machine","صدرك على المسند، أو T-Bar Row بمسند"], "Machine Shoulder Press":["machine",""],
+    "Lat Pulldown":["cable","جهاز السحب العالي"], "Lateral Raise":["db",""], "EZ-Bar Curl":["bar","بار EZ المتعرّج"],
+    "Triceps Rope Pushdown":["cable","حبل"], "Back Squat":["bar","رَك السكوات"], "Romanian Deadlift":["bar",""],
+    "Walking Lunges (Dumbbell)":["db",""], "Leg Curl":["machine",""], "Standing Calf Raise":["machine","أو سميث"],
+    "Tibialis Raise":["bw","ضهرك على الحيطة"], "Incline Dumbbell Press":["db","بنش مايل 30°"],
+    "Assisted Pull-ups":["machine","جهاز المساعدة، أو عقلة بأستك"], "Seated Cable Row":["cable","مقبض V"],
+    "Arnold Press":["db","بنش ضهره مفرود"], "Face Pull":["cable","حبل، البكرة في مستوى وشك"],
+    "Incline Dumbbell Curl":["db","بنش مايل 45°"], "Overhead Cable Triceps Extension":["cable","حبل"],
+    "Hammer Curl":["db",""], "Reverse Pec Deck":["machine","جهاز الـ Pec Deck وأنت قاعد بالعكس"], "Cable Lateral Raise":["cable","مقبض واحد، البكرة تحت"], "Deadlift (Trap Bar)":["bar","Trap Bar، أو بار عادي"], "Bulgarian Split Squat":["db","بنش ورا"],
+    "Hip Thrust":["bar","بنش + وسادة للبار، أو جهاز"], "Nordic Curl":["bw","رجلك متثبتة تحت بنش أو مع زميل"],
+    "Copenhagen Plank":["bw","بنش"], "Single-leg Balance":["bw",""], "Single-leg Calf Raise":["bw","سلمة، وممكن دمبل في إيدك"],
+    "Incline Treadmill Walk":["tread",""],
+    "Cable Crunch":["cable","حبل، وأنت راكع"], "Dead Bug":["bw","على مرتبة"], "Hanging Knee Raise":["bar2",""],
+    "Plank":["bw",""], "Hanging Leg Raise":["bar2",""], "Pallof Press":["cable","مقبض واحد، البكرة في مستوى صدرك"],
+    "Ab Wheel Rollout":["wheel","على ركبك"], "Side Plank":["bw",""],
+    "Lateral Band Walk":["band","mini band فوق الركبة"], "Single-leg Step-down":["bw","سلمة"], "Single-leg RDL":["bw",""],
+    "Y-Balance Reach":["bw",""], "Snap-down Landing":["bw",""], "Single-leg Glute Bridge":["bw","على الأرض"],
+    "Bird Dog":["bw","على مرتبة"], "Side Plank with Reach":["bw",""],
+    "90/90 Hip Switch":["bw","على الأرض"], "Couch Stretch":["bw","كنبة أو حيطة"], "Pigeon Stretch":["bw","على مرتبة"],
+    "Adductor Rock-back":["bw","على مرتبة"], "Half-kneeling Hamstring Stretch":["bw",""], "Knee-to-Wall Ankle":["bw","حيطة"],
+    "Deep Squat Hold":["bw",""], "Thoracic Open Book":["bw","على مرتبة"],
+    "Dead Hang":["bar2",""], "Farmer's Carry":["db","دمبلتين تقال، أو Trap Bar"]
+  };
+
+  /* target muscles per exercise: [main, helpers] */
+  const MUSCLES = {
+    "Bench Press":["الصدر","الكتف الأمامي، التراي"],
+    "Chest-supported Row (Machine)":["نص الضهر والـ Lats","الكتف الخلفي، البايسبس"],
+    "Machine Shoulder Press":["الكتف الأمامي والجانبي","التراي، أعلى الصدر"],
+    "Lat Pulldown":["الـ Lats (عرض الضهر)","البايسبس، الكتف الخلفي"],
+    "Lateral Raise":["الكتف الجانبي","الترابيس"],
+    "Cable Lateral Raise":["الكتف الجانبي",""],
+    "Reverse Pec Deck":["الكتف الخلفي","نص الضهر (الرومبويد)"],
+    "EZ-Bar Curl":["البايسبس","الساعد"],
+    "Triceps Rope Pushdown":["التراي (الرأس الجانبية)",""],
+    "Back Squat":["الفخد الأمامي","المقعدة، الضامة، أسفل الضهر، الكور"],
+    "Romanian Deadlift":["الفخد الخلفي (الهامسترنج)","المقعدة، أسفل الضهر"],
+    "Walking Lunges (Dumbbell)":["الفخد الأمامي والمقعدة","الضامة، التوازن"],
+    "Leg Curl":["الفخد الخلفي (الهامسترنج)","السمانة"],
+    "Standing Calf Raise":["السمانة",""],
+    "Tibialis Raise":["قصبة الرجل من قدّام","الكاحل"],
+    "Incline Dumbbell Press":["أعلى الصدر","الكتف الأمامي، التراي"],
+    "Assisted Pull-ups":["الـ Lats (عرض الضهر)","البايسبس، نص الضهر"],
+    "Seated Cable Row":["نص الضهر (الرومبويد والترابيس الوسطانية)","الـ Lats، البايسبس، الكتف الخلفي"],
+    "Arnold Press":["الكتف الأمامي والجانبي","التراي"],
+    "Face Pull":["الكتف الخلفي","الروتيتر كاف، الترابيس الوسطانية"],
+    "Incline Dumbbell Curl":["البايسبس (الرأس الطويلة)","الساعد"],
+    "Overhead Cable Triceps Extension":["التراي (الرأس الطويلة)",""],
+    "Hammer Curl":["البراكياليس (جنب الدراع)","الساعد، البايسبس"],
+    "Deadlift (Trap Bar)":["المقعدة والفخد الأمامي والخلفي","أسفل الضهر، الترابيس، القبضة، الكور"],
+    "Bulgarian Split Squat":["الفخد الأمامي والمقعدة","الضامة، التوازن"],
+    "Hip Thrust":["المقعدة","الفخد الخلفي"],
+    "Nordic Curl":["الفخد الخلفي (الهامسترنج)","السمانة"],
+    "Copenhagen Plank":["الضامة (Adductors)","الكور الجانبي"],
+    "Single-leg Balance":["عضلات الكاحل والقدم","المقعدة الجانبية، الكور"],
+    "Single-leg Calf Raise":["السمانة","الكاحل"],
+    "Incline Treadmill Walk":["القلب والنَفَس","المقعدة، السمانة"],
+    "Cable Crunch":["عضلة البطن الأمامية (Six-pack)",""],
+    "Dead Bug":["عضلة البطن العميقة (Transverse)","البطن الأمامية"],
+    "Hanging Knee Raise":["أسفل البطن","عضلات الحوض الأمامية، القبضة"],
+    "Plank":["البطن العميقة والأمامية","الكتف، المقعدة"],
+    "Hanging Leg Raise":["أسفل البطن","عضلات الحوض الأمامية، القبضة"],
+    "Pallof Press":["جوانب البطن (Obliques)","البطن العميقة"],
+    "Ab Wheel Rollout":["البطن الأمامية","الـ Lats، الكتف"],
+    "Side Plank":["جوانب البطن (Obliques)","المقعدة الجانبية"],
+    "Lateral Band Walk":["المقعدة الجانبية (Glute Medius)","ثبات الركبة"],
+    "Single-leg Step-down":["الفخد الأمامي","المقعدة الجانبية، ثبات الركبة"],
+    "Single-leg RDL":["الفخد الخلفي والمقعدة","التوازن، الكاحل"],
+    "Y-Balance Reach":["عضلات الكاحل والمقعدة","التوازن، الكور"],
+    "Snap-down Landing":["الفخد الأمامي والمقعدة","التحكم في الركبة وقت النزول"],
+    "Single-leg Glute Bridge":["المقعدة","الفخد الخلفي"],
+    "Bird Dog":["أسفل الضهر والكور","المقعدة، الكتف"],
+    "Side Plank with Reach":["جوانب البطن (Obliques)","الكتف، الكور"],
+    "90/90 Hip Switch":["ليونة مفصل الحوض",""],
+    "Couch Stretch":["قدّام الفخد والحوض (Hip Flexors)",""],
+    "Pigeon Stretch":["المقعدة وجانب الحوض",""],
+    "Adductor Rock-back":["الضامة",""],
+    "Half-kneeling Hamstring Stretch":["الفخد الخلفي",""],
+    "Knee-to-Wall Ankle":["ليونة الكاحل والسمانة",""],
+    "Deep Squat Hold":["الحوض والكاحل وأسفل الضهر",""],
+    "Thoracic Open Book":["نص الضهر (Thoracic)","الصدر"],
+    "Dead Hang":["المسكة والساعد","الـ Lats، الكتف"],
+    "Farmer's Carry":["المسكة والساعد","الترابيس، البطن، الإلية"]
+  };
+  function muscleLine(n){
+    const m = MUSCLES[n]; if (!m) return "";
+    return `<p class="mus"><b>العضلة:</b> ${esc(m[0])}${m[1]?`<span class="mus-h"> · بيساعد: ${esc(m[1])}</span>`:""}</p>`;
+  }
+
+  /* grip per exercise: [English search term, Arabic how-to] — shown under the muscles and added to the YouTube search */
+  const GRIP = {
+    "Bench Press":["medium grip","مسكة من فوق (Overhand)، أعرض من كتفك بشبر تقريبًا، بحيث دراعك يبقى عمودي لما البار ينزل على صدرك. الإبهام ملفوف حوالين البار."],
+    "Chest-supported Row (Machine)":["neutral grip","المقابض اللي كفوفك فيها بتبص لبعض (Neutral). لو الجهاز فيه مقابض أفقية بس: من فوق وبعرض كتفك."],
+    "Machine Shoulder Press":["neutral grip","المقابض اللي كفوفك فيها بتبص لبعض (Neutral) أريح للكتف. لو مفيش غير الأفقية: من فوق وبعرض كتفك تقريبًا."],
+    "Lat Pulldown":["overhand grip","البار الطويل، مسكة من فوق (Overhand) أعرض من كتفك بشبر. مش على آخر البار، المسكة الواسعة جدًا بتقلل المدى."],
+    "Lateral Raise":["","دمبل في كل إيد، الكف بيبص للأرض والدمبل موازي للأرض. إنت بترفع بكوعك مش بإيدك."],
+    "EZ-Bar Curl":["close grip","مسكة من تحت (Underhand) على الانحناية الداخلية للبار، بعرض كتفك تقريبًا."],
+    "Triceps Rope Pushdown":["","حبل، الإبهام لفوق والكفوف بتبص لبعض (Neutral). في الآخر افتح طرفين الحبل لبرّه."],
+    "Back Squat":["high bar","البار على أعلى الترابيس (High bar)، مسكة من فوق أعرض من كتفك بشوية، وأضيق ما مرونتك تسمح. كوعك لتحت."],
+    "Romanian Deadlift":["double overhand","مسكة من فوق بالإيدين (Double overhand)، بعرض كتفك، إيديك برّه فخادك على طول. لو مسكتك فلتت استخدم Straps."],
+    "Walking Lunges (Dumbbell)":["","دمبل في كل إيد جنبك، الكفوف بتبص لجسمك (Neutral)."],
+    "Standing Calf Raise":["","إمسك مقابض الجهاز للتوازن بس، متشدّش بإيدك."],
+    "Incline Dumbbell Press":["","الكفوف لقدّام (Overhand)، ولفّها لجوّه سنة (حوالي 45°) لو كتفك بيضايقك. الدمبل فوق أعلى صدرك."],
+    "Assisted Pull-ups":["overhand grip","مسكة من فوق (Overhand)، أعرض من كتفك سنة. ده نفس شكل العقلة اللي هدفك توصلها."],
+    "Seated Cable Row":["v-bar","مقبض V الضيق، الكفوف بتبص لبعض (Neutral)."],
+    "Arnold Press":["","بتبدأ والكفوف بتبص لوشك قدّام دقنك، ولما ترفع لفّ إيدك لحد ما الكفوف تبص لقدّام فوق."],
+    "Face Pull":["rope","حبل، مسكة من فوق والإبهام بيبص لورا ناحيتك. اسحب ناحية وشك وافتح الحبل لبرّه عند ودانك."],
+    "Incline Dumbbell Curl":["","مسكة من تحت (Underhand)، الكف لقدّام طول الحركة. دراعك سايب لتحت ورا جسمك."],
+    "Overhead Cable Triceps Extension":["rope","حبل، ضهرك للجهاز، الإبهام لفوق والكفوف بتبص لبعض (Neutral)."],
+    "Hammer Curl":["","دمبل، الإبهام لفوق والكفوف بتبص لجسمك (Neutral) طول الحركة."],
+    "Cable Lateral Raise":["single arm","مقبض واحد (D-handle) في الإيد البعيدة عن الجهاز، الكابل معدّي قدّام جسمك."],
+    "Deadlift (Trap Bar)":["high handles","إمسك في نص المقابض بالظبط عشان الوزن يتوازن، الكفوف بتبص لجسمك (Neutral). ابدأ بالمقابض العالية لحد ما تتعلم الحركة."],
+    "Bulgarian Split Squat":["","دمبل في كل إيد جنبك، الكفوف بتبص لجسمك (Neutral)."],
+    "Hip Thrust":["","مسكة من فوق على البار برّه وسطك، بس عشان تثبّته. الشغل كله من الإلية."],
+    "Single-leg Calf Raise":["","الدمبل في نفس إيد الرجل اللي شغالة، والإيد التانية على الحيطة للتوازن."],
+    "Cable Crunch":["rope","حبل، طرفينه جنب وشك أو قدّام جبهتك، وإيدك ثابتة مكانها طول الحركة."],
+    "Hanging Knee Raise":["","مسكة من فوق (Overhand) بعرض كتفك. لو إيدك تعبت قبل بطنك استخدم Straps أو مساند الكوع."],
+    "Hanging Leg Raise":["","مسكة من فوق (Overhand) بعرض كتفك. لو إيدك تعبت قبل بطنك استخدم Straps."],
+    "Pallof Press":["","مقبض واحد (D-handle)، الإيدين الاتنين عليه لازقين في صدرك."],
+    "Ab Wheel Rollout":["","إمسك مقابض العجلة من فوق، دراعك مفرود."],
+    "Dead Hang":["overhand","مسكة من فوق (Overhand) بعرض كتفك، زي العقلة. الإبهام ملفوف حوالين البار."],
+    "Farmer's Carry":["dumbbell","دمبل في كل إيد جنبك، الكفوف بتبص لجسمك (Neutral). إمسك في نص المقبض بالظبط واضغط عليه جامد."]
+  };
+
+  /* how-to media: slug -> file in media/. Files are added as they arrive. */
+  const MEDIA = {
+    "bench-press": {f:"media/bench-press.mp4", poster:"media/bench-press.jpg", talk:true, credit:"TikTok @kg.workouts"},
+    "chest-supported-row-machine": {f:"media/chest-supported-row-machine.mp4", poster:"media/chest-supported-row-machine.jpg", talk:true, credit:"TikTok @haitham_salama0"},
+    "machine-shoulder-press": {f:"media/machine-shoulder-press.mp4", poster:"media/machine-shoulder-press.jpg", talk:true, credit:"TikTok @kg.karimgabriel"},
+    "lat-pulldown": {f:"media/lat-pulldown.mp4", poster:"media/lat-pulldown.jpg", talk:true, credit:"TikTok @kg.karimgabriel"},
+    "lateral-raise": {f:"media/lateral-raise.mp4", poster:"media/lateral-raise.jpg", talk:true, credit:"TikTok @kg.karimgabriel"},
+    "ez-bar-curl": {f:"media/ez-bar-curl.mp4", poster:"media/ez-bar-curl.jpg", talk:true, credit:"TikTok @informa180"},
+    "triceps-rope-pushdown": {f:"media/triceps-rope-pushdown.mp4", poster:"media/triceps-rope-pushdown.jpg", talk:true, credit:"TikTok @kg.karimgabriel"},
+    "cable-crunch": {f:"media/cable-crunch.mp4", poster:"media/cable-crunch.jpg", talk:true, credit:"TikTok @kg.karimgabriel"},
+    "dead-bug": {f:"media/dead-bug.mp4", poster:"media/dead-bug.jpg", talk:true, credit:"TikTok @ibrku"},
+    "chest-stretch": {f:"media/chest-stretch.mp4", poster:"media/chest-stretch.jpg", talk:true, credit:"TikTok @abuhmeidfitness"},
+    "lat-stretch": {f:"media/lat-stretch.mp4", poster:"media/lat-stretch.jpg", talk:true, credit:"TikTok @resurgencept"},
+    "childs-pose": {f:"media/childs-pose.mp4", poster:"media/childs-pose.jpg", talk:true, credit:"TikTok @matyfit.us"},
+    "band-pull-aparts": {f:"media/band-pull-aparts.mp4", poster:"media/band-pull-aparts.jpg", credit:"TikTok @kylemcd7"},
+    "band-dislocates": {f:"media/band-dislocates.mp4", poster:"media/band-dislocates.jpg", talk:true, credit:"TikTok @iamtreburns"},
+    "cat-cow": {f:"media/cat-cow.mp4", poster:"media/cat-cow.jpg", talk:true, credit:"TikTok @bodyweightculture"}
+  };
+
+  function gripLine(n){
+    const g = GRIP[n]; if (!g) return "";
+    return `<p class="mus"><b>المسكة:</b> ${esc(g[1])}</p>`;
+  }
+  function equipChip(n){
+    const q = EQUIP[n]; if (!q) return "";
+    return `<span class="eq eq-${q[0]}">${EQ_LABEL[q[0]]}</span>${q[1]?`<span class="eq-d">${esc(q[1])}</span>`:""}`;
+  }
+  function howTo(n){
+    const s = slug(n);
+    return `<details class="how" data-media="${s}" data-name="${esc(n)}"><summary>شوف الطريقة</summary><div class="how-body"></div></details>`;
+  }
+  function fillHowTo(d){
+    const body = d.querySelector(".how-body"); if (body.dataset.done) return;
+    const m = MEDIA[d.dataset.media], n = d.dataset.name;
+    const f = m && (typeof m === "string" ? m : m.f);
+    const yt = "https://www.youtube.com/results?search_query=" + encodeURIComponent(n + (GRIP[n] && GRIP[n][0] ? " " + GRIP[n][0] : "") + " exercise form");
+    if (f){
+      const talk = m.talk, poster = m.poster ? ` poster="${m.poster}"` : "";
+      body.innerHTML = (/\.(mp4|webm)$/i.test(f)
+        ? (talk
+            ? `<video src="${f}"${poster} playsinline controls preload="metadata"></video><p class="small">فيه شرح بالصوت، شغّله بالصوت.</p>`
+            : `<video src="${f}"${poster} autoplay loop muted playsinline controls preload="metadata"></video>`)
+        : `<img src="${f}" alt="طريقة ${esc(n)}" loading="lazy">`)
+        + (m.credit ? `<p class="small">المصدر: ${esc(m.credit)}</p>` : "");
+    } else {
+      body.innerHTML = `<p class="small">لسه مفيش فيديو للتمرين ده في الأبلكيشن. ابعتهولي وأنا أضيفه.</p><a class="yt" href="${yt}" target="_blank" rel="noopener">دوّر على فيديو في يوتيوب</a>`;
+    }
+    body.dataset.done = "1";
+  }
+
+  /* ---------- weight tracker ---------- */
+  const START_KG = 100, GOAL_LO = 80, GOAL_HI = 83;
+  const fmt = n => (Math.round(n*10)/10).toFixed(1).replace(/\.0$/,"");
+  function sundayOf(dateStr){ const d = new Date(dateStr+"T00:00"); d.setDate(d.getDate()-d.getDay()); return iso(d); }
+
+  function weeklySeries(){
+    const w = state.body.w || {};
+    const dates = Object.keys(w).filter(k=>isFinite(+w[k]) && +w[k]>0).sort();
+    if (!dates.length) return [];
+    const buckets = {};
+    dates.forEach(d=>{ const s = sundayOf(d); (buckets[s] = buckets[s]||[]).push(+w[d]); });
+    const out = [], cur = new Date(sundayOf(dates[0])+"T00:00"), end = new Date(sundayOf(iso(today))+"T00:00");
+    while (cur <= end){
+      const k = iso(cur), arr = buckets[k];
+      out.push({week:k, n:arr?arr.length:0, avg:arr?arr.reduce((a,b)=>a+b,0)/arr.length:null});
+      cur.setDate(cur.getDate()+7);
+    }
+    return out;
+  }
+
+  function statusOf(ch){
+    if (ch == null) return "";
+    if (ch <= -1.3) return `<span class="st st-warn">! أسرع من اللازم</span>`;
+    if (ch <= -0.4) return `<span class="st st-good">✓ ممتاز</span>`;
+    if (ch < 0.25)  return `<span class="st st-warn">– ثابت</span>`;
+    return `<span class="st st-bad">↑ زاد</span>`;
+  }
+
+  function renderTracker(){
+    const series = weeklySeries();
+    const pts = series.filter(p=>p.avg!=null);
+    const last = pts.length ? pts[pts.length-1].avg : null;
+    const tiles = [
+      [`${START_KG}`, "البداية (كجم)"],
+      [last!=null?fmt(last):"—", "متوسط آخر أسبوع"],
+      [last!=null?(last-START_KG<=0?"":"+")+fmt(last-START_KG):"—", "التغيير من البداية"],
+      [last!=null?(last<=GOAL_HI?"وصلت":fmt(last-GOAL_HI)):fmt(START_KG-GOAL_HI), "فاضل لحد 83 كجم"]
+    ];
+    document.getElementById("trkTiles").innerHTML = tiles.map(([v,l])=>`<div class="tile"><div class="v">${v}</div><div class="l">${l}</div></div>`).join("");
+
+    // chart: start point + weekly averages
+    const boxEl = document.getElementById("trkChart");
+    const W_ = Math.max(300, Math.min(720, (boxEl.clientWidth||660) - 20)), H_ = W_ < 480 ? 220 : 250, L = 34, R = 44, T = 16, B = 28;
+    const plot = [{label:"البداية", avg:START_KG, n:null, start:true}].concat(series.map(p=>({label:short(new Date(p.week+"T00:00")), avg:p.avg, n:p.n, week:p.week})));
+    const vals = plot.filter(p=>p.avg!=null).map(p=>p.avg);
+    let lo = Math.floor(Math.min(GOAL_LO, ...vals) - 1), hi = Math.ceil(Math.max(START_KG, ...vals) + 1);
+    const minSlots = 8, slots = Math.max(plot.length, minSlots);
+    const x = i => L + (slots===1?0:(i/(slots-1))*(W_-L-R));
+    const y = v => T + (hi - v)/(hi - lo)*(H_-T-B);
+    let g = "";
+    for (let v = Math.ceil(lo/5)*5; v <= hi; v += 5){
+      g += `<line x1="${L}" x2="${W_-R}" y1="${y(v)}" y2="${y(v)}" stroke="var(--grid)" stroke-width="1"/>`;
+      g += `<text class="ax" x="${L-6}" y="${y(v)+4}" text-anchor="end">${v}</text>`;
+    }
+    g += `<rect x="${L}" y="${y(GOAL_HI)}" width="${W_-L-R}" height="${y(GOAL_LO)-y(GOAL_HI)}" fill="var(--band)"/>`;
+    g += `<text class="ax" x="${W_-R+4}" y="${(y(GOAL_HI)+y(GOAL_LO))/2+4}">الهدف</text>`;
+    const step = Math.max(1, Math.ceil(plot.length/7));
+    plot.forEach((p,i)=>{ if (i%step===0 || i===plot.length-1) g += `<text class="ax" x="${x(i)}" y="${H_-8}" text-anchor="middle">${p.label}</text>`; });
+    // line segments between consecutive known points
+    let d = "", prev = null;
+    plot.forEach((p,i)=>{ if (p.avg==null) return; d += (prev==null?"M":"L")+x(i).toFixed(1)+" "+y(p.avg).toFixed(1)+" "; prev = i; });
+    g += `<path d="${d}" fill="none" stroke="var(--chart)" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>`;
+    plot.forEach((p,i)=>{ if (p.avg==null) return;
+      g += `<circle cx="${x(i)}" cy="${y(p.avg)}" r="4.5" fill="${p.start?"var(--surface)":"var(--chart)"}" stroke="${p.start?"var(--chart)":"var(--surface)"}" stroke-width="2"/>`; });
+    const li = plot.map(p=>p.avg!=null).lastIndexOf(true);
+    if (li >= 0) g += `<text class="lbl" x="${x(li)+8}" y="${y(plot[li].avg)-8}">${fmt(plot[li].avg)}</text>`;
+    // hit areas
+    const bw = (W_-L-R)/Math.max(1,slots-1);
+    plot.forEach((p,i)=>{ if (p.avg==null) return;
+      g += `<rect class="hit" data-i="${i}" x="${x(i)-bw/2}" y="${T}" width="${bw}" height="${H_-T-B}" fill="transparent"/>`; });
+    const empty = pts.length ? "" : `<text class="ax" x="${(L+W_-R)/2}" y="${y((lo+hi)/2)-8}" text-anchor="middle">اكتب وزنك الصبح في "عادات كل يوم"</text><text class="ax" x="${(L+W_-R)/2}" y="${y((lo+hi)/2)+10}" text-anchor="middle">والمتوسط هيظهر هنا كل أسبوع</text>`;
+    const box = document.getElementById("trkChart");
+    box.innerHTML = `<svg viewBox="0 0 ${W_} ${H_}" role="img" aria-label="متوسط الوزن الأسبوعي">${g}${empty}</svg><div class="tip" hidden></div>`;
+    const tip = box.querySelector(".tip"), svg = box.querySelector("svg");
+    box.querySelectorAll(".hit").forEach(r=>{
+      const show = ()=>{
+        const p = plot[+r.dataset.i];
+        const sx = svg.clientWidth / W_;
+        tip.textContent = p.start ? `البداية: ${START_KG} كجم` : `أسبوع ${p.label}: ${fmt(p.avg)} كجم (${p.n} ${p.n===1?"يوم":"أيام"})`;
+        tip.style.left = (10 + x(+r.dataset.i)*sx)+"px"; tip.style.top = (10 + y(p.avg)*sx)+"px"; tip.hidden = false;
+      };
+      r.addEventListener("mouseenter", show); r.addEventListener("click", show);
+      r.addEventListener("mouseleave", ()=>{ tip.hidden = true; });
+    });
+
+    // table (newest first) with change vs previous measured week
+    let prevAvg = START_KG; const rows = [];
+    series.forEach(p=>{ const ch = p.avg!=null ? p.avg - prevAvg : null; rows.push({p, ch}); if (p.avg!=null) prevAvg = p.avg; });
+    document.getElementById("trkRows").innerHTML = rows.length ? rows.slice().reverse().map(({p,ch})=>
+      `<tr><td>${short(new Date(p.week+"T00:00"))}</td><td>${p.n}</td><td>${p.avg!=null?fmt(p.avg):"—"}</td><td><span dir="ltr">${ch!=null?(ch>0?"+":"")+fmt(ch):"—"}</span></td><td>${statusOf(ch)}</td></tr>`).join("")
+      : `<tr><td colspan="5" style="color:var(--muted)">لسه مفيش أوزان متسجلة.</td></tr>`;
+
+    // plateau note: last two measured weeks both flat or up
+    const chs = rows.filter(r=>r.ch!=null).map(r=>r.ch);
+    const note = document.getElementById("trkNote");
+    if (chs.length >= 2 && chs.slice(-2).every(c=>c > -0.25)){
+      note.innerHTML = `<div class="trk-note"><b>الوزن ثابت أسبوعين.</b> قلّل نص كوباية رز أو نص رغيف في اليوم، وشوف مقاس الوسط كمان: لو بينزل، يبقى بتخس دهون وبتبني عضل.</div>`;
+    } else if (chs.length && chs[chs.length-1] <= -1.3){
+      note.innerHTML = `<div class="trk-note"><b>نزلت أسرع من اللازم الأسبوع ده.</b> لو اتكرر، زوّد نص كوباية رز في اليوم عشان متخسرش عضل. أول أسبوعين طبيعي ينزلوا أسرع بسبب المية.</div>`;
+    } else note.innerHTML = "";
+
+    // waist
+    const wa = state.body.waist || {}, wd = Object.keys(wa).sort();
+    const wi = document.getElementById("waistIn");
+    if (document.activeElement !== wi) wi.value = wa[iso(today)] != null ? wa[iso(today)] : "";
+    document.getElementById("waistInfo").textContent = wd.length
+      ? wd.slice(-4).map(k=>`${short(new Date(k+"T00:00"))}: ${wa[k]} سم`).join(" · ") + (wd.length>1 ? ` · التغيير: ${fmt(wa[wd[wd.length-1]]-wa[wd[0]])} سم` : "")
+      : "بيتسجل بتاريخ النهارده.";
+  }
+
+  let bodyTimer = null;
+  function saveBody(){
+    saveLocal();
+    clearTimeout(bodyTimer);
+    bodyTimer = setTimeout(()=>writeDoc("body/log", {w:state.body.w, waist:state.body.waist}), 700);
+  }
+  function parseNum(v){ v = v.trim().replace(",",".").replace("٫",".").replace(/[٠-٩]/g, c=>"٠١٢٣٤٥٦٧٨٩".indexOf(c)); return v===""?null:(isFinite(+v)?+v:null); }
+
+  /* ---------- Quran: khatma + hifz ---------- */
+  const YUSUF = [
+    [1,6,"رؤيا يوسف"],[7,14,"الإخوة بيتآمروا"],[15,20,"الجُب والبيع"],[21,29,"في بيت العزيز والمراودة"],
+    [30,35,"نسوة المدينة والسجن"],[36,42,"رؤيا صاحبي السجن"],[43,49,"رؤيا الملك"],[50,57,"البراءة والتمكين"],
+    [58,68,"الإخوة جايين مصر وبنيامين"],[69,79,"السقاية في رحل أخيه"],[80,87,"حزن يعقوب"],[88,93,"يوسف بيعرّفهم بنفسه"],
+    [94,101,"لقاء الأسرة وتحقيق الرؤيا"],[102,111,"الخاتمة والعبرة"]
+  ];
+  const HZ = [["t","فهمت التفسير"],["h","حفظت"],["s","سمّعت صح"]];
+  function renderQuran(){
+    const q = state.quran || (state.quran = {page:null, hifz:{}});
+    const pg = q.page, inp = document.getElementById("qPage");
+    if (document.activeElement !== inp) inp.value = pg || "";
+    const pct = pg ? Math.min(100, Math.round(pg/604*100)) : 0;
+    document.getElementById("qBar").style.width = pct+"%";
+    document.getElementById("qPct").textContent = `${pct}%`;
+    if (pg){
+      const left = Math.max(0, 604-pg), days = Math.ceil(left/10);
+      const fin = new Date(today); fin.setDate(fin.getDate()+days);
+      document.getElementById("qInfo").textContent = left ? `فاضل ${left} صفحة · هتختم تقريبًا ${short(fin)}` : "ختمت، ربنا يتقبل. ابدأ ختمة جديدة من صفحة 1.";
+    } else document.getElementById("qInfo").textContent = "اكتب رقم الصفحة بعد ورد النهارده.";
+    const cur = YUSUF.findIndex((_,i)=>!HZ.every(([k])=>(q.hifz[i]||{})[k]));
+    document.getElementById("hRows").innerHTML = YUSUF.map(([a,b,t],i)=>{
+      const st = q.hifz[i]||{};
+      return `<tr class="${i===cur?"cur":""}"><td>${i+1}</td><td>${a}–${b}</td><td>${t}</td>${HZ.map(([k,l])=>
+        `<td><input type="checkbox" class="ck" data-hz="${i}:${k}" aria-label="${l}: ${t}" ${st[k]?"checked":""}></td>`).join("")}</tr>`;
+    }).join("");
+    const done = YUSUF.filter((_,i)=>HZ.every(([k])=>(q.hifz[i]||{})[k])).length;
+    const vdone = YUSUF.filter((_,i)=>(q.hifz[i]||{}).h).reduce((n,[a,b])=>n+(b-a+1),0);
+    document.getElementById("hInfo").textContent = cur<0 ? "خلّصت السورة كلها، ما شاء الله" : `المقطع ${cur+1} من 14 · حفظت ${vdone} من 111 آية`;
+  }
+  /* ===================== app: screens, today, training, food ===================== */
+  const CHEV = `<svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>`;
+  const ICO = {
+    sun:`<svg class="gico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2.5v2M12 19.5v2M4.6 4.6l1.4 1.4M18 18l1.4 1.4M2.5 12h2M19.5 12h2M4.6 19.4L6 18M18 6l1.4-1.4"/></svg>`,
+    noon:`<svg class="gico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M3 17.5h18"/><path d="M6.5 17.5a5.5 5.5 0 0 1 11 0"/><path d="M12 7.5v-3M5.3 10.3L3.6 8.6M18.7 10.3l1.7-1.7"/></svg>`,
+    moon:`<svg class="gico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"/></svg>`,
+    timer:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="13" r="7.5"/><path d="M12 9.5V13l2.5 1.5M9.5 2.5h5"/></svg>`
+  };
+  const GROUPS = [["الصبح","sun"],["الضهر والعصر","noon"],["بالليل","moon"]];
+
+  let current = ORDER[today.getDay()];
+  let screen = "today", seg = "weight";
+  const curDay = () => DAYS.find(x=>x.id===current);
+  const curDate = () => iso(dateOf(current));
+  const checksOf = date => state.checks[date] || {};
+  const isToday = () => curDate() === iso(today);
+
+  function countItems(day){
+    let n = HABITS.length + PRAYERS.length + day.tl.length;
+    if (day.wu) n += Array.isArray(day.wu) ? day.wu.length : 1;
+    n += day.ex.length + (day.ex.length && day.id!=="thu" ? 1 : 0);
+    n += day.abs.length;
+    (day.routines||[]).forEach(r=>{ n += r.items.length; });
+    if (day.cd) n++;
+    return n;
+  }
+  function doneCount(day, date){
+    const c = state.checks[date || iso(dateOf(day.id))] || {};
+    return Object.keys(c).filter(k=>c[k] && !/^m\d$/.test(k)).length;
+  }
+  function mosqueCount(date){
+    const c = state.checks[date] || {};
+    return Object.keys(c).filter(k=>c[k] && /^m\d$/.test(k)).length;
+  }
+
+  /* ---------- times: "5:50–7:10" in a 12-hour day → minutes since midnight, in order ---------- */
+  const toMin = s => { const m = String(s).match(/(\d{1,2}):(\d{2})/); return m ? (+m[1] % 12) * 60 + +m[2] : null; };
+  function timed(day){
+    let last = -1;
+    return day.tl.map((it, i) => {
+      const parts = String(it[0]).split("–");
+      let s = toMin(parts[0]), e = parts[1] != null ? toMin(parts[1]) : null;
+      if (s != null){
+        while (s < last - 45) s += 720;
+        last = s;
+        if (e != null){ e += Math.floor(s / 720) * 720; while (e <= s) e += 720; }
+      }
+      const g = s == null || s < 720 ? 0 : s < 1020 ? 1 : 2;
+      return {i, s, e, g, it};
+    });
+  }
+  function nowNext(day){
+    const T = timed(day), c = checksOf(curDate());
+    const d = new Date(), now = d.getHours()*60 + d.getMinutes();
+    let cur = null;
+    T.forEach((x, k) => {
+      if (x.s == null || x.s > now) return;
+      const nextS = (T.slice(k+1).find(y => y.s != null) || {}).s;
+      const end = x.e != null ? x.e : Math.min(x.s + 30, nextS != null ? nextS : x.s + 30);
+      if (now < end && (!cur || x.s >= cur.s)) cur = x;
+    });
+    const next = T.find(x => x.s != null && x.s > now && !c["t"+x.i]);
+    return {cur, next};
+  }
+
+  /* ---------- small builders ---------- */
+  const box = id => `<input type="checkbox" class="ck" data-ck="${id}" id="ck-${id}">`;
+  function menuList(m){ return `<ul class="menu">${m.map(x=>`<li>${esc(BREAD[x]||x)}</li>`).join("")}</ul>`; }
+  function recipeCards(keys){
+    return (keys||[]).map(k=>RECIPES[k]).filter(Boolean).map(r=>
+      `<div class="rc"><div class="rc-h"><b>${r.t}</b><span>${r.time}</span></div><ol>${r.steps.map(x=>`<li>${esc(x)}</li>`).join("")}</ol>${r.tip?`<p class="rc-tip">${esc(r.tip)}</p>`:""}</div>`).join("");
+  }
+  const hasWorkout = day => day.ex.length || (day.routines||[]).length || day.wu || day.cd;
+
+  /* ===================== TODAY ===================== */
+  function heroHTML(){
+    const day = curDay(), date = curDate();
+    const total = countItems(day), done = Math.min(total, doneCount(day, date));
+    const pct = Math.round(done / total * 100), circ = 2 * Math.PI * 32;
+    let lines = "";
+    if (isToday()){
+      const {cur, next} = nowNext(day);
+      if (cur) lines += `<div class="nowline"><span class="k">دلوقتي</span><span class="v">${esc(cur.it[2])}</span><span class="t">${esc(cur.it[0])}</span></div>`;
+      if (next) lines += `<div class="nowline"><span class="k">الجاي</span><span class="v">${esc(next.it[2])}</span><span class="t">${esc(next.it[0])}</span></div>`;
+      if (!cur && !next) lines += `<div class="nowline"><span class="v">خلّصت جدول النهارده</span></div>`;
+    } else {
+      lines += `<div class="nowline"><span class="v">${esc(day.d)} ${short(dateOf(current))}</span></div>`;
+    }
+    return `<div class="card hero" id="hero">
+      <div class="ring" aria-label="خلّصت ${done} من ${total}"><svg viewBox="0 0 76 76"><circle cx="38" cy="38" r="32" fill="none" stroke="rgba(255,255,255,.25)" stroke-width="7"/><circle cx="38" cy="38" r="32" fill="none" stroke="#FFFFFF" stroke-width="7" stroke-linecap="round" stroke-dasharray="${circ}" stroke-dashoffset="${circ*(1-pct/100)}"/></svg><span class="rv">${pct}%</span></div>
+      <div class="hero-txt"><div class="hero-badge">${esc(day.badge)}</div>${lines}</div>
+      <p class="hero-note">${esc(day.note)}</p></div>`;
+  }
+
+  function renderToday(){
+    const day = curDay(), date = curDate(), c = checksOf(date);
+    let h = heroHTML() + soonHTML() + todoHTML() + moneyHTML();
+    const wv = (state.body.w||{})[date];
+    h += `<div class="card"><div class="card-h"><h2>عادات اليوم</h2><span class="small" data-cnt="${HABITS.map(x=>x[0]).join(",")}"></span></div>
+      <div class="weighrow"><label for="wIn">وزنك الصبح</label><input class="field" id="wIn" inputmode="decimal" placeholder="كجم" value="${wv!=null?esc(wv):""}"><span class="small">كجم</span></div>
+      <div class="chips">${HABITS.map(([id,t])=>`<label class="hchip" data-row="${id}"><input type="checkbox" data-ck="${id}" id="ck-${id}"><span class="dot"></span><span>${t}</span></label>`).join("")}</div></div>`;
+    h += `<div class="card"><div class="card-h"><h2>الصلاة</h2><span class="small" id="mDay"></span></div>
+      <div class="prayers">${PRAYERS.map(([id,t])=>`<button type="button" class="pr" data-pr="${id.slice(1)}"><span>${t}</span><span class="st"></span></button>`).join("")}</div>
+      <div class="legend"><span>دوسة: صليت · دوستين: في المسجد <b>★</b></span><span id="mWeek"></span></div></div>`;
+
+    // one schedule for the whole day, in time order
+    const T = timed(day).slice().sort((x, y) => (x.s == null ? -1 : x.s) - (y.s == null ? -1 : y.s) || x.i - y.i);
+    const nowI = isToday() ? (nowNext(day).cur || {}).i : -1;
+    h += `<div class="card sched"><div class="card-h"><h2>جدول اليوم</h2><span class="small" data-cnt="${T.map(x=>"t"+x.i).join(",")}"></span></div><ol class="tl">${
+      T.map(({i, it}) => {
+        const [t,k,a,b,m,r] = it, id = "t"+i;
+        let extra = "";
+        if (m) extra += `<details class="more"><summary>${r&&r.length?"المكونات والوصفة":"المكونات"}</summary>${menuList(m)}${recipeCards(r)}</details>`;
+        if (k === "gym" && hasWorkout(day)) extra += `<button type="button" class="golink" data-go="train">افتح التمرين ←</button>`;
+        if (k === "deen" && /حفظ/.test(a)) extra += `<button type="button" class="golink" data-go="progress" data-seg="quran">افتح الحفظ ←</button>`;
+        if (k === "deen" && /ورد/.test(a)) extra += `<button type="button" class="golink" data-go="progress" data-seg="quran">سجّل الصفحة ←</button>`;
+        return `<li data-row="${id}" class="${i===nowI?"now":""}">${box(id)}<span class="t">${esc(t)}</span><div class="body">
+          <label for="ck-${id}"><span class="tdot d-${k}"></span><span class="ttl">${esc(a)}</span></label>${b?`<span class="sub">${esc(b)}</span>`:""}${extra}</div></li>`;
+      }).join("")}</ol></div>`;
+    document.getElementById("scr-today").innerHTML = h;
+    refreshMarks();
+  }
+
+  /* ===================== TRAINING ===================== */
+  function restSec(e){
+    const r = e.rest || "";
+    let m = r.match(/(\d+)(?:–\d+)?\s*د/); if (m) return +m[1] * 60;
+    m = r.match(/(\d+)(?:–\d+)?\s*ث/); if (m) return +m[1];
+    return null;
+  }
+  const fmtSec = s => `${Math.floor(s/60)}:${String(s%60).padStart(2,"0")}`;
+  function setsShort(e){
+    if (e.k === "main" || e.k === "comp") return `3 × ${e.reps}`;
+    if (e.k === "iso") return `${e.sets||2} × ${e.reps}`;
+    return e.sets || "";
+  }
+  function exCard(e, id){
+    let pills = "", warm = "", log = "";
+    if (e.k === "main" || e.k === "comp"){
+      pills = `<span class="pill sets">3 مجموعات × ${esc(e.reps)}</span><span class="pill">2 تقيلة + 1 أخف 10%</span><span class="pill">سايب 1–2 عدة</span>`;
+      warm = `<p class="warm"><b>تسخين:</b> ${e.k==="main"?WARM_MAIN:WARM_COMP}</p>`;
+    } else if (e.k === "iso"){
+      pills = `<span class="pill sets">${e.sets||2} مجموعات × ${esc(e.reps)}</span><span class="pill">لقرب الفشل</span>${e.partial?`<span class="pill">آخر مجموعة: + 4 أنصاف عدات</span>`:""}`;
+      warm = `<p class="warm"><b>تسخين:</b> ${WARM_ISO}</p>`;
+    } else pills = `<span class="pill sets">${esc(e.sets)}</span>`;
+    if (e.rest) pills += `<span class="pill">${esc(e.rest)}</span>`;
+    const date = curDate();
+    if (e.k === "main" || e.k === "comp" || e.k === "iso" || e.log){
+      const s = slug(e.n), lg = state.weights[s] || {};
+      const prev = Object.keys(lg).filter(k=>k<date && lg[k]!=="" && lg[k]!=null).sort().pop();
+      log = `<div class="logrow"><label for="w-${s}">أتقل مجموعة</label><input id="w-${s}" data-w="${s}" inputmode="decimal" placeholder="كجم" value="${lg[date]!=null?esc(lg[date]):""}"><span class="last">${prev?`المرة اللي فاتت (${short(new Date(prev+"T00:00"))}): ${esc(lg[prev])} كجم`:""}</span></div>`;
+    }
+    const q = EQUIP[e.n], mu = MUSCLES[e.n], gr = GRIP[e.n];
+    const kv = (q?`<dt>الجهاز</dt><dd>${equipChip(e.n)}</dd>`:"") + (mu?`<dt>العضلة</dt><dd>${esc(mu[0])}${mu[1]?` <span class="muted">· بيساعد: ${esc(mu[1])}</span>`:""}</dd>`:"") + (gr?`<dt>المسكة</dt><dd>${esc(gr[1])}</dd>`:"");
+    const rs = restSec(e);
+    const act = rs ? `<div class="actrow"><button type="button" class="btn primary" data-rest="${rs}" data-name="${esc(e.n)}">${ICO.timer} ابدأ الراحة ${fmtSec(rs)}</button></div>` : "";
+    const sub = [setsShort(e), e.rest].filter(Boolean).join(" · ");
+    return `<details class="exc" data-row="${id}"><summary>${box(id)}<span class="nm"><span class="ttl en">${esc(e.n)}</span><small>${esc(sub)}</small></span>${CHEV}</summary>
+      <div class="inner"><div class="pills">${pills}</div>${kv?`<dl class="kv">${kv}</dl>`:""}${warm}<p class="cue">${esc(e.c)}</p>${log}${act}${howTo(e.n)}</div></details>`;
+  }
+  function phaseCard(id, p){
+    return `<details class="exc" data-row="${id}"><summary>${box(id)}<span class="nm"><span class="ttl">${p.title}</span><small>${p.time}</small></span>${CHEV}</summary>
+      <div class="inner phase-list"><ul class="plain">${p.items.map(([a,b,m])=>`<li><b>${a}</b>: ${b}${m && MEDIA[slug(m)] ? howTo(m) : ""}</li>`).join("")}</ul></div></details>`;
+  }
+  function trainIds(day){
+    const ids = [];
+    (day.routines||[]).forEach(r => r.items.forEach((_,i)=>ids.push(r.id+"-"+i)));
+    const wus = day.wu ? (Array.isArray(day.wu) ? day.wu : [day.wu]) : [];
+    if (wus[0]) ids.push("wu");
+    day.ex.forEach((_,i)=>ids.push("e"+i));
+    if (day.ex.length && day.id!=="thu") ids.push("tr");
+    day.abs.forEach((_,i)=>ids.push("a"+i));
+    wus.slice(1).forEach((_,i)=>ids.push("wu"+(i+2)));
+    if (day.cd) ids.push("cd");
+    return ids;
+  }
+  function renderTrain(){
+    const day = curDay(), el = document.getElementById("scr-train");
+    if (!hasWorkout(day)){
+      el.innerHTML = `<div class="card"><p class="empty">مفيش تمرين ${isToday()?"النهارده":"اليوم ده"}. يوم راحة، والمشي اللي في الجدول كفاية.</p></div>`; return;
+    }
+    const ids = trainIds(day);
+    const gymT = day.tl.find(t => t[1]==="gym") || [];
+    let h = `<div class="card"><div class="wo-head"><div><h2 class="en">${esc(day.k)}</h2><div class="small">${esc(day.badge)}</div></div><span class="small" data-cnt="${ids.join(",")}"></span></div>
+      <div class="bar"><i id="trBar"></i></div>${gymT[0]?`<p class="small" style="margin:8px 0 0">المعاد: <span class="num" dir="ltr">${esc(gymT[0])}</span></p>`:""}</div>`;
+    (day.routines||[]).forEach(r => {
+      h += `<h3 class="sect-title">${r.title} · ${r.time}</h3>` + r.items.map((e,i)=>exCard(Object.assign({k:"hold"}, e), r.id+"-"+i)).join("");
+    });
+    const wus = day.wu ? (Array.isArray(day.wu) ? day.wu : [day.wu]) : [];
+    if (wus[0]) h += `<h3 class="sect-title">الإحماء</h3>` + phaseCard("wu", W[wus[0]]);
+    if (day.ex.length){
+      h += `<h3 class="sect-title">التمارين</h3>` + day.ex.map((e,i)=>exCard(e, "e"+i)).join("");
+      if (day.id !== "thu") h += exCard(TREAD, "tr");
+    }
+    if (day.abs.length) h += `<h3 class="sect-title">البطن · 8–10 دقايق</h3>` + day.abs.map((e,i)=>exCard(Object.assign({k:"hold", rest:"راحة 45 ث"}, e), "a"+i)).join("");
+    wus.slice(1).forEach((w,i)=>{ h += `<h3 class="sect-title">قبل الماتش</h3>` + phaseCard("wu"+(i+2), W[w]); });
+    if (day.cd) h += `<h3 class="sect-title">في الآخر</h3>` + phaseCard("cd", C[day.cd]);
+    el.innerHTML = h;
+    refreshMarks();
+    const c = checksOf(curDate());
+    const first = [...el.querySelectorAll("details.exc")].find(d => !c[d.dataset.row]);
+    if (first) first.open = true;
+  }
+  function advanceFrom(id){
+    const el = document.getElementById("scr-train");
+    const cards = [...el.querySelectorAll("details.exc")], c = checksOf(curDate());
+    const k = cards.findIndex(d => d.dataset.row === id); if (k < 0) return;
+    cards[k].open = false;
+    const nx = cards.slice(k+1).find(d => !c[d.dataset.row]);
+    if (nx){ nx.open = true; setTimeout(()=>nx.scrollIntoView({behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block:"start"}), 60); }
+  }
+
+  /* ---------- rest timer ---------- */
+  const TM = {end:0, total:0, iv:null, ctx:null, lock:null, hideT:null};
+  const tEl = document.getElementById("timer");
+  function startTimer(sec, name){
+    clearTimeout(TM.hideT);
+    TM.total = sec*1000; TM.end = Date.now() + TM.total;
+    try { TM.ctx = TM.ctx || new (window.AudioContext||window.webkitAudioContext)(); TM.ctx.resume && TM.ctx.resume(); } catch(e){}
+    try { navigator.wakeLock && navigator.wakeLock.request("screen").then(l=>{ TM.lock = l; }).catch(()=>{}); } catch(e){}
+    tEl.classList.remove("end"); tEl.hidden = false;
+    document.querySelector("#tLbl b").textContent = "راحة";
+    document.querySelector("#tLbl span").textContent = name;
+    clearInterval(TM.iv); TM.iv = setInterval(tick, 250); tick();
+  }
+  function tick(){
+    const rem = TM.end - Date.now();
+    if (rem <= 0) return finishTimer();
+    document.getElementById("tVal").textContent = fmtSec(Math.ceil(rem/1000));
+    document.getElementById("tBar").style.width = (100 - rem/TM.total*100) + "%";
+  }
+  function beep(){
+    const ctx = TM.ctx; if (!ctx) return;
+    [0, .35, .7].forEach(t => {
+      try { const o = ctx.createOscillator(), g = ctx.createGain(); o.frequency.value = 880; o.connect(g); g.connect(ctx.destination);
+        g.gain.setValueAtTime(.0001, ctx.currentTime+t); g.gain.exponentialRampToValueAtTime(.35, ctx.currentTime+t+.02); g.gain.exponentialRampToValueAtTime(.0001, ctx.currentTime+t+.25);
+        o.start(ctx.currentTime+t); o.stop(ctx.currentTime+t+.27); } catch(e){}
+    });
+  }
+  function finishTimer(){
+    clearInterval(TM.iv);
+    document.getElementById("tVal").textContent = "0:00";
+    document.getElementById("tBar").style.width = "100%";
+    document.querySelector("#tLbl b").textContent = "يلا المجموعة الجاية";
+    tEl.classList.add("end");
+    try { navigator.vibrate && navigator.vibrate([300,150,300,150,300]); } catch(e){}
+    beep();
+    TM.hideT = setTimeout(stopTimer, 6000);
+  }
+  function stopTimer(){
+    clearInterval(TM.iv); clearTimeout(TM.hideT); tEl.hidden = true;
+    try { TM.lock && TM.lock.release(); } catch(e){} TM.lock = null;
+  }
+  document.getElementById("tPlus").addEventListener("click", ()=>{
+    if (tEl.classList.contains("end")){ startTimer(15, document.querySelector("#tLbl span").textContent); return; }
+    TM.end += 15000; TM.total += 15000; tick();
+  });
+  document.getElementById("tStop").addEventListener("click", stopTimer);
+
+  /* ===================== FOOD ===================== */
+  function renderFood(){
+    const day = curDay();
+    const meals = timed(day).filter(x => x.it[1] === "food");
+    let h = `<div class="card"><div class="card-h"><h2>أكل ${isToday()?"النهارده":"اليوم ده"}</h2><span class="small" data-cnt="${meals.map(x=>"t"+x.i).join(",")}"></span></div>
+      <p class="small" style="margin:0">حوالي 2100–2200 سعر و160 جم بروتين. علّم على كل وجبة لما تاكلها.</p></div>`;
+    meals.forEach(({i, it}) => {
+      const [t,,a,b,m,r] = it, id = "t"+i;
+      const rc = recipeCards(r);
+      h += `<div class="card" data-row="${id}"><div class="card-h" style="margin-bottom:4px"><label for="ck-${id}" style="display:flex;align-items:center;gap:10px;cursor:pointer">${box(id)}<span><span class="ttl" style="font-weight:700">${esc(a)}</span>${b?`<span class="sub">${esc(b)}</span>`:""}</span></label><span class="small num" dir="ltr">${esc(t)}</span></div>
+        ${m?menuList(m):""}${rc?`<details class="more"><summary>طريقة التحضير</summary>${rc}</details>`:""}</div>`;
+    });
+    h += `<button type="button" class="btn" data-go="ref" data-ref="food" style="align-self:flex-start">البدائل ونصايح الأكل ←</button>`;
+    document.getElementById("scr-food").innerHTML = h;
+    refreshMarks();
+  }
+
+  /* ===================== PROGRESS: week ===================== */
+  function renderWeek(){
+    const ws = weekStart(), we = new Date(ws); we.setDate(we.getDate()+6);
+    document.getElementById("wkTitle").textContent = weekOffset === 0 ? "الأسبوع ده" : `${short(ws)} – ${short(we)}`;
+    document.getElementById("wkDays").innerHTML = DAYS.map(d => {
+      const dt = iso(dateOf(d.id)), pct = Math.min(100, Math.round(doneCount(d, dt)/countItems(d)*100));
+      return `<button type="button" class="wkday${dt===iso(today)?" today":""}" data-day="${d.id}"><span><b>${d.d}</b><small>${esc(d.k)}</small></span><span class="bar" style="margin:0"><i style="width:${pct}%"></i></span><span class="pct">${pct}%</span></button>`;
+    }).join("");
+    document.getElementById("wkMosque").textContent = `المسجد: ${ORDER.reduce((s,id)=>s+mosqueCount(iso(dateOf(id))),0)} من 35`;
+  }
+
+  /* ===================== marks: update every visible checkbox and counter ===================== */
+
+  /* ===================== TO-DO: per-day tasks, unfinished ones move to today ===================== */
+  const DAYNAME = id => (DAYS.find(d=>d.id===id)||{}).d || "";
+  function dayLabel(dateStr){
+    const d = new Date(dateStr+"T00:00");
+    const diff = Math.round((d - today) / 86400000);
+    if (diff === 0) return "النهارده";
+    if (diff === -1) return "امبارح";
+    if (diff === 1) return "بكرة";
+    return `${DAYNAME(ORDER[d.getDay()])} ${short(d)}`;
+  }
+  function rollover(){
+    const t = iso(today); let carried = [];
+    Object.keys(state.todos).sort().forEach(d => {
+      if (d >= t) return;
+      const list = state.todos[d] || [], keep = [];
+      list.forEach(x => { if (x.done) keep.push(x); else carried.push(Object.assign({}, x, {from: x.from || d})); });
+      if (keep.length) state.todos[d] = keep; else delete state.todos[d];
+    });
+    if (carried.length){ state.todos[t] = carried.concat(state.todos[t] || []); saveLocal(); }
+  }
+  function todoHTML(){
+    const date = curDate(), list = state.todos[date] || [];
+    const done = list.filter(x=>x.done).length;
+    const past = date < iso(today);
+    const items = list.map(x => `<li class="td${x.done?" is-done":""}" data-tid="${x.id}">
+        <input type="checkbox" class="ck" data-todo="${x.id}" id="td-${x.id}" ${x.done?"checked":""}>
+        <label for="td-${x.id}"><span class="ttl">${esc(x.text)}</span>${x.from?`<span class="sub">مترحّلة من ${esc(dayLabel(x.from))}</span>`:""}</label>
+        <button type="button" class="tdx" data-deltodo="${x.id}" aria-label="امسح المهمة: ${esc(x.text)}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button></li>`).join("");
+    return `<div class="card" id="todos"><div class="card-h"><h2>مهام ${isToday()?"النهارده":dayLabel(date)}</h2><span class="small">${list.length?`${done}/${list.length}`:""}</span></div>
+      ${list.length?`<ul class="tdl">${items}</ul>`:`<p class="small" style="margin:0 0 10px">${past?"مفيش مهام متسجلة لليوم ده.":"مفيش مهام لسه. اكتب أول مهمة تحت."}</p>`}
+      ${past?`<p class="small" style="margin:8px 0 0">المهام اللي مخلصتش بتترحّل للنهارده لوحدها.</p>`:`<form class="tdform" id="todoForm" autocomplete="off"><input class="field" id="todoIn" maxlength="140" placeholder="ضيف مهمة ${isToday()?"للنهارده":"لـ"+dayLabel(date)}" aria-label="مهمة جديدة"><button class="btn primary" type="submit">ضيف</button></form>`}
+      </div>`;
+  }
+  function redrawTodos(keepFocus){
+    const el = document.getElementById("todos"); if (!el) return;
+    el.outerHTML = todoHTML();
+    if (keepFocus){ const i = document.getElementById("todoIn"); if (i) i.focus(); }
+  }
+  document.addEventListener("submit", e => {
+    if (e.target.id !== "todoForm") return;
+    e.preventDefault();
+    const inp = document.getElementById("todoIn"), text = inp.value.trim(); if (!text) return;
+    const date = curDate();
+    state.todos[date] = (state.todos[date] || []).concat({id: Date.now().toString(36) + Math.random().toString(36).slice(2,5), text, done:false});
+    saveLocal(); redrawTodos(true);
+  });
+  document.addEventListener("change", e => {
+    const id = e.target.dataset && e.target.dataset.todo; if (!id) return;
+    const list = state.todos[curDate()] || [], x = list.find(t=>t.id===id); if (!x) return;
+    x.done = e.target.checked; saveLocal(); redrawTodos(false);
+  });
+  document.addEventListener("click", e => {
+    const b = e.target.closest("[data-deltodo]"); if (!b) return;
+    const date = curDate();
+    state.todos[date] = (state.todos[date] || []).filter(t=>t.id!==b.dataset.deltodo);
+    if (!state.todos[date].length) delete state.todos[date];
+    saveLocal(); redrawTodos(false);
+  });
+  rollover();
+
+  function refreshMarks(){
+    const date = curDate(), c = checksOf(date);
+    document.querySelectorAll("main [data-ck]").forEach(el => {
+      const on = !!c[el.dataset.ck]; el.checked = on;
+      const row = el.closest("[data-row]"); if (row){ row.classList.toggle("is-done", on); if (row.classList.contains("hchip")) row.classList.toggle("on", on); }
+    });
+    document.querySelectorAll("main [data-cnt]").forEach(el => {
+      const ids = el.dataset.cnt.split(","); el.textContent = `${ids.filter(id=>c[id]).length}/${ids.length}`;
+    });
+    document.querySelectorAll(".pr").forEach(b => {
+      const n = b.dataset.pr, p = !!c["p"+n], m = !!c["m"+n];
+      b.classList.toggle("done", p && !m); b.classList.toggle("mosque", m);
+      b.querySelector(".st").textContent = m ? "★ المسجد" : p ? "✓ صليت" : "—";
+      b.setAttribute("aria-pressed", p ? "true" : "false");
+    });
+    const md = document.getElementById("mDay"), mw = document.getElementById("mWeek");
+    if (md){ md.textContent = `${PRAYERS.filter(([id])=>c[id]).length}/5`; mw.textContent = `المسجد الأسبوع ده: ${ORDER.reduce((s,id)=>s+mosqueCount(iso(dateOf(id))),0)} من 35`; }
+    const hero = document.getElementById("hero"); if (hero) hero.outerHTML = heroHTML();
+    const tb = document.getElementById("trBar");
+    if (tb){ const ids = trainIds(curDay()); tb.style.width = Math.round(ids.filter(id=>c[id]).length/ids.length*100) + "%"; }
+  }
+
+  /* ===================== navigation ===================== */
+  /* pages live inside 5 tabs; health and more have a sub navigation */
+  const PAGES = {
+    today:{scr:"today",grp:"today"}, train:{scr:"train",grp:"health",t:"التمرين"}, food:{scr:"food",grp:"health",t:"الأكل"},
+    weight:{scr:"progress",seg:"weight",grp:"health",t:"الوزن"}, money:{scr:"money",grp:"money"}, rem:{scr:"rem",grp:"rem"},
+    quran:{scr:"progress",seg:"quran",grp:"more",t:"القرآن"}, week:{scr:"progress",seg:"week",grp:"more",t:"الأسبوع"}, ref:{scr:"ref",grp:"more",t:"المرجع والإعدادات"}
+  };
+  const GROUPS_NAV = {today:{t:"النهارده",p:["today"]}, health:{t:"الصحة",p:["train","food","weight"]}, money:{t:"الفلوس",p:["money"]}, rem:{t:"التذكيرات",p:["rem"]}, more:{t:"المزيد",p:["quran","week","ref"]}};
+  const SCREENS = ["today","train","food","progress","ref","money","rem"];
+  let page = "today";
+  const lastIn = LS.get("lb:last") || {};
+  function updateDayNav(){
+    const day = curDay(), dt = dateOf(current);
+    document.getElementById("dayName").textContent = day.d;
+    document.getElementById("dayDate").textContent = isToday() ? `النهارده · ${short(dt)}` : `${short(dt)} · ارجع للنهارده`;
+    document.getElementById("dayLbl").classList.toggle("not-today", !isToday());
+    document.getElementById("dayNav").hidden = !["today","train","food"].includes(page);
+  }
+  function renderScreen(){
+    updateDayNav();
+    if (screen === "today") renderToday();
+    else if (screen === "train") renderTrain();
+    else if (screen === "food") renderFood();
+    else if (screen === "progress"){ if (seg==="week") renderWeek(); else if (seg==="quran") renderQuran(); else renderTracker(); }
+    else if (screen === "rem") renderRem();
+    else if (screen === "money") showMoney();
+    updateRemBadge();
+  }
+  function go(name, opts){
+    opts = opts || {};
+    if (name === "progress") name = opts.seg || "weight";
+    if (!PAGES[name]) name = "today";
+    const P = PAGES[name], G = GROUPS_NAV[P.grp];
+    page = name; screen = P.scr;
+    SCREENS.forEach(s => { const el = document.getElementById("scr-"+s); el.hidden = s !== screen; if (s !== screen && ["today","train","food"].includes(s)) el.innerHTML = ""; });
+    document.querySelector("main").classList.toggle("full", screen === "money");
+    document.querySelectorAll(".tabbtn").forEach(b => b.setAttribute("aria-current", b.dataset.tab===P.grp ? "page" : "false"));
+    document.getElementById("scrTitle").textContent = G.t;
+    const sn = document.getElementById("subnav");
+    sn.hidden = G.p.length < 2;
+    sn.innerHTML = G.p.map(k => `<button type="button" data-page="${k}" aria-current="${k===name?"page":"false"}">${PAGES[k].t}</button>`).join("");
+    if (P.seg) setSeg(P.seg, true);
+    renderScreen();
+    lastIn[P.grp] = name; LS.set("lb:last", lastIn);
+    LS.set("fit:screen", name);
+    try { history.replaceState(null, "", "#"+name); } catch(e){}
+    window.scrollTo({top:0});
+    if (opts.ref){ const d = document.querySelector(`details.ref[data-ref="${opts.ref}"]`); if (d){ d.open = true; setTimeout(()=>d.scrollIntoView({block:"start"}), 50); } }
+  }
+  function setSeg(name){
+    seg = name;
+    document.querySelectorAll("[data-pane]").forEach(p => p.hidden = p.dataset.pane !== name);
+  }
+  function shiftDay(n){
+    let k = ORDER.indexOf(current) + n;
+    if (k < 0){ weekOffset--; k = 6; } else if (k > 6){ weekOffset++; k = 0; }
+    current = ORDER[k]; renderScreen();
+  }
+  document.getElementById("prevDay").addEventListener("click", ()=>shiftDay(-1));
+  document.getElementById("nextDay").addEventListener("click", ()=>shiftDay(1));
+  document.getElementById("dayLbl").addEventListener("click", ()=>{ weekOffset = 0; current = ORDER[today.getDay()]; renderScreen(); });
+  document.querySelector(".tabbar").addEventListener("click", e => { const b = e.target.closest(".tabbtn"); if (!b) return; const g = b.dataset.tab; go(lastIn[g] && GROUPS_NAV[g].p.includes(lastIn[g]) ? lastIn[g] : GROUPS_NAV[g].p[0]); });
+  document.getElementById("subnav").addEventListener("click", e => { const b = e.target.closest("[data-page]"); if (b) go(b.dataset.page); });
+
+  /* ===================== MONEY (the former masrouf app, embedded) ===================== */
+  const NUMF = new Intl.NumberFormat("ar-EG-u-nu-latn", {maximumFractionDigits:0});
+  let moneyLoaded = false, moneyQueue = null;
+  function sizeMoney(){
+    const f = document.getElementById("moneyFrame"), top = document.querySelector(".topbar").offsetHeight;
+    f.style.height = Math.max(320, window.innerHeight - top) + "px";
+  }
+  function showMoney(){
+    const f = document.getElementById("moneyFrame");
+    sizeMoney();
+    if (!moneyLoaded){
+      moneyLoaded = true;
+      f.addEventListener("load", ()=>{ syncFrameTheme(); if (moneyQueue){ const q = moneyQueue; moneyQueue = null; setTimeout(()=>{ try{ f.contentWindow.lbAdd && f.contentWindow.lbAdd(q); }catch(e){} }, 300); } });
+      f.src = "money/index.html";
+    }
+  }
+  function moneyAdd(type){
+    go("money");
+    const f = document.getElementById("moneyFrame");
+    try { if (f.contentWindow && f.contentWindow.lbAdd && f.contentDocument.readyState === "complete"){ f.contentWindow.lbAdd(type); return; } } catch(e){}
+    moneyQueue = type;
+  }
+  function syncFrameTheme(){
+    try {
+      const d = document.getElementById("moneyFrame").contentDocument; if (!d) return;
+      const t = document.documentElement.getAttribute("data-theme");
+      if (t) d.documentElement.setAttribute("data-theme", t); else d.documentElement.removeAttribute("data-theme");
+    } catch(e){}
+  }
+  function moneySnap(){
+    try { return JSON.parse(localStorage.getItem("masrouf-data") || "null"); } catch(e){ return null; }
+  }
+  function moneyHTML(){
+    if (!isToday()) return "";
+    const d = moneySnap(), mk = `${today.getFullYear()}-${String(today.getMonth()+1).padStart(2,"0")}`;
+    let body;
+    if (d && Array.isArray(d.entries) && d.entries.length){
+      const t0 = today.getTime(), t1 = t0 + 86400000;
+      const out = d.entries.filter(e=>e.type!=="in");
+      const todaySpent = out.filter(e=>e.ts>=t0 && e.ts<t1).reduce((a,e)=>a+(+e.amount||0),0);
+      const month = d.entries.filter(e=>e.month===mk);
+      const spent = month.filter(e=>e.type!=="in").reduce((a,e)=>a+(+e.amount||0),0);
+      const inc = month.filter(e=>e.type==="in").reduce((a,e)=>a+(+e.amount||0),0);
+      body = `<div class="mini"><div class="cell sp"><div class="v">${NUMF.format(todaySpent)}</div><div class="l">صرفت النهارده</div></div>
+        <div class="cell"><div class="v">${NUMF.format(spent)}</div><div class="l">${inc?`صرفت الشهر ده من ${NUMF.format(inc)}`:"صرفت الشهر ده"}</div></div></div>`;
+    } else body = `<p class="small" style="margin:0">لسه مفيش مصاريف متسجلة. سجّل أول مصروف وهتلاقي ملخصه هنا كل يوم.</p>`;
+    return `<div class="card"><div class="card-h"><h2>الفلوس</h2><button type="button" class="golink" data-page-go="money" style="margin:0">افتح ←</button></div>${body}
+      <div class="actrow" style="margin-top:10px"><button type="button" class="btn primary" data-money-add="out">سجّل مصروف</button><button type="button" class="btn" data-money-add="in">سجّل دخل</button></div></div>`;
+  }
+  document.addEventListener("click", e => {
+    const a = e.target.closest("[data-money-add]"); if (a){ moneyAdd(a.dataset.moneyAdd); return; }
+    const g = e.target.closest("[data-page-go]"); if (g){ go(g.dataset.pageGo); }
+  });
+  window.addEventListener("resize", ()=>{ if (screen === "money") sizeMoney(); });
+
+  /* ===================== REMINDERS ===================== */
+  const RCATS = {car:["العربية","#3550F0"], home:["البيت","#0E9F8E"], health:["الصحة","#D9468F"], kid:["أنس","#7B6CF0"], bills:["فواتير واشتراكات","#0FA37F"], other:["تانية","#8A93AA"]};
+  const UNITS = {d:["يوم","أيام"], w:["أسبوع","أسابيع"], m:["شهر","شهور"], y:["سنة","سنين"]};
+  const TEMPLATES = [
+    {title:"تغيير زيت العربية", cat:"car", n:4, u:"m"},
+    {title:"تغيير شمعة فلتر المية", cat:"home", n:3, u:"m"},
+    {title:"ترخيص العربية", cat:"car", n:1, u:"y"},
+    {title:"تأمين العربية", cat:"car", n:1, u:"y"},
+    {title:"تجديد باقة النت", cat:"bills", n:1, u:"m"}
+  ];
+  if (!Array.isArray(state.rem)) state.rem = (cached && Array.isArray(cached.rem)) ? cached.rem : [];
+  let remEdit = null, remDel = null;
+  const dOf = s => new Date(s+"T00:00");
+  const daysTo = s => Math.round((dOf(s) - today) / 86400000);
+  const DNAME = d => (DAYS.find(x=>x.id===ORDER[d.getDay()])||{}).d || "";
+  function addInterval(dateStr, n, u){
+    const d = dOf(dateStr);
+    if (u==="d") d.setDate(d.getDate()+n); else if (u==="w") d.setDate(d.getDate()+7*n);
+    else if (u==="m"){ const day = d.getDate(); d.setDate(1); d.setMonth(d.getMonth()+n); d.setDate(Math.min(day, new Date(d.getFullYear(), d.getMonth()+1, 0).getDate())); }
+    else if (u==="y") d.setFullYear(d.getFullYear()+n);
+    return iso(d);
+  }
+  function unitWord(n, u){ return n===1 ? UNITS[u][0] : (n===2 ? {d:"يومين",w:"أسبوعين",m:"شهرين",y:"سنتين"}[u] : `${n} ${n<=10?UNITS[u][1]:UNITS[u][0]}`); }
+  const everyText = r => r.every ? `كل ${unitWord(r.every.n, r.every.u)}` : "مرة واحدة";
+  const daysWord = n => n===1 ? "يوم" : n===2 ? "يومين" : `${n} ${n<=10?"أيام":"يوم"}`;
+  function whenText(r){
+    const n = daysTo(r.due), d = dOf(r.due), dl = `${DNAME(d)} ${short(d)}`;
+    if (n < 0) return {t:`متأخر ${daysWord(-n)}`, c:"over", dl};
+    if (n === 0) return {t:"النهارده", c:"now", dl};
+    if (n === 1) return {t:"بكرة", c:"now", dl};
+    if (n <= 7) return {t:`بعد ${daysWord(n)}`, c:"soon", dl};
+    return {t:`بعد ${daysWord(n)}`, c:"", dl};
+  }
+  const activeRem = () => state.rem.filter(r=>!r.closed).sort((a,b)=>a.due<b.due?-1:a.due>b.due?1:0);
+  function updateRemBadge(){
+    const n = activeRem().filter(r=>daysTo(r.due)<=1).length, b = document.getElementById("remBadge");
+    b.hidden = !n; b.textContent = n;
+  }
+  function remItem(r, compact){
+    const w = whenText(r), c = RCATS[r.cat] || RCATS.other;
+    if (compact) return `<div class="soonrow"><span class="rdot" style="background:${c[1]};margin:0"></span><span><b>${esc(r.title)}</b><small>${w.dl}</small></span><span class="rwhen ${w.c}">${w.t}</span></div>`;
+    const sure = remDel === r.id;
+    return `<li class="ritem${w.c==="over"?" over":""}"><div class="rh"><span class="rdot" style="background:${c[1]}"></span><div class="rt"><b>${esc(r.title)}</b>
+      <small>${c[0]} · ${everyText(r)} · ${w.dl}${r.last?` · آخر مرة ${short(dOf(r.last))}`:""}</small>${r.note?`<small>${esc(r.note)}</small>`:""}</div><span class="rwhen ${w.c}">${w.t}</span></div>
+      <div class="acts"><button type="button" class="btn done" data-rdone="${r.id}">${r.every?`خلصت، والجاي بعد ${unitWord(r.every.n, r.every.u)}`:"خلصت"}</button>
+      <button type="button" class="btn" data-rics="${r.id}">ضيفه للتقويم</button><button type="button" class="btn" data-redit="${r.id}">تعديل</button>
+      <button type="button" class="btn${sure?" warn":""}" data-rdel="${r.id}">${sure?"متأكد؟ امسح":"مسح"}</button></div></li>`;
+  }
+  function remForm(){
+    const r = remEdit ? state.rem.find(x=>x.id===remEdit) : null;
+    const v = r || {title:"", cat:"car", due: addInterval(iso(today), 1, "m"), every:{n:1,u:"m"}, note:""};
+    const rep = !!v.every;
+    return `<form class="rform" id="remForm" autocomplete="off">
+      ${r?"":`<div class="tpl">${TEMPLATES.map((t,i)=>`<button type="button" data-tpl="${i}">${t.title}</button>`).join("")}</div>`}
+      <label>التذكير<input id="rTitle" required maxlength="80" placeholder="مثلًا: تغيير زيت العربية" value="${esc(v.title)}"></label>
+      <div class="row2"><label>النوع<select id="rCat">${Object.entries(RCATS).map(([k,c])=>`<option value="${k}" ${k===v.cat?"selected":""}>${c[0]}</option>`).join("")}</select></label>
+        <label>المعاد<input id="rDue" type="date" required value="${v.due}"></label></div>
+      <div class="row3"><label>بيتكرر؟<select id="rRep"><option value="0" ${rep?"":"selected"}>مرة واحدة</option><option value="1" ${rep?"selected":""}>كل</option></select></label>
+        <label>كام<input id="rN" type="number" min="1" max="99" inputmode="numeric" value="${rep?v.every.n:1}" ${rep?"":"disabled"}></label>
+        <label>&nbsp;<select id="rU" ${rep?"":"disabled"}>${Object.entries(UNITS).map(([k,u])=>`<option value="${k}" ${(rep?v.every.u:"m")===k?"selected":""}>${u[1]}</option>`).join("")}</select></label></div>
+      <label>ملاحظة (اختياري)<input id="rNote" maxlength="120" placeholder="مثلًا: زيت 5W-30، أو عند الكيلو 45,000" value="${esc(v.note||"")}"></label>
+      <p class="small" style="margin:0">هيظهرلك في شاشة النهارده قبل المعاد بأسبوع. ولو عايز إشعار على الموبايل وهو مقفول، دوس "ضيفه للتقويم" بعد ما تحفظه، وهيفكّرك قبلها بأسبوع وقبلها بيوم.</p>
+      <div class="actrow"><button class="btn primary" type="submit">${r?"احفظ التعديل":"ضيف التذكير"}</button>${r?`<button class="btn" type="button" data-rcancel="1">إلغاء</button>`:""}</div>
+    </form>`;
+  }
+  function renderRem(){
+    const el = document.getElementById("scr-rem"), list = activeRem();
+    const over = list.filter(r=>daysTo(r.due)<0), week = list.filter(r=>{const n=daysTo(r.due); return n>=0&&n<=7;}), later = list.filter(r=>daysTo(r.due)>7);
+    const closed = state.rem.filter(r=>r.closed);
+    let h = `<div class="card"><div class="card-h"><h2>${list.length?"تذكيراتك":"مفيش تذكيرات لسه"}</h2></div>
+      ${list.length?`<div class="rsum">${over.length?`<span class="o">متأخر ${over.length}</span>`:""}<span class="w">الأسبوع ده ${week.length}</span><span>الكل ${list.length}</span></div>`:`<p class="small" style="margin:0">ضيف حاجة محتاج تفتكرها، زي زيت العربية أو شمعة الفلتر، وحدد المعاد وكل قد إيه بتتكرر.</p>`}</div>`;
+    h += `<details class="ref" id="remNew" ${remEdit||!list.length?"open":""}><summary><span>${remEdit?"تعديل التذكير":"تذكير جديد"}</span>${CHEV}</summary><div>${remForm()}</div></details>`;
+    const sec = (t, arr) => arr.length ? `<h3 class="sect-title">${t}</h3><ul class="rlist">${arr.map(r=>remItem(r)).join("")}</ul>` : "";
+    h += sec("متأخر", over) + sec("خلال أسبوع", week) + sec("بعدين", later);
+    if (closed.length) h += `<details class="ref"><summary><span>خلصت (${closed.length})</span>${CHEV}</summary><div><ul class="plain">${closed.slice(-20).reverse().map(r=>`<li>${esc(r.title)}${r.last?` · ${short(dOf(r.last))}`:""}</li>`).join("")}</ul></div></details>`;
+    el.innerHTML = h;
+    const rep = document.getElementById("rRep");
+    if (rep) rep.addEventListener("change", ()=>{ const on = rep.value==="1"; document.getElementById("rN").disabled = !on; document.getElementById("rU").disabled = !on; });
+    updateRemBadge();
+  }
+  function soonHTML(){
+    if (!isToday()) return "";
+    const soon = activeRem().filter(r=>daysTo(r.due)<=7);
+    if (!soon.length) return "";
+    return `<div class="card"><div class="card-h"><h2>جاي قريب</h2><button type="button" class="golink" data-page-go="rem" style="margin:0">كل التذكيرات ←</button></div>${soon.map(r=>remItem(r,true)).join("")}</div>`;
+  }
+  function icsFor(r){
+    const d = r.due.replace(/-/g,""), stamp = new Date().toISOString().replace(/[-:]/g,"").replace(/\.\d+Z$/,"Z");
+    const e2 = t => String(t).replace(/\\/g,"\\\\").replace(/;/g,"\\;").replace(/,/g,"\\,").replace(/\n/g,"\\n");
+    const freq = r.every ? {d:"DAILY",w:"WEEKLY",m:"MONTHLY",y:"YEARLY"}[r.every.u] : null;
+    return ["BEGIN:VCALENDAR","VERSION:2.0","PRODID:-//LifeBase//AR","CALSCALE:GREGORIAN","BEGIN:VEVENT",
+      `UID:${r.id}@lifebase`, `DTSTAMP:${stamp}`, `DTSTART:${d}T100000`, `DTEND:${d}T103000`,
+      `SUMMARY:${e2(r.title)}`, r.note?`DESCRIPTION:${e2(r.note)}`:"", freq?`RRULE:FREQ=${freq};INTERVAL=${r.every.n}`:"",
+      "BEGIN:VALARM","ACTION:DISPLAY",`DESCRIPTION:${e2("بعد أسبوع: "+r.title)}`,"TRIGGER:-P7D","END:VALARM",
+      "BEGIN:VALARM","ACTION:DISPLAY",`DESCRIPTION:${e2("بكرة: "+r.title)}`,"TRIGGER:-P1D","END:VALARM",
+      "END:VEVENT","END:VCALENDAR"].filter(Boolean).join("\r\n");
+  }
+  function downloadIcs(r){
+    const blob = new Blob([icsFor(r)], {type:"text/calendar"});
+    const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = `${r.title.replace(/[\\/:*?"<>|]/g,"").slice(0,40) || "reminder"}.ics`;
+    document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(a.href), 2000);
+  }
+  document.addEventListener("submit", e => {
+    if (e.target.id !== "remForm") return;
+    e.preventDefault();
+    const title = document.getElementById("rTitle").value.trim(), due = document.getElementById("rDue").value;
+    if (!title || !due) return;
+    const rep = document.getElementById("rRep").value === "1";
+    const n = Math.max(1, Math.min(99, parseInt(document.getElementById("rN").value, 10) || 1));
+    const o = {title, cat: document.getElementById("rCat").value, due, every: rep ? {n, u: document.getElementById("rU").value} : null, note: document.getElementById("rNote").value.trim()};
+    if (remEdit){ const r = state.rem.find(x=>x.id===remEdit); if (r) Object.assign(r, o); remEdit = null; }
+    else state.rem.push(Object.assign({id: "r"+Date.now().toString(36)+Math.random().toString(36).slice(2,5)}, o));
+    saveLocal(); renderRem();
+  });
+  document.addEventListener("click", e => {
+    const t = e.target.closest("[data-tpl]");
+    if (t){ const x = TEMPLATES[+t.dataset.tpl];
+      document.getElementById("rTitle").value = x.title; document.getElementById("rCat").value = x.cat;
+      document.getElementById("rRep").value = "1"; document.getElementById("rN").disabled = false; document.getElementById("rU").disabled = false;
+      document.getElementById("rN").value = x.n; document.getElementById("rU").value = x.u;
+      document.getElementById("rDue").value = addInterval(iso(today), x.n, x.u); return; }
+    const dn = e.target.closest("[data-rdone]");
+    if (dn){ const r = state.rem.find(x=>x.id===dn.dataset.rdone); if (!r) return;
+      r.last = iso(today);
+      if (r.every) r.due = addInterval(iso(today), r.every.n, r.every.u); else r.closed = true;
+      saveLocal(); renderScreen(); return; }
+    const ic = e.target.closest("[data-rics]");
+    if (ic){ const r = state.rem.find(x=>x.id===ic.dataset.rics); if (r) downloadIcs(r); return; }
+    const ed = e.target.closest("[data-redit]");
+    if (ed){ remEdit = ed.dataset.redit; renderRem(); const n = document.getElementById("remNew"); if (n) n.scrollIntoView({block:"start"}); return; }
+    if (e.target.closest("[data-rcancel]")){ remEdit = null; renderRem(); return; }
+    const dl = e.target.closest("[data-rdel]");
+    if (dl){ const id = dl.dataset.rdel;
+      if (remDel !== id){ remDel = id; renderRem(); setTimeout(()=>{ if (remDel===id){ remDel = null; if (screen==="rem") renderRem(); } }, 4000); return; }
+      state.rem = state.rem.filter(x=>x.id!==id); remDel = null; saveLocal(); renderRem(); return; }
+  });
+
+  /* ===================== events ===================== */
+  document.addEventListener("click", e => {
+    const g = e.target.closest("[data-go]");
+    if (g){ go(g.dataset.go, {seg: g.dataset.seg, ref: g.dataset.ref}); return; }
+    const pr = e.target.closest(".pr");
+    if (pr){
+      const date = curDate(), c = Object.assign({}, checksOf(date)), n = pr.dataset.pr;
+      if (!c["p"+n]) c["p"+n] = true;
+      else if (!c["m"+n]) c["m"+n] = true;
+      else { delete c["p"+n]; delete c["m"+n]; }
+      state.checks[date] = c; saveLocal(); refreshMarks(); return;
+    }
+    const rb = e.target.closest("[data-rest]");
+    if (rb){ startTimer(+rb.dataset.rest, rb.dataset.name); return; }
+    const wd = e.target.closest(".wkday");
+    if (wd){ current = wd.dataset.day; go("today"); return; }
+  });
+  document.addEventListener("change", e => {
+    const id = e.target.dataset && e.target.dataset.ck; if (!id) return;
+    const date = curDate(), c = Object.assign({}, checksOf(date));
+    if (e.target.checked) c[id] = true; else delete c[id];
+    state.checks[date] = c; saveLocal(); refreshMarks();
+    if (e.target.checked && screen === "train" && e.target.closest("details.exc")) advanceFrom(id);
+  });
+  document.addEventListener("toggle", e => {
+    const d = e.target; if (d.classList && d.classList.contains("how") && d.open && d.dataset.media) fillHowTo(d);
+  }, true);
+
+  const wTimers = {};
+  document.addEventListener("input", e => {
+    const t = e.target;
+    if (t.id === "wIn"){
+      const date = curDate(), v = parseNum(t.value), w = Object.assign({}, state.body.w);
+      if (v == null) delete w[date]; else w[date] = v;
+      state.body.w = w;
+      if (v != null){ const c = Object.assign({}, checksOf(date)); c.h1 = true; state.checks[date] = c; }
+      saveBody(); refreshMarks(); return;
+    }
+    if (t.id === "waistIn"){
+      const v = parseNum(t.value), wa = Object.assign({}, state.body.waist);
+      if (v == null) delete wa[iso(today)]; else wa[iso(today)] = v;
+      state.body.waist = wa; saveBody(); renderTracker(); return;
+    }
+    if (t.id === "qPage"){
+      const v = parseInt(String(t.value).replace(/[٠-٩]/g, ch=>"٠١٢٣٤٥٦٧٨٩".indexOf(ch)), 10);
+      state.quran.page = (v>=1 && v<=604) ? v : null; saveLocal(); renderQuran(); return;
+    }
+    const s = t.dataset && t.dataset.w;
+    if (s){
+      const date = curDate(), v = t.value.trim().replace(",",".");
+      const lg = Object.assign({}, state.weights[s]||{});
+      if (v === "") delete lg[date]; else lg[date] = isNaN(+v) ? v : +v;
+      const keys = Object.keys(lg).sort(); while (keys.length > 60) delete lg[keys.shift()];
+      state.weights[s] = lg; saveLocal();
+    }
+  });
+  document.getElementById("hRows").addEventListener("change", e=>{
+    const t = e.target.dataset && e.target.dataset.hz; if (!t) return;
+    e.stopPropagation();
+    const [i,k] = t.split(":"); const hz = state.quran.hifz;
+    hz[i] = Object.assign({}, hz[i]||{}); if (e.target.checked) hz[i][k] = true; else delete hz[i][k];
+    saveLocal(); renderQuran();
+  });
+
+  /* ---------- backup ---------- */
+  function lastBackupText(){
+    const t = LS.get("fit:lastBackup");
+    return t ? `آخر نسخة احتياطية: ${short(new Date(t))}` : "لسه معملتش نسخة احتياطية";
+  }
+  function setStatus(){ setSync(true, `محفوظ على الموبايل ده · ${lastBackupText()}`); }
+  try { if (navigator.storage && navigator.storage.persist) navigator.storage.persist(); } catch(e){}
+  setStatus();
+  function showMsg(t){ const m = document.getElementById("backupMsg"); m.textContent = t; m.hidden = false; }
+  document.getElementById("exportBtn").addEventListener("click", ()=>{
+    const data = JSON.stringify({app:"lifebase", version:2, savedAt:new Date().toISOString(), state, money: moneySnap()}, null, 1);
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(new Blob([data], {type:"application/json"}));
+    a.download = `lifebase-backup-${iso(new Date())}.json`;
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(()=>URL.revokeObjectURL(a.href), 2000);
+    LS.set("fit:lastBackup", new Date().toISOString()); setStatus();
+    showMsg("اتعملت نسخة احتياطية. احفظ الملف في Drive أو ابعته لنفسك.");
+  });
+  document.getElementById("importFile").addEventListener("change", e=>{
+    e.stopPropagation();
+    const f = e.target.files && e.target.files[0]; if (!f) return;
+    const r = new FileReader();
+    r.onload = ()=>{
+      try{
+        const x = JSON.parse(r.result), st = x.state || x;
+        if (!st || typeof st !== "object" || !("checks" in st)) throw new Error("bad");
+        state.checks = st.checks||{}; state.weights = st.weights||{};
+        state.quran = {page:(st.quran&&st.quran.page)||null, hifz:(st.quran&&st.quran.hifz)||{}};
+        state.todos = st.todos || {}; rollover();
+        state.rem = Array.isArray(st.rem) ? st.rem : [];
+        if (x.money && Array.isArray(x.money.entries)){
+          try { x.money.updatedAt = Date.now(); localStorage.setItem("masrouf-data", JSON.stringify(x.money)); } catch(err){}
+          try { const f = document.getElementById("moneyFrame"); if (f.contentWindow && f.contentWindow.lbReload) f.contentWindow.lbReload(); } catch(err){}
+        }
+        state.body = {w:(st.body&&st.body.w)||{}, waist:(st.body&&st.body.waist)||{}};
+        saveLocal(); renderScreen();
+        showMsg("رجّعت البيانات من النسخة الاحتياطية.");
+      }catch(err){ showMsg("الملف ده مش نسخة احتياطية من الأبلكيشن. اختار ملف lifebase-backup."); }
+      e.target.value = "";
+    };
+    r.readAsText(f);
+  });
+
+  /* ---------- guide (first launch) ---------- */
+  const guide = document.getElementById("guide");
+  function openGuide(){ guide.hidden = false; document.getElementById("obGo").focus(); }
+  document.getElementById("obGo").addEventListener("click", ()=>{ guide.hidden = true; LS.set("lb:ob", 1); });
+  document.getElementById("showGuide").addEventListener("click", openGuide);
+
+
+  /* ---------- theme: auto / light / dark ---------- */
+  const THEMES = ["auto","light","dark"];
+  const TH_ICON = {
+    auto:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><circle cx="12" cy="12" r="8"/><path d="M12 4a8 8 0 0 1 0 16z" fill="currentColor"/></svg>`,
+    light:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2.5v2M12 19.5v2M4.6 4.6l1.4 1.4M18 18l1.4 1.4M2.5 12h2M19.5 12h2M4.6 19.4L6 18M18 6l1.4-1.4"/></svg>`,
+    dark:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"/></svg>`
+  };
+  const TH_NAME = {auto:"تلقائي حسب الموبايل", light:"فاتح", dark:"غامق"};
+  function applyTheme(t){
+    const root = document.documentElement;
+    if (t === "auto") root.removeAttribute("data-theme"); else root.setAttribute("data-theme", t);
+    const btn = document.getElementById("themeBtn");
+    btn.innerHTML = TH_ICON[t]; btn.setAttribute("aria-label", `المظهر: ${TH_NAME[t]}`); btn.title = `المظهر: ${TH_NAME[t]}`;
+    const dark = t === "dark" || (t === "auto" && matchMedia("(prefers-color-scheme: dark)").matches);
+    document.querySelectorAll('meta[name="theme-color"]').forEach(m => { m.setAttribute("content", dark ? "#0D1220" : "#F2F4FA"); m.removeAttribute("media"); });
+    document.querySelectorAll("[data-theme-pick]").forEach(b => b.setAttribute("aria-pressed", b.dataset.themePick === t ? "true" : "false"));
+    if (screen === "progress" && seg === "weight") renderTracker();
+    if (typeof syncFrameTheme === "function") syncFrameTheme();
+  }
+  let theme = LS.get("fit:theme") || "auto";
+  document.getElementById("themeBtn").addEventListener("click", ()=>{
+    theme = THEMES[(THEMES.indexOf(theme)+1) % 3]; LS.set("fit:theme", theme); applyTheme(theme);
+  });
+  document.addEventListener("click", e=>{
+    const b = e.target.closest("[data-theme-pick]"); if (!b) return;
+    theme = b.dataset.themePick; LS.set("fit:theme", theme); applyTheme(theme);
+  });
+  matchMedia("(prefers-color-scheme: dark)").addEventListener("change", ()=>{ if (theme === "auto") applyTheme("auto"); });
+  applyTheme(theme);
+
+  /* ---------- start ---------- */
+  const fromHash = (location.hash||"").slice(1);
+  go(PAGES[fromHash] ? fromHash : (PAGES[LS.get("fit:screen")] ? LS.get("fit:screen") : "today"));
+  if (!LS.get("lb:ob")) openGuide();
+
+  let rsz; window.addEventListener("resize", ()=>{ clearTimeout(rsz); rsz = setTimeout(()=>{ if (screen==="progress" && seg==="weight") renderTracker(); }, 150); });
+  setInterval(()=>{ if (screen==="today" && isToday() && !document.hidden){ const h = document.getElementById("hero"); if (h) h.outerHTML = heroHTML(); } }, 60000);
+  document.addEventListener("visibilitychange", ()=>{
+    if (document.visibilityState !== "visible") return;
+    const now = new Date(); now.setHours(0,0,0,0);
+    if (now.getTime() !== today.getTime()) location.reload();
+    if (!tEl.hidden && !tEl.classList.contains("end")) tick();
+  });
+  if ("serviceWorker" in navigator) {
+    window.addEventListener("load", ()=>{ navigator.serviceWorker.register("sw.js").catch(()=>{}); });
+  }
+
+})();
+</script>
+</body>
+</html>
