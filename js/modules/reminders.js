@@ -33,7 +33,7 @@ function whenText(r){
 }
 const activeRem = () => state.rem.filter(r=>!r.closed).sort((a,b)=>a.due<b.due?-1:a.due>b.due?1:0);
 function updateRemBadge(){
-  const n = activeRem().filter(r=>daysTo(r.due)<=1).length, b = document.getElementById("remBadge");
+  const n = activeRem().filter(r=>daysTo(r.due)<=1).length, b = $("planBadge");
   b.hidden = !n; b.textContent = n;
 }
 function remItem(r, compact){
@@ -67,22 +67,29 @@ function renderRem(){
   const el = document.getElementById("scr-rem"), list = activeRem();
   const over = list.filter(r=>daysTo(r.due)<0), week = list.filter(r=>{const n=daysTo(r.due); return n>=0&&n<=7;}), later = list.filter(r=>daysTo(r.due)>7);
   const closed = state.rem.filter(r=>r.closed);
-  let h = `<div class="card"><div class="card-h"><h2>${list.length?"تذكيراتك":"مفيش تذكيرات لسه"}</h2></div>
-    ${list.length?`<div class="rsum">${over.length?`<span class="o">متأخر ${over.length}</span>`:""}<span class="w">الأسبوع ده ${week.length}</span><span>الكل ${list.length}</span></div>`:`<p class="small" style="margin:0">ضيف حاجة محتاج تفتكرها، زي زيت العربية أو شمعة الفلتر، وحدد المعاد وكل قد إيه بتتكرر.</p>`}</div>`;
-  h += `<details class="ref" id="remNew" ${remEdit||!list.length?"open":""}><summary><span>${remEdit?"تعديل التذكير":"تذكير جديد"}</span>${CHEV}</summary><div>${remForm()}</div></details>`;
+  let h = list.length
+    ? `<div class="card"><div class="card-h"><h2>تذكيراتك</h2><button type="button" class="btn sm soft" data-rnew>+ تذكير جديد</button></div>
+       <div class="rsum">${over.length?`<span class="o">متأخر ${over.length}</span>`:""}<span class="w">الأسبوع ده ${week.length}</span><span>الكل ${list.length}</span></div></div>`
+    : emptyState("bell", "مفيش تذكيرات لسه", "ضيف حاجة محتاج تفتكرها، زي زيت العربية أو شمعة الفلتر، وحدد كل قد إيه بتتكرر.", `<button type="button" class="btn primary" data-rnew>ضيف أول تذكير</button>`);
   const sec = (t, arr) => arr.length ? `<h3 class="sect-title">${t}</h3><ul class="rlist">${arr.map(r=>remItem(r)).join("")}</ul>` : "";
   h += sec("متأخر", over) + sec("خلال أسبوع", week) + sec("بعدين", later);
   if (closed.length) h += `<details class="ref"><summary><span>خلصت (${closed.length})</span>${CHEV}</summary><div><ul class="plain">${closed.slice(-20).reverse().map(r=>`<li>${esc(r.title)}${r.last?` · ${short(dOf(r.last))}`:""}</li>`).join("")}</ul></div></details>`;
   el.innerHTML = h;
-  const rep = document.getElementById("rRep");
-  if (rep) rep.addEventListener("change", ()=>{ const on = rep.value==="1"; document.getElementById("rN").disabled = !on; document.getElementById("rU").disabled = !on; });
   updateRemBadge();
 }
-function soonHTML(){
-  if (!isToday()) return "";
-  const soon = activeRem().filter(r=>daysTo(r.due)<=7);
-  if (!soon.length) return "";
-  return `<div class="card"><div class="card-h"><h2>جاي قريب</h2><button type="button" class="golink" data-go="rem" style="margin:0">كل التذكيرات ←</button></div>${soon.map(r=>remItem(r,true)).join("")}</div>`;
+function openRemForm(id){
+  remEdit = id || null;
+  openSheet(`<h2 class="sheet-t">${remEdit ? "تعديل التذكير" : "تذكير جديد"}</h2>${remForm()}`, "تذكير");
+  const rep = $("rRep");
+  rep.addEventListener("change", () => { const on = rep.value === "1"; $("rN").disabled = !on; $("rU").disabled = !on; });
+  if (!remEdit) setTimeout(() => $("rTitle").focus(), 80);
+}
+/* Today card: what's due in the coming week (today and tomorrow are already in "محتاج انتباهك") */
+function soonCard(){
+  if (!isToday()) return null;
+  const soon = activeRem().filter(r => { const n = daysTo(r.due); return n > 1 && n <= 7; });
+  if (!soon.length) return null;
+  return {t:"تذكيرات جاية", meta:String(soon.length), body:soon.map(r=>remItem(r,true)).join(""), link:`<button type="button" class="golink" data-go="rem">كل التذكيرات ←</button>`};
 }
 function icsFor(r){
   const d = r.due.replace(/-/g,""), stamp = new Date().toISOString().replace(/[-:]/g,"").replace(/\.\d+Z$/,"Z");
@@ -108,9 +115,9 @@ document.addEventListener("submit", e => {
   const rep = document.getElementById("rRep").value === "1";
   const n = Math.max(1, Math.min(99, parseInt(document.getElementById("rN").value, 10) || 1));
   const o = {title, cat: document.getElementById("rCat").value, due, every: rep ? {n, u: document.getElementById("rU").value} : null, note: document.getElementById("rNote").value.trim()};
-  if (remEdit){ const r = state.rem.find(x=>x.id===remEdit); if (r) Object.assign(r, o); remEdit = null; }
-  else state.rem.push(Object.assign({id: "r"+Date.now().toString(36)+Math.random().toString(36).slice(2,5)}, o));
-  save(); renderRem();
+  if (remEdit){ const r = state.rem.find(x=>x.id===remEdit); if (r) Object.assign(r, o); remEdit = null; toast("اتحفظ التعديل"); }
+  else { state.rem.push(Object.assign({id: "r"+uid()}, o)); toast(`اتضاف: ${title}`); }
+  closeSheet(); save(); renderScreen();
 });
 document.addEventListener("click", e => {
   const t = e.target.closest("[data-tpl]");
@@ -123,14 +130,18 @@ document.addEventListener("click", e => {
   if (dn){ const r = state.rem.find(x=>x.id===dn.dataset.rdone); if (!r) return;
     r.last = iso(today);
     if (r.every) r.due = addInterval(iso(today), r.every.n, r.every.u); else r.closed = true;
-    save(); renderScreen(); return; }
+    buzz(); save(); renderScreen();
+    toast(r.every ? `تمام. الجاي ${whenText(r).dl}` : "تمام، خلصت"); return; }
   const ic = e.target.closest("[data-rics]");
   if (ic){ const r = state.rem.find(x=>x.id===ic.dataset.rics); if (r) downloadIcs(r); return; }
   const ed = e.target.closest("[data-redit]");
-  if (ed){ remEdit = ed.dataset.redit; renderRem(); const n = document.getElementById("remNew"); if (n) n.scrollIntoView({block:"start"}); return; }
-  if (e.target.closest("[data-rcancel]")){ remEdit = null; renderRem(); return; }
+  if (ed){ openRemForm(ed.dataset.redit); return; }
+  if (e.target.closest("[data-rnew]")){ openRemForm(); return; }
+  if (e.target.closest("[data-rcancel]")){ remEdit = null; closeSheet(); return; }
   const dl = e.target.closest("[data-rdel]");
   if (dl){ const id = dl.dataset.rdel;
     if (remDel !== id){ remDel = id; renderRem(); setTimeout(()=>{ if (remDel===id){ remDel = null; if (screen==="rem") renderRem(); } }, 4000); return; }
-    state.rem = state.rem.filter(x=>x.id!==id); remDel = null; save(); renderRem(); return; }
+    const gone = state.rem.find(x=>x.id===id);
+    state.rem = state.rem.filter(x=>x.id!==id); remDel = null; save(); renderScreen();
+    toast("التذكير اتمسح", "تراجع", () => { state.rem.push(gone); save(); renderScreen(); }); return; }
 });

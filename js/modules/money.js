@@ -156,7 +156,7 @@ function catPicker(selCat, selSub, act, id){
 }
 function moneyList(){
   const d = monthData(mui.month);
-  if (!d.es.length) return `<section class="card"><div class="card-h"><h2>العمليات</h2></div><p class="empty">مفيش حاجة متسجلة في ${esc(monthName(mui.month, false))}.<br>دوس + وسجّل أول مصروف.</p></section>`;
+  if (!d.es.length) return emptyState("wallet", `مفيش عمليات في ${monthName(mui.month, false)}`, "سجّل أول مصروف أو دخل للشهر ده.", `<button type="button" class="btn primary" data-money-add="out">سجّل مصروف</button>`);
   let h = "", last = "";
   d.es.forEach(e => {
     const day = new Date(e.ts).toLocaleDateString(LOCALE, {weekday:"long", day:"numeric", month:"long"});
@@ -215,7 +215,7 @@ function moneyGoals(){
       <div class="small">${per}</div>
       <form class="m-gform" data-goal="${g.id}" autocomplete="off"><input class="input" inputmode="decimal" placeholder="حطّيت كام؟" aria-label="المبلغ اللي حطيته"><button class="btn sm soft">ضيف</button>
       <button type="button" class="btn sm ${mui.goalDel === g.id ? "danger sure" : "ghost"}" data-act="delGoal" data-id="${g.id}">${mui.goalDel === g.id ? "متأكد؟" : "امسح"}</button></form></section>`;
-  }).join("") : `<section class="card"><p class="empty">لسه مفيش أهداف.<br>ضيف أول هدف تحت، زي مقدّم العربية أو صندوق طوارئ.</p></section>`;
+  }).join("") : emptyState("target", "لسه مفيش أهداف", "ضيف أول هدف تحت، زي مقدّم العربية أو صندوق طوارئ.");
   h += `<section class="card"><div class="card-h"><h2>هدف جديد</h2></div>
     <form id="goalForm" class="form" autocomplete="off"><input class="input" id="gName" placeholder="اسم الهدف، مثلاً: مقدّم العربية" aria-label="اسم الهدف">
       <div class="row2"><input class="input" id="gTarget" inputmode="decimal" placeholder="المبلغ" aria-label="المبلغ المطلوب"><input class="input" id="gDeadline" type="month" aria-label="عاوزه إمتى"></div>
@@ -257,16 +257,16 @@ function renderMoney(){
 }
 
 /* Today card */
-function moneyHTML(){
-  if (!isToday()) return "";
+function moneyCard(){
+  if (!isToday()) return null;
   const t0 = today.getTime(), t1 = t0 + 864e5, d = monthData(monthKey(today));
   const todaySpent = money.entries.filter(e => e.type !== "in" && e.ts >= t0 && e.ts < t1).reduce((a,e) => a + e.amount, 0);
-  const body = money.entries.length
+  const body = (money.entries.length
     ? `<div class="tiles tiles-2"><div class="tile"><div class="v num">${mfmt(todaySpent)}</div><div class="l">صرفت النهارده</div></div>
        <div class="tile"><div class="v num" style="color:var(--money)">${mfmt(d.spent)}</div><div class="l">${d.income ? `صرفت الشهر ده من ${mfmt(d.income)}` : "صرفت الشهر ده"}</div></div></div>`
-    : `<p class="small" style="margin:0">لسه مفيش مصاريف متسجلة. سجّل أول مصروف وهتلاقي ملخصه هنا كل يوم.</p>`;
-  return `<div class="card"><div class="card-h"><h2>الفلوس</h2><button type="button" class="golink" data-go="money">افتح ←</button></div>${body}
-    <div class="actrow" style="margin-top:12px"><button type="button" class="btn primary" data-money-add="out">سجّل مصروف</button><button type="button" class="btn" data-money-add="in">سجّل دخل</button></div></div>`;
+    : `<p class="small" style="margin:0">لسه مفيش مصاريف متسجلة. سجّل أول مصروف وهتلاقي ملخصه هنا كل يوم.</p>`)
+    + `<div class="actrow" style="margin-top:12px"><button type="button" class="btn primary" data-money-add="out">سجّل مصروف</button><button type="button" class="btn" data-money-add="in">سجّل دخل</button></div>`;
+  return {t:"الفلوس", meta:"", body, link:`<button type="button" class="golink" data-go="money">افتح الفلوس ←</button>`};
 }
 
 /* ===================== add sheet ===================== */

@@ -18,10 +18,10 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alexandria:wght@500;600;700&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap">
-<link rel="stylesheet" href="css/tokens.css?v=5">
-<link rel="stylesheet" href="css/base.css?v=5">
-<link rel="stylesheet" href="css/components.css?v=5">
-<link rel="stylesheet" href="css/screens.css?v=5">
+<link rel="stylesheet" href="css/tokens.css?v=6">
+<link rel="stylesheet" href="css/base.css?v=6">
+<link rel="stylesheet" href="css/components.css?v=6">
+<link rel="stylesheet" href="css/screens.css?v=6">
 </head>
 <body>
 <header class="topbar">
@@ -41,6 +41,8 @@
   <section class="screen" id="scr-today" data-title="النهارده"></section>
   <section class="screen" id="scr-train" data-title="التمرين" hidden></section>
   <section class="screen" id="scr-food" data-title="الأكل" hidden></section>
+  <section class="screen" id="scr-sched" data-title="الجدول" hidden></section>
+  <section class="screen" id="scr-tasks" data-title="المهام" hidden></section>
 
   <section class="screen" id="scr-progress" data-title="التقدّم" hidden>
     <div data-pane="weight" class="screen">
@@ -220,7 +222,9 @@
           <li>يوم الكورة: رشة ملح وعصرة ليمون على لتر مية.</li>
         </ul>
       </div></details>
-    <h3 class="sect-title">الأبلكيشن</h3>
+  </section>
+
+  <section class="screen" id="scr-settings" data-title="الإعدادات" hidden>
     <div class="card">
       <div class="card-h"><h2>المظهر</h2></div>
       <div class="seg" role="group" aria-label="المظهر">
@@ -232,11 +236,11 @@
     </div>
     <div class="card" id="dataCard"></div>
     <div id="installCard"></div>
-    <button class="btn" id="showGuide" type="button" style="align-self:flex-start">إزاي أستخدم الأبلكيشن</button>
+    <div class="actrow"><button class="btn" type="button" data-arrange>رتّب شاشة النهارده</button><button class="btn" id="showGuide" type="button">إزاي أستخدم الأبلكيشن</button></div>
   </section>
 </main>
 
-<button class="fab" id="fab" type="button" aria-label="سجّل مصروف أو دخل" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></button>
+<button class="fab" id="fab" type="button" aria-label="ضيف حاجة جديدة"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></button>
 
 <div class="timer" id="timer" hidden role="timer" aria-live="polite">
   <div class="tv" id="tVal">0:00</div>
@@ -248,11 +252,11 @@
 
 <nav class="tabbar" aria-label="الأقسام">
   <div class="tabbar-in">
-    <button class="tabbtn" type="button" data-tab="today" aria-current="page"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="4.5" width="17" height="16" rx="3"/><path d="M8 2.5v4M16 2.5v4M3.5 9.5h17M8.5 15l2.3 2.2L15.5 13"/></svg>النهارده</button>
+    <button class="tabbtn" type="button" data-tab="today" aria-current="page"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10.5L12 4l8 6.5V19a1 1 0 0 1-1 1h-4v-6h-6v6H5a1 1 0 0 1-1-1z"/></svg>النهارده</button>
+    <button class="tabbtn" type="button" data-tab="plan"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="4.5" width="17" height="16" rx="3"/><path d="M8 2.5v4M16 2.5v4M3.5 9.5h17M8.5 15l2.3 2.2L15.5 13"/></svg>الخطة<span class="tbadge" id="planBadge" hidden></span></button>
     <button class="tabbtn" type="button" data-tab="health"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6.5 7v10M17.5 7v10M3.5 9.5v5M20.5 9.5v5M6.5 12h11"/></svg>الصحة</button>
     <button class="tabbtn" type="button" data-tab="money"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="13" rx="3"/><path d="M3 10h18M16.5 14.5h1"/><path d="M6 6l9.5-2.5a1.5 1.5 0 0 1 1.8 1L18 6"/></svg>الفلوس</button>
-    <button class="tabbtn" type="button" data-tab="rem"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 16.5V11a6 6 0 0 1 12 0v5.5l1.5 2h-15z"/><path d="M10 20.5a2 2 0 0 0 4 0"/></svg>التذكيرات<span class="tbadge" id="remBadge" hidden></span></button>
-    <button class="tabbtn" type="button" data-tab="more"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="6" cy="12" r="1.4"/><circle cx="12" cy="12" r="1.4"/><circle cx="18" cy="12" r="1.4"/></svg>المزيد</button>
+    <button class="tabbtn" type="button" data-tab="me"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8.5" r="3.8"/><path d="M4.5 20a7.5 7.5 0 0 1 15 0"/></svg>أنا</button>
   </div>
 </nav>
 
@@ -262,13 +266,14 @@
     <h2 id="obT">أهلًا بيك</h2>
     <p class="small" style="margin:4px 0 0">الأبلكيشن متقسّم 5 أجزاء من الشريط اللي تحت:</p>
     <ul class="ob-list">
-      <li><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="3.5" y="4.5" width="17" height="16" rx="3"/><path d="M3.5 9.5h17M8.5 15l2.3 2.2L15.5 13"/></svg></span><span><b>النهارده</b>إنت فين في اليوم، والتذكيرات القريبة، ومهامك، وفلوس النهارده، والعادات والصلاة، وجدول اليوم.</span></li>
-      <li><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6.5 7v10M17.5 7v10M3.5 9.5v5M20.5 9.5v5M6.5 12h11"/></svg></span><span><b>الصحة</b>التمرين بعدّاد الراحة، والأكل بالوصفات، ومتابعة الوزن.</span></li>
-      <li><span class="ic" style="background:var(--money-soft);color:var(--money)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="3" y="6" width="18" height="13" rx="3"/><path d="M3 10h18"/></svg></span><span><b>الفلوس</b>سجّل مصروفك ودخلك من زرار +، وشوف راحت فين في التحليل، وتابع أهداف الادخار والفئات.</span></li>
-      <li><span class="ic" style="background:var(--rem-soft);color:var(--rem)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6 16.5V11a6 6 0 0 1 12 0v5.5l1.5 2h-15z"/></svg></span><span><b>التذكيرات</b>زيت العربية، وشمعة الفلتر، والترخيص. بيفكّرك قبلها بأسبوع، وتقدر تضيفه لتقويم موبايلك.</span></li>
-      <li><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="6" cy="12" r="1.4"/><circle cx="12" cy="12" r="1.4"/><circle cx="18" cy="12" r="1.4"/></svg></span><span><b>المزيد</b>القرآن، وملخص الأسبوع، والمرجع، والإعدادات والنسخة الاحتياطية.</span></li>
+      <li><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10.5L12 4l8 6.5V19a1 1 0 0 1-1 1h-4v-6h-6v6H5a1 1 0 0 1-1-1z"/></svg></span><span><b>النهارده</b>إنت فين في اليوم والجاي إمتى، واللي محتاج انتباهك، ومهامك وروتينك وفلوسك. رتّب الكروت زي ما تحب.</span></li>
+      <li><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="4.5" width="17" height="16" rx="3"/><path d="M8 2.5v4M16 2.5v4M3.5 9.5h17M8.5 15l2.3 2.2L15.5 13"/></svg></span><span><b>الخطة</b>جدول اليوم كله، والمهام لكل يوم، والتذكيرات زي زيت العربية وشمعة الفلتر، وملخص الأسبوع.</span></li>
+      <li><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6.5 7v10M17.5 7v10M3.5 9.5v5M20.5 9.5v5M6.5 12h11"/></svg></span><span><b>الصحة</b>التمرين بعدّاد الراحة، والأكل بالوصفات، ومتابعة الوزن.</span></li>
+      <li><span class="ic" style="background:var(--money-soft);color:var(--money)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="13" rx="3"/><path d="M3 10h18M16.5 14.5h1"/><path d="M6 6l9.5-2.5a1.5 1.5 0 0 1 1.8 1L18 6"/></svg></span><span><b>الفلوس</b>مصاريفك ودخلك، وراحت فين، وأهداف الادخار والفئات.</span></li>
+      <li><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8.5" r="3.8"/><path d="M4.5 20a7.5 7.5 0 0 1 15 0"/></svg></span><span><b>أنا</b>القرآن، والمرجع، والإعدادات والنسخة الاحتياطية.</span></li>
     </ul>
-    <p class="small">عايز تشوف يوم تاني؟ استخدم الأسهم فوق، ودوس على اسم اليوم ترجع للنهارده.</p>
+    <p class="small">زرار <b>+</b> اللي تحت بيضيف أي حاجة من أي شاشة: مصروف، دخل، مهمة، تذكير، أو وزن.</p>
+    <p class="small">عايز تشوف يوم تاني؟ استخدم الأسهم فوق أو اسحب الشاشة يمين وشمال، ودوس على اسم اليوم ترجع للنهارده.</p>
     <button class="btn primary" id="obGo" type="button" style="width:100%;justify-content:center;padding:12px">يلا نبدأ</button>
   </div>
 </div>
@@ -276,21 +281,23 @@
 <div id="sheetRoot"></div>
 <div id="toastRoot" aria-live="polite"></div>
 
-<script src="js/core.js?v=5" defer></script>
-<script src="js/data/plan.js?v=5" defer></script>
-<script src="js/data/training.js?v=5" defer></script>
-<script src="js/data/recipes.js?v=5" defer></script>
-<script src="js/store.js?v=5" defer></script>
-<script src="js/modules/today.js?v=5" defer></script>
-<script src="js/modules/todos.js?v=5" defer></script>
-<script src="js/modules/train.js?v=5" defer></script>
-<script src="js/modules/food.js?v=5" defer></script>
-<script src="js/modules/weight.js?v=5" defer></script>
-<script src="js/modules/quran.js?v=5" defer></script>
-<script src="js/modules/week.js?v=5" defer></script>
-<script src="js/modules/reminders.js?v=5" defer></script>
-<script src="js/modules/money.js?v=5" defer></script>
-<script src="js/modules/settings.js?v=5" defer></script>
-<script src="js/app.js?v=5" defer></script>
+<script src="js/core.js?v=6" defer></script>
+<script src="js/data/plan.js?v=6" defer></script>
+<script src="js/data/training.js?v=6" defer></script>
+<script src="js/data/recipes.js?v=6" defer></script>
+<script src="js/store.js?v=6" defer></script>
+<script src="js/modules/today.js?v=6" defer></script>
+<script src="js/modules/todos.js?v=6" defer></script>
+<script src="js/modules/train.js?v=6" defer></script>
+<script src="js/modules/food.js?v=6" defer></script>
+<script src="js/modules/weight.js?v=6" defer></script>
+<script src="js/modules/quran.js?v=6" defer></script>
+<script src="js/modules/week.js?v=6" defer></script>
+<script src="js/modules/plan.js?v=6" defer></script>
+<script src="js/modules/quickadd.js?v=6" defer></script>
+<script src="js/modules/reminders.js?v=6" defer></script>
+<script src="js/modules/money.js?v=6" defer></script>
+<script src="js/modules/settings.js?v=6" defer></script>
+<script src="js/app.js?v=6" defer></script>
 </body>
 </html>

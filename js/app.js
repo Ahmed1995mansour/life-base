@@ -3,17 +3,17 @@
    Pages live inside 5 tabs. A tab with more than one page shows a sub navigation under the title. */
 const PAGES = {
   today:{scr:"today", grp:"today"},
+  sched:{scr:"sched", grp:"plan", t:"الجدول"}, tasks:{scr:"tasks", grp:"plan", t:"المهام"}, rem:{scr:"rem", grp:"plan", t:"التذكيرات"}, week:{scr:"progress", seg:"week", grp:"plan", t:"الأسبوع"},
   train:{scr:"train", grp:"health", t:"التمرين"}, food:{scr:"food", grp:"health", t:"الأكل"}, weight:{scr:"progress", seg:"weight", grp:"health", t:"الوزن"},
   money:{scr:"money", grp:"money", t:"الرئيسية"}, mstats:{scr:"money", grp:"money", t:"التحليل"}, mgoals:{scr:"money", grp:"money", t:"الأهداف"}, mcats:{scr:"money", grp:"money", t:"الفئات"},
-  rem:{scr:"rem", grp:"rem"},
-  quran:{scr:"progress", seg:"quran", grp:"more", t:"القرآن"}, week:{scr:"progress", seg:"week", grp:"more", t:"الأسبوع"}, ref:{scr:"ref", grp:"more", t:"المرجع والإعدادات"}
+  quran:{scr:"progress", seg:"quran", grp:"me", t:"القرآن"}, ref:{scr:"ref", grp:"me", t:"المرجع"}, settings:{scr:"settings", grp:"me", t:"الإعدادات"}
 };
 const GROUPS_NAV = {
-  today:{t:"النهارده", p:["today"]}, health:{t:"الصحة", p:["train","food","weight"]},
-  money:{t:"الفلوس", p:["money","mstats","mgoals","mcats"]}, rem:{t:"التذكيرات", p:["rem"]}, more:{t:"المزيد", p:["quran","week","ref"]}
+  today:{t:"النهارده", p:["today"]}, plan:{t:"الخطة", p:["sched","tasks","rem","week"]}, health:{t:"الصحة", p:["train","food","weight"]},
+  money:{t:"الفلوس", p:["money","mstats","mgoals","mcats"]}, me:{t:"أنا", p:["quran","ref","settings"]}
 };
-const SCREENS = ["today","train","food","progress","ref","money","rem"];
-const DAY_PAGES = ["today","train","food"];
+const SCREENS = ["today","sched","tasks","train","food","progress","ref","settings","money","rem"];
+const DAY_PAGES = ["today","sched","train","food"];
 const lastIn = LS.get("lb:last") || {};
 
 function updateDayNav(){
@@ -30,9 +30,11 @@ function renderScreen(){
   else if (screen === "train") renderTrain();
   else if (screen === "food") renderFood();
   else if (screen === "progress"){ if (seg === "week") renderWeek(); else if (seg === "quran") renderQuran(); else renderTracker(); }
+  else if (screen === "sched") renderSchedule();
+  else if (screen === "tasks") renderTasks();
   else if (screen === "rem") renderRem();
   else if (screen === "money") renderMoney();
-  else if (screen === "ref") renderRef();
+  else if (screen === "settings") renderRef();
   updateRemBadge();
 }
 function go(name, opts){
@@ -41,13 +43,12 @@ function go(name, opts){
   if (!PAGES[name]) name = "today";
   const P = PAGES[name], G = GROUPS_NAV[P.grp];
   page = name; screen = P.scr;
-  SCREENS.forEach(s => { const el = $("scr-"+s); el.hidden = s !== screen; if (s !== screen && ["today","train","food","money","rem"].includes(s)) el.innerHTML = ""; });
+  SCREENS.forEach(s => { const el = $("scr-"+s); el.hidden = s !== screen; if (s !== screen && !["progress","ref","settings"].includes(s)) el.innerHTML = ""; });
   document.querySelectorAll(".tabbtn").forEach(b => b.setAttribute("aria-current", b.dataset.tab === P.grp ? "page" : "false"));
   $("scrTitle").textContent = G.t;
   const sn = $("subnav");
   sn.hidden = G.p.length < 2;
   sn.innerHTML = G.p.map(k => `<button type="button" data-page="${k}" aria-current="${k === name ? "page" : "false"}">${PAGES[k].t}</button>`).join("");
-  $("fab").hidden = P.grp !== "money";
   if (P.seg) setSeg(P.seg);
   closeSheet();
   renderScreen();
@@ -79,7 +80,20 @@ document.addEventListener("click", e => {
   const g = e.target.closest("[data-go]");
   if (g) go(g.dataset.go, {seg:g.dataset.seg, ref:g.dataset.ref});
 });
-$("fab").addEventListener("click", () => openAdd("out"));
+$("fab").addEventListener("click", () => screen === "money" ? openAdd("out") : openQuick());
+
+/* swipe left/right on a day screen to change the day (next day is to the left in Arabic) */
+let dsw = null;
+document.querySelector("main").addEventListener("touchstart", e => {
+  if (!DAY_PAGES.includes(page) || e.touches.length > 1) return;
+  if (e.target.closest(".td,.subnav,.tablewrap,input,textarea,select,.chips,.prayers,.chartbox,video")) return;
+  dsw = {x:e.touches[0].clientX, y:e.touches[0].clientY, t:Date.now()};
+}, {passive:true});
+document.querySelector("main").addEventListener("touchend", e => {
+  if (!dsw) return;
+  const t = e.changedTouches[0], dx = t.clientX - dsw.x, dy = t.clientY - dsw.y, fast = Date.now() - dsw.t < 600; dsw = null;
+  if (fast && Math.abs(dx) > 70 && Math.abs(dy) < 45){ shiftDay(dx > 0 ? 1 : -1); buzz(6); }
+}, {passive:true});
 
 /* ===================== start ===================== */
 (async () => {

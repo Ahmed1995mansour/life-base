@@ -10,8 +10,9 @@
 .nowline .k{font-size:11.5px;font-weight:700;color:var(--muted);min-width:42px}
 .nowline .v{font-weight:600}
 .nowline .t{font-variant-numeric:tabular-nums;color:var(--muted);font-size:12.5px;direction:ltr}
-.hero-note{grid-column:1/-1;margin:2px 0 0;font-size:13px;color:var(--muted)}
-.hero-today .nowline .k,.hero-today .nowline .t,.hero-today .hero-note{color:rgba(255,255,255,.75)}
+.hero-today .nowline .k,.hero-today .nowline .t{color:rgba(255,255,255,.75)}
+.nowline{flex-wrap:wrap}
+.nowline .in{font-size:11.5px;font-weight:700;padding:0 8px;border-radius:99px;background:rgba(255,255,255,.2)}
 .hero-today .ring .rv{font-family:var(--font-display);font-size:18px}
 .hchip{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--line);border-radius:999px;padding:7px 12px 7px 14px;background:var(--surface-2);cursor:pointer;font-size:13.5px;user-select:none}
 .hchip input{position:absolute;opacity:0;width:1px;height:1px}
@@ -63,15 +64,15 @@ details.more[open]>summary::after{content:"▴"}
 
 /* ---------- to-do ---------- */
 .tdl{list-style:none;margin:0 0 10px;padding:0}
-.td{display:grid;grid-template-columns:24px 1fr 32px;gap:10px;align-items:start;padding:9px 0;border-top:1px solid var(--line)}
+.td{touch-action:pan-y;position:relative;background:var(--surface);transition:transform .18s,background .15s;display:grid;grid-template-columns:24px 1fr 40px;gap:10px;align-items:start;padding:9px 0;border-top:1px solid var(--line)}
 .td:first-child{border-top:0;padding-top:2px}
 .td label{cursor:pointer;min-width:0;overflow-wrap:anywhere}
 .td .ttl{font-weight:500}
-.tdx{width:32px;height:28px;border:0;background:transparent;color:var(--muted);border-radius:8px;cursor:pointer;display:grid;place-items:center}
+.tdx{width:40px;height:36px;border:0;background:transparent;color:var(--muted);border-radius:8px;cursor:pointer;display:grid;place-items:center}
 .tdx svg{width:16px;height:16px}
 .tdx:hover{background:var(--surface-2);color:var(--bad)}
 .tdform{display:flex;gap:8px}
-.tdform .field{flex:1;width:auto;min-width:0}
+.tdform .input{flex:1}
 
 /* ---------- training ---------- */
 .wo-head{display:flex;justify-content:space-between;align-items:center;gap:10px}
@@ -259,3 +260,37 @@ table.hz .ck{width:22px;height:22px}
 .m-mainrow small{display:block;color:var(--muted);font-size:12px}
 .m-rowend{display:flex;align-items:center;gap:8px}
 .m-catedit{background:var(--surface-2);border-radius:var(--r-md);padding:12px;display:flex;flex-direction:column;gap:12px;margin-bottom:6px}
+
+.td.swiping{transition:none}
+.td.sw-done{background:var(--good-soft)}
+.td.sw-del{background:var(--bad-soft)}
+
+/* ---------- today: attention, folding cards, arrange sheet, quick add ---------- */
+.attn{border-color:color-mix(in srgb,var(--rem) 35%,var(--line))}
+.att{display:grid;grid-template-columns:36px 1fr auto;gap:10px;align-items:center;width:100%;text-align:right;border:0;border-top:1px solid var(--line);background:transparent;color:var(--ink);padding:10px 0}
+.attn .card-h+.att{border-top:0;padding-top:2px}
+.att b{display:block;font-weight:600;font-size:14px;overflow-wrap:anywhere}
+.att small{color:var(--muted);font-size:12px}
+.att-ic{width:36px;height:36px;border-radius:12px;display:grid;place-items:center;background:var(--surface-2)}
+.att-ic svg{width:19px;height:19px}
+.att-go{transform:rotate(90deg)}
+.tc-h{display:flex;align-items:center;gap:6px;border:0;background:transparent;padding:0;color:var(--ink);text-align:right;flex:1;min-width:0}
+.tc-h .chev{width:16px;height:16px}
+.tc-h[aria-expanded="true"] .chev{transform:rotate(180deg)}
+.tcard.folded .tc-b{display:none}
+.tcard.folded .card-h{margin-bottom:0}
+.tc-link{margin-top:10px}
+.tl-mini>li{padding:9px 0}
+.tl-mini>li:first-child{border-top:0}
+.sched-hint{margin:-4px 16px 8px}
+.sum-ic{width:20px;height:20px;color:var(--sleep)}
+.arr{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
+.arr li{display:grid;grid-template-columns:1fr auto auto auto;gap:6px;align-items:center;background:var(--surface-2);border-radius:var(--r-md);padding:8px 8px 8px 8px;font-weight:600;font-size:14px}
+.arr li span{padding-inline-start:6px}
+.arr li.off span{color:var(--muted);text-decoration:line-through}
+.arr .iconbtn:disabled{opacity:.35}
+.quick{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.qk{display:flex;flex-direction:column;align-items:center;gap:8px;border:1px solid var(--line);background:var(--surface);border-radius:var(--r-lg);padding:14px 6px;font-weight:700;font-size:14px;color:var(--ink);transition:transform .12s}
+.qk:active{transform:scale(.96)}
+.qk-ic{width:46px;height:46px;border-radius:15px;display:grid;place-items:center}
+.qk-ic svg{width:24px;height:24px}

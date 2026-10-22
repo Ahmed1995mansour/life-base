@@ -36,8 +36,8 @@ function watch(p, tag){
   await p.goto(URL); await p.waitForTimeout(900);
   out.guide = await p.isVisible('#guide'); await p.click('#obGo');
   out.mirror = await p.evaluate(() => { const d = JSON.parse(localStorage.getItem('lb:data')); return {v:d.v, entries:d.money.entries.length, cats:d.money.cats.length, rem:d.core.rem.length, migrated:!!d.migrated, w:Object.values(d.core.body.w)}; });
-  out.todayCards = await p.$$eval('#scr-today .card-h h2, #scr-today .nudge b', h => h.map(x => x.textContent));
-  out.todo = await p.$$eval('#todos .ttl', l => l.map(x => x.textContent));
+  out.todayCards = await p.$$eval('#scr-today .card-h h2', h => h.map(x => x.textContent));
+  out.todo = await p.$$eval('[data-card="tasks"] .ttl', l => l.map(x => x.textContent));
   out.moneyCard = await p.$$eval('#scr-today .tiles .tile', c => c.map(x => x.innerText.replace(/\s+/g,' ')));
   await p.screenshot({path:SP+'/p1-today.png', fullPage:true});
 
@@ -88,24 +88,24 @@ function watch(p, tag){
   await p.screenshot({path:SP+'/p1-cats.png', fullPage:true});
 
   // other pages render without errors
-  for (const [tab, pg] of [['health','train'],['health','food'],['health','weight'],['rem',null],['more','quran'],['more','week'],['more','ref']]){
+  for (const [tab, pg] of [['health','train'],['health','food'],['health','weight'],['plan','rem'],['me','quran'],['plan','week'],['me','ref']]){
     await p.click(`.tabbtn[data-tab="${tab}"]`); await p.waitForTimeout(120);
     if (pg) { await p.click(`#subnav [data-page="${pg}"]`); await p.waitForTimeout(150); }
     await p.screenshot({path:`${SP}/p1-${pg||tab}.png`, fullPage:true});
   }
-  out.ref = await p.$eval('#dataCard', x => x.innerText.replace(/\s+/g,' '));
+  await p.evaluate(() => go('settings')); out.ref = await p.$eval('#dataCard', x => x.innerText.replace(/\s+/g,' '));
   out.weightRows = await p.evaluate(() => { go('weight'); return document.querySelectorAll('#trkRows tr').length; });
   out.remList = await p.evaluate(() => { go('rem'); return [...document.querySelectorAll('.ritem .rt b')].map(x => x.textContent); });
 
   // dark theme pass
   await p.evaluate(() => setTheme('dark'));
-  for (const pg of ['today','money','mstats','rem','ref']){ await p.evaluate(x => go(x), pg); await p.waitForTimeout(120); await p.screenshot({path:`${SP}/p1-dark-${pg}.png`, fullPage:true}); }
+  for (const pg of ['today','money','mstats','rem','settings']){ await p.evaluate(x => go(x), pg); await p.waitForTimeout(120); await p.screenshot({path:`${SP}/p1-dark-${pg}.png`, fullPage:true}); }
   await p.evaluate(() => go('today')); await p.click('#scr-today [data-money-add="in"]'); await p.waitForTimeout(150);
   await p.screenshot({path:SP+'/p1-dark-sheet.png'});
   await p.keyboard.press('Escape');
 
   // backup round trip
-  await p.evaluate(() => go('ref'));
+  await p.evaluate(() => go('settings'));
   const [dl] = await Promise.all([p.waitForEvent('download'), p.click('[data-backup="export"]')]);
   const bpath = SP + '/p1-backup.json'; await dl.saveAs(bpath);
   const bk = JSON.parse(fs.readFileSync(bpath,'utf8'));
@@ -119,7 +119,7 @@ function watch(p, tag){
   const q = await ctx2.newPage(); watch(q,'B');
   await q.goto(URL); await q.waitForTimeout(700); await q.click('#obGo');
   out.freshEmpty = await q.evaluate(() => money.entries.length);
-  await q.evaluate(() => go('ref'));
+  await q.evaluate(() => go('settings'));
   await q.setInputFiles('#importFile', bpath); await q.waitForTimeout(300);
   out.restored = await q.evaluate(() => ({entries:money.entries.length, rem:state.rem.length, goals:money.goals.length, quran:state.quran.page}));
   // and an old masrouf backup merges

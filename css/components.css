@@ -32,8 +32,8 @@
 .iconbtn.sure{background:var(--bad);border-color:var(--bad);color:#fff}
 .golink{display:inline-flex;align-items:center;gap:4px;border:0;background:transparent;color:var(--accent);font-weight:700;font-size:var(--fs-sm);padding:0}
 
-/* floating add button (money pages for now) */
-.fab{position:fixed;inset-inline-start:max(16px,calc(50% - 280px + 4px));bottom:calc(var(--tabbar) + env(safe-area-inset-bottom,0px) + 24px);z-index:31;width:56px;height:56px;border-radius:18px;border:0;background:linear-gradient(135deg,var(--money1),var(--money2));color:#fff;display:grid;place-items:center;box-shadow:0 10px 24px color-mix(in srgb,var(--money1) 40%,transparent);transition:transform .12s}
+/* floating add button: on every screen */
+.fab{position:fixed;inset-inline-start:max(16px,calc(50% - 280px + 4px));bottom:calc(var(--tabbar) + env(safe-area-inset-bottom,0px) + 24px);z-index:31;width:56px;height:56px;border-radius:18px;border:0;background:linear-gradient(135deg,var(--hero1),var(--hero2));color:#fff;display:grid;place-items:center;box-shadow:0 10px 24px color-mix(in srgb,var(--hero1) 40%,transparent);transition:transform .12s}
 .fab:active{transform:scale(.94)}
 .fab svg{width:26px;height:26px}
 
@@ -123,7 +123,7 @@ details.ref p{margin:6px 0}
 .grab{width:40px;height:4px;border-radius:9px;background:var(--line);margin:0 auto}
 
 /* ---------- toast ---------- */
-.toast{position:fixed;inset-inline:16px;top:calc(env(safe-area-inset-top,0px) + 12px);z-index:60;max-width:380px;margin:0 auto;background:var(--ink);color:var(--bg);border-radius:var(--r-md);padding:10px 14px;text-align:center;font-size:14px;box-shadow:var(--shadow-lg)}
+.toast{display:flex;align-items:center;justify-content:center;gap:12px;position:fixed;inset-inline:16px;top:calc(env(safe-area-inset-top,0px) + 12px);z-index:60;max-width:380px;margin:0 auto;background:var(--ink);color:var(--bg);border-radius:var(--r-md);padding:10px 14px;text-align:center;font-size:14px;box-shadow:var(--shadow-lg)}
 
 @media (prefers-reduced-motion:no-preference){
   .sheet{animation:sheetUp .28s cubic-bezier(.2,.8,.2,1)} @keyframes sheetUp{from{transform:translateY(50px);opacity:.4}}
@@ -131,3 +131,15 @@ details.ref p{margin:6px 0}
   .toast{animation:toastIn .2s ease-out} @keyframes toastIn{from{opacity:0;transform:translateY(-8px)}}
   .screen:not([hidden]){animation:screenIn .2s ease-out} @keyframes screenIn{from{opacity:.4;transform:translateY(4px)}}
 }
+
+.toast-act{border:0;background:color-mix(in srgb,var(--bg) 18%,transparent);color:var(--bg);font-weight:700;padding:4px 12px;border-radius:var(--r-pill);font-size:13.5px}
+
+/* empty state */
+.empty-state{display:flex;flex-direction:column;align-items:center;text-align:center;gap:6px;padding:26px 18px}
+.empty-state .es-ic{width:56px;height:56px;border-radius:18px;display:grid;place-items:center;background:var(--accent-soft);color:var(--accent);margin-bottom:4px}
+.empty-state .es-ic svg{width:28px;height:28px}
+.empty-state h2{font-size:16.5px}
+.empty-state p{margin:0 0 8px;color:var(--muted);font-size:var(--fs-sm);max-width:32ch}
+
+/* sheet title */
+.sheet-t{font-family:var(--font-display);font-size:19px}

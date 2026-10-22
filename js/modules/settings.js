@@ -29,12 +29,6 @@ function renderRef(){
   $("installCard").innerHTML = installHTML();
 }
 
-/* Today: a gentle nudge when the last backup is old */
-function backupHTML(){
-  if (!isToday() || !backupDue()) return "";
-  return `<div class="card nudge"><p><b>خد نسخة احتياطية</b>${meta.lastBackup ? "آخر نسخة من أكتر من أسبوعين." : "لسه ماخدتش ولا نسخة."} ملف واحد فيه كل بياناتك.</p><button class="btn sm primary" type="button" data-backup="export">احفظ</button></div>`;
-}
-
 document.addEventListener("click", async e => {
   if (e.target.closest('[data-backup="export"]')){
     if (await exportBackup()){ toast("النسخة الاحتياطية جاهزة"); renderScreen(); }
@@ -57,8 +51,8 @@ $("importFile").addEventListener("change", e => {
   };
   r.readAsText(f);
 });
-window.addEventListener("beforeinstallprompt", e => { e.preventDefault(); installEvt = e; if (page === "ref") renderRef(); });
-window.addEventListener("appinstalled", () => { installEvt = null; toast("اتثبّت، افتحه من الأيقونة"); if (page === "ref") renderRef(); });
+window.addEventListener("beforeinstallprompt", e => { e.preventDefault(); installEvt = e; if (page === "settings") renderRef(); });
+window.addEventListener("appinstalled", () => { installEvt = null; toast("اتثبّت، افتحه من الأيقونة"); if (page === "settings") renderRef(); });
 
 /* ---------- guide (first launch) ---------- */
 const guide = $("guide");

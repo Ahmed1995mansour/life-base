@@ -1,7 +1,7 @@
 // LifeBase service worker.
 // The page is network-first so updates arrive; css/js carry ?v=N and are cache-first (a new version means new URLs).
 // Fonts and how-to videos are cached the first time they load. Run tools/release.py to bump the version.
-const VERSION = "lifebase-v5";
+const VERSION = "lifebase-v6";
 const SHELL = [
   "./",
   "index.html",
@@ -10,26 +10,28 @@ const SHELL = [
   "icons/icon-512.png",
   "icons/maskable-512.png",
   "icons/apple-touch-icon.png",
-  "css/tokens.css?v=5",
-  "css/base.css?v=5",
-  "css/components.css?v=5",
-  "css/screens.css?v=5",
-  "js/core.js?v=5",
-  "js/data/plan.js?v=5",
-  "js/data/training.js?v=5",
-  "js/data/recipes.js?v=5",
-  "js/store.js?v=5",
-  "js/modules/today.js?v=5",
-  "js/modules/todos.js?v=5",
-  "js/modules/train.js?v=5",
-  "js/modules/food.js?v=5",
-  "js/modules/weight.js?v=5",
-  "js/modules/quran.js?v=5",
-  "js/modules/week.js?v=5",
-  "js/modules/reminders.js?v=5",
-  "js/modules/money.js?v=5",
-  "js/modules/settings.js?v=5",
-  "js/app.js?v=5"
+  "css/tokens.css?v=6",
+  "css/base.css?v=6",
+  "css/components.css?v=6",
+  "css/screens.css?v=6",
+  "js/core.js?v=6",
+  "js/data/plan.js?v=6",
+  "js/data/training.js?v=6",
+  "js/data/recipes.js?v=6",
+  "js/store.js?v=6",
+  "js/modules/today.js?v=6",
+  "js/modules/todos.js?v=6",
+  "js/modules/train.js?v=6",
+  "js/modules/food.js?v=6",
+  "js/modules/weight.js?v=6",
+  "js/modules/quran.js?v=6",
+  "js/modules/week.js?v=6",
+  "js/modules/plan.js?v=6",
+  "js/modules/quickadd.js?v=6",
+  "js/modules/reminders.js?v=6",
+  "js/modules/money.js?v=6",
+  "js/modules/settings.js?v=6",
+  "js/app.js?v=6"
 ];
 
 self.addEventListener("install", e => {

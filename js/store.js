@@ -5,7 +5,7 @@
    The first time, data from the old Fourma (fit:v2) and مصاريفي (masrouf) apps is copied in; the old copies are left untouched. */
 
 const DB_NAME = "lifebase", MIRROR = "lb:data", DOC_KEY = "doc";
-const state = {checks:{}, weights:{}, body:{w:{}, waist:{}}, quran:{page:null, hifz:{}}, todos:{}, rem:[]};
+const state = {checks:{}, weights:{}, body:{w:{}, waist:{}}, quran:{page:null, hifz:{}}, todos:{}, rem:[], prefs:{}};
 let money = {entries:[], goals:[], cats:[]};
 const meta = {updatedAt:0, lastBackup:0, migrated:null, persisted:null};
 
@@ -40,7 +40,8 @@ function normalizeCore(c){
     body: {w: (c.body && c.body.w) || {}, waist: (c.body && c.body.waist) || {}},
     quran: {page: (c.quran && c.quran.page) || null, hifz: (c.quran && c.quran.hifz) || {}},
     todos: c.todos || {},
-    rem: Array.isArray(c.rem) ? c.rem : []
+    rem: Array.isArray(c.rem) ? c.rem : [],
+    prefs: c.prefs && typeof c.prefs === "object" ? c.prefs : {}
   };
 }
 function applyDoc(doc){
