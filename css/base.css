@@ -1,0 +1,48 @@
+/* Reset, type and the app shell: top bar, sub navigation, content area, floating tab bar. */
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%;background:var(--bg)}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--font-ui);font-size:var(--fs-md);line-height:1.65;-webkit-tap-highlight-color:transparent;-webkit-font-smoothing:antialiased}
+body.locked{overflow:hidden}
+[hidden]{display:none!important}
+img,video{max-width:100%}
+button,input,select,textarea{font:inherit;color:inherit}
+input,button{touch-action:manipulation}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+h1,h2,h3,h4{margin:0;line-height:1.3;text-wrap:balance}
+.en{direction:ltr;unicode-bidi:isolate}
+.num{font-variant-numeric:tabular-nums}
+.small{font-size:var(--fs-sm);color:var(--muted)}
+.muted{color:var(--muted)}
+
+/* ---------- top bar ---------- */
+.topbar{position:sticky;top:0;z-index:20;background:color-mix(in srgb,var(--bg) 92%,transparent);backdrop-filter:saturate(1.4) blur(10px);-webkit-backdrop-filter:saturate(1.4) blur(10px);padding:calc(env(safe-area-inset-top,0px) + 10px) 16px 10px}
+.topbar-in{max-width:720px;margin:0 auto;display:flex;align-items:center;gap:10px}
+.topbar h1{font-family:var(--font-display);font-size:var(--fs-xl);font-weight:700;letter-spacing:-.2px;flex:1}
+.daynav{display:flex;align-items:center;gap:4px}
+.daylbl{min-width:96px;text-align:center;border:0;background:transparent;line-height:1.2;padding:2px 4px;border-radius:var(--r-xs)}
+.daylbl b{display:block;font-size:var(--fs-md)}
+.daylbl span{font-size:var(--fs-xs);color:var(--muted);font-variant-numeric:tabular-nums}
+.daylbl.not-today span{color:var(--accent);font-weight:600}
+
+.subnav{max-width:720px;margin:10px auto 0;display:flex;gap:6px;overflow-x:auto;scrollbar-width:none}
+.subnav::-webkit-scrollbar{display:none}
+.subnav button{flex:none;border:1px solid var(--line);background:var(--surface);border-radius:var(--r-pill);padding:6px 14px;font-weight:600;font-size:13.5px;color:var(--muted)}
+.subnav button[aria-current="page"]{background:var(--ink);border-color:var(--ink);color:var(--bg)}
+
+/* ---------- content ---------- */
+main{max-width:720px;margin:0 auto;padding:14px 16px calc(var(--tabbar) + env(safe-area-inset-bottom,0px) + 110px)}
+.screen{display:flex;flex-direction:column;gap:14px}
+.sect-title{font-size:var(--fs-sm);font-weight:700;color:var(--muted);margin:6px 2px -4px;letter-spacing:.2px}
+
+/* ---------- floating tab bar ---------- */
+.tabbar{position:fixed;inset-inline:12px;bottom:calc(10px + env(safe-area-inset-bottom,0px));z-index:30;max-width:560px;margin:0 auto;border:1px solid var(--line);border-radius:22px;background:var(--dock);backdrop-filter:saturate(1.6) blur(16px);-webkit-backdrop-filter:saturate(1.6) blur(16px);box-shadow:var(--shadow-lg)}
+.tabbar-in{display:grid;grid-template-columns:repeat(5,1fr);height:var(--tabbar)}
+.tabbtn{border:0;background:transparent;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;color:var(--muted);font-size:var(--fs-xs);font-weight:600;position:relative}
+.tabbtn svg{width:23px;height:23px;transition:transform .15s}
+.tabbtn[aria-current="page"]{color:var(--accent)}
+.tabbtn[aria-current="page"] svg{transform:translateY(-2px)}
+.tabbtn[aria-current="page"]::before{content:"";position:absolute;bottom:7px;width:5px;height:5px;border-radius:50%;background:var(--accent)}
+.tbadge{position:absolute;top:8px;inset-inline-start:calc(50% + 6px);min-width:17px;height:17px;padding:0 4px;border-radius:9px;background:var(--rem);color:#fff;font-size:10.5px;font-weight:700;display:grid;place-items:center;font-variant-numeric:tabular-nums}
+
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}

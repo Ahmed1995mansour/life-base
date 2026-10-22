@@ -1,0 +1,68 @@
+/* LifeBase design tokens: the only place colors, type, radii and spacing are defined.
+   Light is the default; dark applies when the phone is dark (theme "auto") or when the user picks dark. */
+:root{
+  color-scheme:light;
+  /* type */
+  --font-ui:"IBM Plex Sans Arabic",Tahoma,"Segoe UI",sans-serif;
+  --font-display:"Alexandria","IBM Plex Sans Arabic",sans-serif;
+  --fs-xs:11.5px; --fs-sm:13px; --fs-md:15px; --fs-lg:17px; --fs-xl:21px;
+  /* shape and space */
+  --r-xs:8px; --r-sm:10px; --r-md:14px; --r-lg:20px; --r-xl:28px; --r-pill:999px;
+  --sp-1:4px; --sp-2:8px; --sp-3:12px; --sp-4:16px; --sp-5:20px;
+  --tap:44px; --tabbar:64px;
+
+  /* surfaces and text */
+  --bg:#F2F4FA; --surface:#FFFFFF; --surface-2:#F6F7FC; --ink:#11162A; --muted:#5F6782; --line:#E3E6F0;
+  /* brand */
+  --accent:#3550F0; --accent-2:#7B4DFF; --accent-soft:#E9EDFF; --on-accent:#FFFFFF;
+  --hero1:#3550F0; --hero2:#7B4DFF;
+  /* sections */
+  --money:#0FA37F; --money-soft:#E0F5EE; --money1:#0E9F7E; --money2:#1479A8; --spend:#E0703F;
+  --rem:#E8730C; --rem-soft:#FFF0E0;
+  --food:#E07B12; --food-soft:#FFF3E3;
+  --work:#6B7590; --home:#D9468F; --sleep:#7B6CF0; --self:#0E9F8E;
+  --gold:#B8860B; --gold-soft:#FBF2D9;
+  /* status */
+  --good:#12805C; --good-soft:#E1F5EC; --warn:#A16207; --warn-soft:#FDF2DC; --bad:#C2413A; --bad-soft:#FDE7E5;
+  /* charts */
+  --chart:#3550F0; --band:#E6F6EF; --grid:#E8EBF3; --done:#A3AAC0;
+  /* depth */
+  --shadow:0 1px 2px rgba(17,22,42,.04),0 6px 20px rgba(17,22,42,.05);
+  --shadow-lg:0 10px 30px rgba(17,22,42,.12);
+  --dock:color-mix(in srgb,#FFFFFF 84%,transparent);
+  --scrim:rgba(8,12,24,.45);
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  color-scheme:dark;
+  --bg:#0D1220; --surface:#151B2D; --surface-2:#1A2136; --ink:#E9EDF8; --muted:#94A0BE; --line:#252D45;
+  --accent:#7088FF; --accent-2:#A07BFF; --accent-soft:#1F2850; --on-accent:#0D1220;
+  --hero1:#3D4FE0; --hero2:#7A3FF2;
+  --money:#3DD6A6; --money-soft:#11302A; --money1:#0B7F66; --money2:#155E86; --spend:#F2A184;
+  --rem:#FFA24D; --rem-soft:#33240F;
+  --food:#F4A54A; --food-soft:#2E2414;
+  --work:#A3ADC8; --home:#F07AB4; --sleep:#A79BFF; --self:#3DD2BF;
+  --gold:#E9BE55; --gold-soft:#2F2713;
+  --good:#4CD6A0; --good-soft:#12302A; --warn:#F2BE55; --warn-soft:#2F2611; --bad:#FF8A80; --bad-soft:#3A1C1F;
+  --chart:#7088FF; --band:#16302A; --grid:#232B42; --done:#4E5873;
+  --shadow:0 1px 0 rgba(255,255,255,.02);
+  --shadow-lg:0 10px 30px rgba(0,0,0,.45);
+  --dock:color-mix(in srgb,#151B2D 84%,transparent);
+  --scrim:rgba(0,0,0,.55);
+} }
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --bg:#0D1220; --surface:#151B2D; --surface-2:#1A2136; --ink:#E9EDF8; --muted:#94A0BE; --line:#252D45;
+  --accent:#7088FF; --accent-2:#A07BFF; --accent-soft:#1F2850; --on-accent:#0D1220;
+  --hero1:#3D4FE0; --hero2:#7A3FF2;
+  --money:#3DD6A6; --money-soft:#11302A; --money1:#0B7F66; --money2:#155E86; --spend:#F2A184;
+  --rem:#FFA24D; --rem-soft:#33240F;
+  --food:#F4A54A; --food-soft:#2E2414;
+  --work:#A3ADC8; --home:#F07AB4; --sleep:#A79BFF; --self:#3DD2BF;
+  --gold:#E9BE55; --gold-soft:#2F2713;
+  --good:#4CD6A0; --good-soft:#12302A; --warn:#F2BE55; --warn-soft:#2F2611; --bad:#FF8A80; --bad-soft:#3A1C1F;
+  --chart:#7088FF; --band:#16302A; --grid:#232B42; --done:#4E5873;
+  --shadow:0 1px 0 rgba(255,255,255,.02);
+  --shadow-lg:0 10px 30px rgba(0,0,0,.45);
+  --dock:color-mix(in srgb,#151B2D 84%,transparent);
+  --scrim:rgba(0,0,0,.55);
+}
