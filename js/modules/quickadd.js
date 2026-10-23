@@ -16,7 +16,7 @@ function openWeightSheet(){
     <input class="m-amount num" id="wsVal" inputmode="decimal" placeholder="0.0" value="${v != null ? v : ""}" aria-label="الوزن بالكيلو">
     <p class="small" style="text-align:center;margin:-6px 0 0">كيلو · على الريق الصبح أدق</p>
     <button class="btn primary lg">احفظ</button></form>`, "وزن النهارده");
-  setTimeout(() => $("wsVal").focus(), 80);
+  setTimeout(() => { const el = $("wsVal"); if (el) el.focus(); }, 80);
 }
 document.addEventListener("click", e => {
   const q = e.target.closest("[data-quick]"); if (!q) return;

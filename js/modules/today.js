@@ -116,14 +116,14 @@ function attentionHTML(){
 function summaryHTML(){
   const date = curDate(), past = date < iso(today);
   if (!past && !(isToday() && new Date().getHours() >= 20)) return "";
-  const day = curDay(), c = checksOf(date), todos = state.todos[date] || [];
+  const day = curDay(), c = checksOf(date), todos = tasksDoneOn(date);
   const ids = trainIds(day), trained = ids.filter(id => c[id]).length;
   const t0 = new Date(date+"T00:00").getTime();
   const spent = money.entries.filter(e => e.type !== "in" && e.ts >= t0 && e.ts < t0 + 864e5).reduce((a,e) => a + e.amount, 0);
   const cell = (v, l) => `<div class="cell"><div class="v num">${v}</div><div class="l">${l}</div></div>`;
   return `<section class="card"><div class="card-h"><h2>${past ? `ملخص ${dayLabel(date)}` : "ملخص يومك"}</h2>${ICO.moon.replace("<svg",'<svg class="sum-ic"')}</div>
     <div class="cells">${cell(`${PRAYERS.filter(([id]) => c[id]).length}/5`, "صلاة")}${cell(`${HABITS.filter(([id]) => c[id]).length}/${HABITS.length}`, "عادات")}
-    ${cell(todos.length ? `${todos.filter(x => x.done).length}/${todos.length}` : "—", "مهام")}${ids.length ? cell(`${trained}/${ids.length}`, "تمرين") : cell("راحة", "تمرين")}
+    ${cell(todos.all ? `${todos.done}/${todos.all}` : "—", "مهام")}${ids.length ? cell(`${trained}/${ids.length}`, "تمرين") : cell("راحة", "تمرين")}
     ${cell(mfmt(spent), "صرفت")}${cell(state.body.w[date] != null ? state.body.w[date] : "—", "الوزن")}</div></section>`;
 }
 

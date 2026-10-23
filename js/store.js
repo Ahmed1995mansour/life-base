@@ -5,7 +5,7 @@
    The first time, data from the old Fourma (fit:v2) and مصاريفي (masrouf) apps is copied in; the old copies are left untouched. */
 
 const DB_NAME = "lifebase", MIRROR = "lb:data", DOC_KEY = "doc";
-const state = {checks:{}, weights:{}, body:{w:{}, waist:{}}, quran:{page:null, hifz:{}}, todos:{}, rem:[], prefs:{}, plan:null, profile:null};
+const state = {checks:{}, weights:{}, body:{w:{}, waist:{}}, quran:{page:null, hifz:{}}, tasks:{lists:[], items:[]}, rem:[], prefs:{}, plan:null, profile:null};
 let needsSetup = false;
 let money = {entries:[], goals:[], cats:[]};
 const meta = {updatedAt:0, lastBackup:0, migrated:null, persisted:null};
@@ -40,7 +40,7 @@ function normalizeCore(c){
     weights: c.weights || {},
     body: {w: (c.body && c.body.w) || {}, waist: (c.body && c.body.waist) || {}},
     quran: {page: (c.quran && c.quran.page) || null, hifz: (c.quran && c.quran.hifz) || {}},
-    todos: c.todos || {},
+    tasks: normalizeTasks(c.tasks, c.todos),
     rem: Array.isArray(c.rem) ? c.rem : [],
     prefs: c.prefs && typeof c.prefs === "object" ? c.prefs : {},
     plan: normalizePlan(c.plan),
@@ -65,7 +65,7 @@ function bindPlan(){ DAYS = state.plan.days; HABITS = state.plan.habits; }
 function applyDoc(doc){
   Object.assign(state, normalizeCore(doc.core));
   if (!state.plan){
-    const used = doc.migrated || (doc.core && (Object.keys(doc.core.checks || {}).length || (doc.core.rem || []).length)) || (doc.money && (doc.money.entries || []).length);
+    const used = doc.migrated || (doc.core && (Object.keys(doc.core.checks || {}).length || (doc.core.rem || []).length || Object.keys(doc.core.todos || {}).length || ((doc.core.tasks || {}).items || []).length || Object.keys((doc.core.body || {}).w || {}).length)) || (doc.money && (doc.money.entries || []).length);
     if (used){ state.plan = planFromLegacy(); state.profile.setup = true; }   // Mans's own data: his plan
     else { state.plan = planFromLegacy(); needsSetup = true; }                // a new person: setup will replace it
   }
@@ -194,7 +194,7 @@ function importBackup(text){
       added = money.entries.length - before;
     } else money = m;
   }
-  rollover(); save();
+  save();
   if (mergeMoney && !core) return `اترجّع ${added} عملية فلوس جديدة`;
   return "رجّعت البيانات من النسخة الاحتياطية";
 }

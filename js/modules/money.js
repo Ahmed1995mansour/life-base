@@ -298,7 +298,7 @@ function renderAdd(){
     const note = $("noteIn");
     note.addEventListener("input", () => { if (!msheet.touched){ const g = note.value.trim() ? guess(note.value) : {cat:null, sub:""}; msheet.cat = g.cat; msheet.sub = g.sub; paintPicker(); } });
   }
-  setTimeout(() => $("amt").focus(), 80);
+  setTimeout(() => { const el = $("amt"); if (el) el.focus(); }, 80);
 }
 function paintPicker(){
   const el = $("picker"); if (!el) return;
@@ -316,7 +316,7 @@ document.addEventListener("click", e => {
   switch (a){
     case "pickCat": if (msheet.cat !== t.dataset.cat){ msheet.cat = t.dataset.cat; msheet.sub = ""; } msheet.touched = true; paintPicker(); break;
     case "pickSub": msheet.sub = msheet.sub === t.dataset.sub ? "" : t.dataset.sub; msheet.touched = true; paintPicker(); break;
-    case "newCatToggle": msheet.newCat = !msheet.newCat; paintPicker(); if (msheet.newCat) setTimeout(() => $("quickCat").focus(), 30); break;
+    case "newCatToggle": msheet.newCat = !msheet.newCat; paintPicker(); if (msheet.newCat) setTimeout(() => { const el = $("quickCat"); if (el) el.focus(); }, 30); break;
     case "quickCatSave": { const c = addMain($("quickCat").value, [], null); if (c){ msheet.cat = c.id; msheet.sub = ""; msheet.touched = true; msheet.newCat = false; paintPicker(); } break; }
     case "pickColor": mui.newColor = t.dataset.color; document.querySelectorAll('[data-act="pickColor"]').forEach(b => b.setAttribute("aria-pressed", b === t)); break;
     case "toggleEntry": mui.openEntry = mui.openEntry === id ? null : id; mui.sureDel = null; renderMoney(); break;

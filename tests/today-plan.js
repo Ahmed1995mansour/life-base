@@ -82,15 +82,15 @@ const seed = async (p) => {
   const row = await p.$('#scr-tasks .td >> nth=0'); const bb = await row.boundingBox();
   await p.mouse.move(bb.x + 120, bb.y + bb.height/2); await p.mouse.down(); await p.mouse.move(bb.x + 170, bb.y + bb.height/2, {steps:4}); await p.mouse.move(bb.x + 260, bb.y + bb.height/2, {steps:6}); await p.mouse.up();
   await p.waitForTimeout(250);
-  out.afterSwipeRight = await p.evaluate(() => state.todos[iso(today)].map(x => x.text + (x.done ? ' ✓' : '')));
+  out.afterSwipeRight = await p.evaluate(() => tasksForDay(iso(today)).map(x => x.text + (x.done ? ' ✓' : '')));
   // swipe the second task left → deleted, then undo
   const row2 = await p.$('#scr-tasks .td >> nth=1'); const b2 = await row2.boundingBox();
   await p.mouse.move(b2.x + 250, b2.y + b2.height/2); await p.mouse.down(); await p.mouse.move(b2.x + 200, b2.y + b2.height/2, {steps:4}); await p.mouse.move(b2.x + 100, b2.y + b2.height/2, {steps:6}); await p.mouse.up();
   await p.waitForTimeout(250);
-  out.afterSwipeLeft = await p.evaluate(() => (state.todos[iso(today)]||[]).map(x => x.text));
+  out.afterSwipeLeft = await p.evaluate(() => tasksForDay(iso(today)).map(x => x.text));
   await p.screenshot({path:SP+'/p2-undo.png'});
   await p.click('.toast-act'); await p.waitForTimeout(150);
-  out.afterUndo = await p.evaluate(() => (state.todos[iso(today)]||[]).map(x => x.text));
+  out.afterUndo = await p.evaluate(() => tasksForDay(iso(today)).map(x => x.text));
   await p.click('#subnav [data-page="rem"]'); await p.waitForTimeout(150);
   out.rem = await p.$$eval('.ritem .rt b', l => l.map(x => x.textContent));
   await p.screenshot({path:SP+'/p2-rem.png', fullPage:true});

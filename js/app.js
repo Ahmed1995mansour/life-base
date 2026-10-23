@@ -107,7 +107,6 @@ document.querySelector("main").addEventListener("touchend", e => {
   await loadAll();
   if (needsSetup) await openSetup(true);
   applyModules();
-  rollover();
   const fromHash = (location.hash || "").slice(1), last = LS.get("lb:page") || LS.get("fit:screen");
   go(PAGES[fromHash] ? fromHash : (PAGES[last] ? last : "today"));
   if (!LS.get("lb:ob")) openGuide();

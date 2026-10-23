@@ -82,7 +82,7 @@ function openRemForm(id){
   openSheet(`<h2 class="sheet-t">${remEdit ? "تعديل التذكير" : "تذكير جديد"}</h2>${remForm()}`, "تذكير");
   const rep = $("rRep");
   rep.addEventListener("change", () => { const on = rep.value === "1"; $("rN").disabled = !on; $("rU").disabled = !on; });
-  if (!remEdit) setTimeout(() => $("rTitle").focus(), 80);
+  if (!remEdit) setTimeout(() => { const el = $("rTitle"); if (el) el.focus(); }, 80);
 }
 /* Today card: what's due in the coming week (today and tomorrow are already in "محتاج انتباهك") */
 function soonCard(){
