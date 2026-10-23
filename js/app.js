@@ -22,6 +22,13 @@ function updateDayNav(){
   $("dayDate").textContent = isToday() ? `النهارده · ${short(dt)}` : `${short(dt)} · ارجع للنهارده`;
   $("dayLbl").classList.toggle("not-today", !isToday());
   $("dayNav").hidden = !DAY_PAGES.includes(page);
+  if (page === "today") $("scrTitle").textContent = relDay(curDate());   // the title follows the day you're looking at
+}
+/* "النهارده", "بكرة", "امبارح", "بعد 5 أيام", "من 3 أيام" */
+function relDay(date){
+  const n = Math.round((new Date(date + "T00:00") - today) / 864e5);
+  if (n === 0) return "النهارده"; if (n === 1) return "بكرة"; if (n === -1) return "امبارح";
+  return n > 1 ? `بعد ${daysWord(n)}` : `من ${daysWord(-n)}`;
 }
 /* redraw whatever is on screen (after any change to the data) */
 function renderScreen(){
