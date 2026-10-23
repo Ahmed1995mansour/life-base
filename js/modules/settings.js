@@ -26,6 +26,7 @@ function installHTML(){
 }
 function renderRef(){
   $("dataCard").innerHTML = dataCardHTML();
+  $("syncCard").innerHTML = syncCardHTML();
   $("installCard").innerHTML = installHTML();
 }
 

@@ -105,6 +105,7 @@ document.querySelector("main").addEventListener("touchend", e => {
   current = ORDER[today.getDay()];
   applyTheme(theme);
   await loadAll();
+  if (cloudOn()) await Promise.race([pullCloud(), new Promise(r => setTimeout(r, 5000))]);   // newer data from another device
   if (needsSetup) await openSetup(true);
   applyModules();
   const fromHash = (location.hash || "").slice(1), last = LS.get("lb:page") || LS.get("fit:screen");

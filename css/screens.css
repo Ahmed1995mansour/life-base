@@ -348,3 +348,6 @@ table.hz .ck{width:22px;height:22px}
 .tdx.star:hover{color:var(--gold);background:transparent}
 .tgroup-late{border-color:color-mix(in srgb,var(--bad) 35%,var(--line))}
 .tgroup-late h2{color:var(--bad)}
+
+.restore-link{border:0;background:transparent;color:var(--accent);font-weight:700;font-size:13.5px;padding:0;text-align:start;align-self:flex-start}
+#syncCard .sect-title{margin-top:0}

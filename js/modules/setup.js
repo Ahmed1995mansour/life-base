@@ -15,6 +15,7 @@ function suDefaults(){
 const dayChips = (name, sel) => `<div class="chips">${ORDER.map((id, i) => `<button type="button" class="chip" data-su-day="${name}" data-id="${id}" aria-pressed="${sel.includes(id)}">${WEEKDAYS[i]}</button>`).join("")}</div>`;
 const SU_STEPS = [
   () => `<h2>أهلًا بيك في LifeBase</h2><p class="small">كام سؤال سريع ونعملك خطة يومك. كل حاجة تقدر تغيّرها بعدين.</p>
+    <button type="button" class="restore-link" data-su-restore>عندك بيانات قبل كده؟ رجّعها من هنا ←</button>
     <label class="lbl">اسمك<input class="input" data-su="name" value="${esc(su.name)}" placeholder="اختياري" autocomplete="given-name"></label>
     <span class="lbl">هدفك</span><div class="chips">${Object.entries(GOALS).map(([k, t]) => `<button type="button" class="chip" data-su-goal="${k}" aria-pressed="${su.goal === k}">${t}</button>`).join("")}</div>
     <div class="row3s"><label class="lbl">وزنك (كجم)<input class="input" data-su="weight" inputmode="decimal" value="${esc(su.weight)}"></label>

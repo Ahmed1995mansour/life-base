@@ -128,6 +128,7 @@ function save(){
   meta.updatedAt = Date.now();
   writeMirror();
   clearTimeout(idbTimer); idbTimer = setTimeout(writeIdb, 250);
+  if (typeof onSaved === "function") onSaved();   // copies outside the browser (sync.js)
 }
 function flushSave(){ if (idbTimer){ clearTimeout(idbTimer); idbTimer = null; writeIdb(); } }
 document.addEventListener("visibilitychange", () => { if (document.visibilityState === "hidden") flushSave(); });

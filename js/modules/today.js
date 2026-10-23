@@ -94,6 +94,10 @@ function attentionHTML(){
   const dp = duePrayer();
   if (dp) rows.push(`<div class="att"><span class="att-ic" style="color:var(--gold)">${ICO.moon}</span><span><b>صليت ${dp.name}؟</b><small>الأذان كان ${clock(dp.at)}</small></span>
     <span class="actrow"><button type="button" class="btn sm soft" data-prdue="${dp.n}">صليت</button><button type="button" class="btn sm" data-prdue="${dp.n}" data-mosque="1">في المسجد ★</button></span></div>`);
+  if (SYNC.fileNeedsOk && SYNC.fileName)
+    rows.push(`<div class="att"><span class="att-ic" style="color:var(--accent)">${ICO.list}</span><span><b>كمّل الحفظ في الملف</b><small>Chrome محتاج تأكيد منك</small></span><button type="button" class="btn sm primary" data-file="ok">تمام</button></div>`);
+  if (cloudOn() && (SYNC.error === "token" || SYNC.error === "pass"))
+    rows.push(`<button type="button" class="att" data-go="settings"><span class="att-ic" style="color:var(--bad)">${ICO.list}</span><span><b>الحفظ الأونلاين واقف</b><small>${SYNC.error === "token" ? "الـ token انتهى" : "محتاج كلمة السر"}، دوس عشان توصّله تاني</small></span>${ICO.next}</button>`);
   if (!state.profile.loc && !state.prefs.noLoc)
     rows.push(`<div class="att"><span class="att-ic" style="color:var(--gold)">${ICO.clock}</span><span><b>حدد مدينتك</b><small>عشان مواقيت الصلاة تظهر هنا</small></span>
     <span class="actrow"><button type="button" class="btn sm primary" data-locsheet>حدد</button><button type="button" class="btn sm ghost" data-noloc>بعدين</button></span></div>`);
