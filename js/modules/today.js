@@ -197,7 +197,7 @@ function renderToday(){
 }
 function openArrange(){
   const p = todayPrefs();
-  openSheet(`<h2 class="sheet-t">رتّب شاشة النهارده</h2><p class="small" style="margin:-6px 0 0">غيّر ترتيب الكروت، وخبّي اللي مش محتاجه.</p>
+  openSheet(`<h2 class="sheet-t">رتّب شاشة يومي</h2><p class="small" style="margin:-6px 0 0">غيّر ترتيب الكروت، وخبّي اللي مش محتاجه.</p>
     <ul class="arr">${p.order.map((k, i) => { const hid = p.hidden.includes(k); return `<li class="${hid ? "off" : ""}"><span>${TODAY_CARDS[k].n}</span>
       <button type="button" class="iconbtn" data-arr="up" data-k="${k}" aria-label="لفوق" ${i === 0 ? "disabled" : ""}>${ICO.up}</button>
       <button type="button" class="iconbtn" data-arr="down" data-k="${k}" aria-label="لتحت" ${i === p.order.length - 1 ? "disabled" : ""}>${ICO.down}</button>

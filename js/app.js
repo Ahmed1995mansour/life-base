@@ -9,7 +9,7 @@ const PAGES = {
   quran:{scr:"progress", seg:"quran", grp:"me", t:"القرآن"}, myplan:{scr:"myplan", grp:"me", t:"خطتي"}, ref:{scr:"ref", grp:"me", t:"المرجع"}, settings:{scr:"settings", grp:"me", t:"الإعدادات"}
 };
 const GROUPS_NAV = {
-  today:{t:"النهارده", p:["today"]}, plan:{t:"الخطة", p:["sched","tasks","rem","week"]}, health:{t:"الصحة", p:["train","food","weight"]},
+  today:{t:"يومي", p:["today"]}, plan:{t:"الخطة", p:["sched","tasks","rem","week"]}, health:{t:"الصحة", p:["train","food","weight"]},
   money:{t:"الفلوس", p:["money","mstats","mgoals","mcats"]}, me:{t:"أنا", p:["quran","myplan","ref","settings"]}
 };
 const SCREENS = ["today","sched","tasks","train","food","progress","ref","settings","myplan","money","rem"];
