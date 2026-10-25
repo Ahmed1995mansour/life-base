@@ -6,7 +6,8 @@ const EX_KINDS = {main:"أساسي تقيل (3 مجموعات)", comp:"مركّ�
 const WU_OPTS = {"":"من غير", upper:"إحماء الجزء العلوي", lower:"إحماء الرجل", football:"إحماء الكورة"};
 let editDay = null;            // day id being edited, or null for the overview
 let itemEdit = null;           // {day, id} of the timeline item in the sheet
-let exEdit = null;             // {day, list:"ex"|"abs", i}
+let exEdit = null;
+let planSure = false;          // two taps to bring back Mans's original plan             // {day, list:"ex"|"abs", i}
 
 const dayOf = id => DAYS.find(d => d.id === id);
 const dayName = id => WEEKDAYS[ORDER.indexOf(id)];
@@ -44,7 +45,8 @@ function renderMyPlan(){
     <section class="card"><div class="card-h"><h2>مواقيت الصلاة</h2><button type="button" class="btn sm soft" data-locsheet>${pr.loc ? "غيّر" : "حدد مدينتك"}</button></div>${prayerPreview()}</section>
     <section class="card"><div class="card-h"><h2>خطة جديدة من الأول</h2></div>
       <p class="small" style="margin:0 0 10px">نسألك نفس أسئلة البداية ونعمل جدول وتمرين وعادات جديدة. بياناتك (الفلوس، والوزن، والمهام، والتذكيرات) مش هتتمسح.</p>
-      <button type="button" class="btn" data-resetup>ابدأ الأسئلة</button></section>`;
+      <div class="actrow"><button type="button" class="btn" data-resetup>ابدأ الأسئلة</button><button type="button" class="btn ${planSure ? "danger sure" : "soft"}" data-mansplan>${planSure ? "متأكد؟ دوس تاني" : "رجّع خطة مانس الأصلية"}</button></div>
+      <p class="small" style="margin:8px 0 0">خطة مانس: Upper A الأحد، رجل الاتنين، راحة ومشي التلات، Upper B الأربع، كتف ودراع الخميس قبل الماتش، ليونة الجمعة، وتمرين الكورة في البيت السبت. الجيم 12 الضهر والغدا 1:30 بعده على طول.</p></section>`;
   progPreview();
 }
 
@@ -165,6 +167,12 @@ document.addEventListener("click", e => {
     toast("العادة اتمسحت", "تراجع", () => { HABITS.splice(at, 0, gone); save(); renderScreen(); }); return; }
   const gs = e.target.closest("[data-goalset]");
   if (gs){ state.profile.goal = gs.dataset.goalset; save(); document.querySelectorAll("[data-goalset]").forEach(b => b.setAttribute("aria-pressed", b === gs)); return; }
+  if (e.target.closest("[data-mansplan]")){
+    if (!planSure){ planSure = true; renderMyPlan(); setTimeout(() => { if (planSure){ planSure = false; if (page === "myplan") renderMyPlan(); } }, 4000); return; }
+    planSure = false; const old = state.plan;
+    state.plan = planFromLegacy(); bindPlan(); save(); renderMyPlan();
+    toast("رجعت خطتك الأصلية", "تراجع", () => { state.plan = old; bindPlan(); save(); renderScreen(); }); return;
+  }
   if (e.target.closest("[data-resetup]")){ openSetup(false).then(() => { editDay = null; go("today"); }); }
 });
 document.addEventListener("input", e => {
