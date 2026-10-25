@@ -52,6 +52,20 @@ function tasksForDay(date){
   }).sort((a, b) => (a.done - b.done) || byDue(a, b));
 }
 
+/* links: optional on any task. "example.com/x" becomes "https://example.com/x" */
+function cleanLink(v){
+  v = String(v || "").trim(); if (!v) return "";
+  if (!/^[a-z][a-z0-9+.-]*:/i.test(v)) v = "https://" + v;
+  try { const u = new URL(v); return /^(https?|mailto|tel):$/.test(u.protocol) ? u.href : ""; } catch(e){ return ""; }
+}
+const linkLabel = l => { try { const u = new URL(l); return u.protocol.startsWith("http") ? u.hostname.replace(/^www\./, "") + (u.pathname.length > 1 ? "/…" : "") : l.replace(/^(mailto|tel):/, ""); } catch(e){ return l; } };
+/* a link typed or pasted with the task text is taken out of the text */
+function splitLink(text){
+  const m = text.match(/(https?:\/\/\S+|www\.\S+)/i); if (!m) return {text, link:""};
+  const link = cleanLink(m[1]), rest = text.replace(m[1], "").replace(/\s+/g, " ").trim();
+  const full = link.replace(/^https?:\/\/(www\.)?/, "").replace(/\/$/, "");
+  return {text:rest || (full.length > 50 ? full.slice(0, 49) + "…" : full), link};
+}
 function taskRow(x, showList){
   const late = x.due && !x.done && x.due < iso(today);
   const meta = [];
@@ -60,11 +74,11 @@ function taskRow(x, showList){
   if (showList && state.tasks.lists.length > 1) meta.push(esc(listOf(x.list).name));
   return `<li class="td${x.done ? " is-done" : ""}${late ? " is-late" : ""}" data-swipe="${x.id}">
     <input type="checkbox" class="ck" data-todo="${x.id}" id="td-${x.id}" ${x.done ? "checked" : ""} aria-label="خلصت: ${esc(x.text)}">
-    <button type="button" class="td-t" data-tedit="${x.id}"><span class="ttl">${esc(x.text)}</span>${meta.length ? `<span class="sub">${meta.join(" · ")}</span>` : ""}</button>
+    <div class="td-m"><button type="button" class="td-t" data-tedit="${x.id}"><span class="ttl">${esc(x.text)}</span>${meta.length ? `<span class="sub">${meta.join(" · ")}</span>` : ""}</button>${x.link ? `<a class="td-link en" href="${esc(x.link)}" target="_blank" rel="noopener noreferrer">${ICO.link}${esc(linkLabel(x.link))}</a>` : ""}</div>
     <button type="button" class="tdx star${x.star ? " on" : ""}" data-tstar="${x.id}" aria-label="${x.star ? "شيل النجمة" : "مهمة"}" aria-pressed="${!!x.star}">${x.star ? "★" : "☆"}</button></li>`;
 }
 const taskList = (items, showList) => `<ul class="tdl">${items.map(x => taskRow(x, showList)).join("")}</ul>`;
-const quickForm = (attrs, ph) => `<form class="tdform" data-taskform ${attrs} autocomplete="off"><input class="input" maxlength="140" placeholder="${esc(ph)}" aria-label="مهمة جديدة"><button class="btn primary" type="submit">ضيف</button></form>`;
+const quickForm = (attrs, ph) => `<form class="tdform" data-taskform ${attrs} autocomplete="off"><input class="input" maxlength="500" placeholder="${esc(ph)}" aria-label="مهمة جديدة"><button class="btn primary" type="submit">ضيف</button></form>`;
 
 /* Today card */
 function tasksCard(){
@@ -121,12 +135,13 @@ function openTodoSheet(date, id){
   const dchip = (v, label) => `<button type="button" class="chip" data-tsday="${v}" aria-pressed="${due === v}">${label}</button>`;
   openSheet(`<h2 class="sheet-t">${x ? "تعديل المهمة" : "مهمة جديدة"}</h2>
     <form id="todoSheet" class="form" autocomplete="off">
-      <input class="input" id="tsText" maxlength="140" placeholder="محتاج تعمل إيه؟" aria-label="المهمة" value="${x ? esc(x.text) : ""}">
+      <input class="input" id="tsText" maxlength="500" placeholder="محتاج تعمل إيه؟" aria-label="المهمة" value="${x ? esc(x.text) : ""}">
       <span class="lbl">القايمة</span>
       <div class="chips" role="group" aria-label="القايمة">${state.tasks.lists.map(l => `<button type="button" class="chip" data-tslist="${l.id}" aria-pressed="${l.id === list}">${esc(l.name)}</button>`).join("")}</div>
       <span class="lbl">إمتى</span>
       <div class="chips" role="group" aria-label="إمتى">${dchip("", "من غير تاريخ")}${dchip(t, "النهارده")}${dchip(tm, "بكرة")}
         <label class="chip"><input type="date" id="tsDate" value="${due}" aria-label="يوم تاني" style="border:0;background:transparent;font:inherit;color:inherit;padding:0;max-width:9.5em"></label></div>
+      <label class="lbl">لينك (اختياري)<input class="input en" id="tsLink" type="text" inputmode="url" autocapitalize="off" spellcheck="false" maxlength="500" placeholder="https://…" value="${x && x.link ? esc(x.link) : ""}"></label>
       <label class="toggle"><span>★ مهمة: تظهر في النهارده حتى لو من غير تاريخ</span><input type="checkbox" id="tsStar" ${x && x.star ? "checked" : ""}><i></i></label>
       <div class="actrow"><button class="btn primary lg" style="flex:1">${x ? "احفظ" : "ضيف المهمة"}</button>${x ? `<button type="button" class="btn danger" data-tdel="${x.id}">امسح</button>` : ""}</div></form>`, "مهمة");
   if (!x) setTimeout(() => { const el = $("tsText"); if (el) el.focus(); }, 80);
@@ -185,14 +200,17 @@ document.addEventListener("submit", e => {
   if (f.hasAttribute("data-taskform")){
     e.preventDefault();
     const inp = f.querySelector("input"), text = inp.value.trim(); if (!text) return;
-    addTask({text, due:f.dataset.due || "", list:f.dataset.list || state.tasks.lists[0].id});
+    const sp = splitLink(text);
+    addTask({text:sp.text, link:sp.link, due:f.dataset.due || "", list:f.dataset.list || state.tasks.lists[0].id});
     renderScreen();
     const again = document.querySelector(f.dataset.due ? `[data-taskform][data-due="${f.dataset.due}"] input` : "[data-taskform] input"); if (again) again.focus();
   } else if (f.id === "todoSheet"){
     e.preventDefault();
     const text = $("tsText").value.trim(); if (!text){ toast("اكتب المهمة الأول"); return; }
     const lb = document.querySelector('[data-tslist][aria-pressed="true"]');
-    const o = {text, due:$("tsDate").value || "", list:lb ? lb.dataset.tslist : state.tasks.lists[0].id, star:$("tsStar").checked};
+    const rawLink = $("tsLink").value.trim(), sp = rawLink ? {text, link:cleanLink(rawLink)} : splitLink(text);
+    if (rawLink && !sp.link){ toast("اللينك ده مش مظبوط"); $("tsLink").focus(); return; }
+    const o = {text:sp.text, link:sp.link, due:$("tsDate").value || "", list:lb ? lb.dataset.tslist : state.tasks.lists[0].id, star:$("tsStar").checked};
     if (taskEdit){ Object.assign(state.tasks.items.find(x => x.id === taskEdit) || {}, o); save(); toast("اتحفظت"); }
     else { addTask(o); toast(o.due ? `اتضافت لـ${dayLabel(o.due)}` : `اتضافت لـ${listOf(o.list).name}`); }
     taskEdit = null; closeSheet(); renderScreen();

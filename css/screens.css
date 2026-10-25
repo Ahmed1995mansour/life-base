@@ -351,3 +351,7 @@ table.hz .ck{width:22px;height:22px}
 
 .restore-link{border:0;background:transparent;color:var(--accent);font-weight:700;font-size:13.5px;padding:0;text-align:start;align-self:flex-start}
 #syncCard .sect-title{margin-top:0}
+.td-m{min-width:0;display:flex;flex-direction:column;align-items:flex-start;gap:2px}
+.td-link{display:inline-flex;align-items:center;gap:4px;font-size:12.5px;font-weight:600;color:var(--accent);text-decoration:none;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding:2px 0}
+.td-link svg{width:14px;height:14px;flex:none}
+.is-done .td-link{opacity:.6}

@@ -45,7 +45,7 @@ const watch = (p, tag) => { p.on('pageerror', e => errs.push(tag+' page: '+e.mes
   out.chips = await p.$$eval('.tlists .chip', l => l.map(x => x.innerText.replace(/\s+/g,' ').trim()));
   await p.screenshot({path:SP+'/p4-all.png', fullPage:true});
   // star an undated task → it shows on Today
-  await p.click('[data-swipe] .td-t:has-text("اقرا كتاب العادات") ~ [data-tstar]'); await p.waitForTimeout(100);
+  await p.click('[data-swipe]:has-text("اقرا كتاب العادات") [data-tstar]'); await p.waitForTimeout(100);
   // edit: move "غسيل العربية" to today
   await p.click('.td-t:has-text("غسيل العربية")'); await p.waitForTimeout(100);
   await p.click('[data-tsday="2026-10-23"]'); await p.click('#todoSheet button.primary'); await p.waitForTimeout(120);
