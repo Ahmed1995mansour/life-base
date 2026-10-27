@@ -74,7 +74,8 @@ async function connectCloud(token, pass){
     cryptoKey = await deriveKey(pass, SYNC.salt); SYNC.key = b64(await crypto.subtle.exportKey("raw", cryptoKey));
   }
   let took = "local";
-  if (remote && (!hasData() || (+remote.updatedAt || 0) > meta.updatedAt)){ useDoc(remote); took = "remote"; }
+  if (remote && !hasData()){ useDoc(remote); took = "remote"; }
+  else if (remote){ SYNC.lastSynced = 0; SYNC.needChoice = true; saveSyncCfg(); return {user:user.login, choice:true, remote}; }   // both have data: the user decides
   if (!SYNC.gistId){
     const g = await gh("/gists", {method:"POST", body:JSON.stringify({description:GIST_DESC, public:false, files:{[GIST_FILE]:{content:await encryptDoc(docOf())}}})});
     SYNC.gistId = g.id;
@@ -82,7 +83,44 @@ async function connectCloud(token, pass){
   SYNC.lastSynced = meta.updatedAt; SYNC.lastPush = Date.now(); saveSyncCfg();
   return {user:user.login, took};
 }
-function disconnectCloud(){ Object.assign(SYNC, {token:"", gistId:"", key:"", salt:"", lastSynced:0, error:""}); cryptoKey = null; saveSyncCfg(); }
+/* when the phone and GitHub both have data */
+const docSummary = d => {
+  const c = d.core || {}, t = (c.tasks || {}).items || [], m = (d.money || {}).entries || [];
+  return `${m.length} عملية فلوس · ${t.length} مهمة · ${Object.keys((c.body || {}).w || {}).length} وزن · ${Object.keys(c.checks || {}).length} يوم متعلّم`;
+};
+let pendingRemote = null;
+function openChoiceSheet(remote){
+  pendingRemote = remote;
+  openSheet(`<h2 class="sheet-t">لقينا بياناتك على GitHub</h2>
+    <div class="choice"><b>اللي على GitHub</b><small>آخر تعديل ${dateText(+remote.updatedAt || Date.now())}</small><small>${docSummary(remote)}</small></div>
+    <div class="choice"><b>اللي على الموبايل ده</b><small>${docSummary(docOf())}</small></div>
+    <button type="button" class="btn primary lg" data-choose="remote">رجّع اللي على GitHub</button>
+    <button type="button" class="btn lg" data-choose="local">خلّي اللي على الموبايل واحفظه مكانه</button>
+    <p class="small" style="margin:0">لو اخترت الموبايل، اللي على GitHub هيتبدّل، بس هتفضل تقدر ترجّعه من "نسخ أقدم".</p>`, "اختار النسخة");
+}
+async function chooseCopy(which){
+  SYNC.needChoice = false;
+  if (which === "remote"){ useDoc(pendingRemote); toast("رجّعنا بياناتك من GitHub"); }
+  else { await pushNow(true); toast("اتحفظ اللي على الموبايل على GitHub"); }
+  pendingRemote = null; SYNC.needChoice = false; SYNC.lastSynced = meta.updatedAt; SYNC.lastPush = Date.now(); saveSyncCfg();
+  finishRestore();
+}
+/* GitHub keeps every version of the gist: list them and bring one back */
+async function openVersions(){
+  openSheet(`<h2 class="sheet-t">نسخ أقدم على GitHub</h2><div id="verList"><p class="small">بنجيب النسخ…</p></div>`, "نسخ أقدم");
+  try {
+    const list = await gh(`/gists/${SYNC.gistId}/commits?per_page=30`);
+    $("verList").innerHTML = list.length ? list.map(v => `<button type="button" class="prow" data-ver="${v.version}"><span class="num">${new Date(v.committed_at).toLocaleString("ar-EG-u-nu-latn", {day:"numeric", month:"short", hour:"numeric", minute:"2-digit"})}</span><span><small>${v.change_status && v.change_status.total ? v.change_status.total + " سطر اتغيّر" : ""}</small></span>${ICO.next}</button>`).join("") : `<p class="small">مفيش نسخ.</p>`;
+  } catch(e){ $("verList").innerHTML = `<p class="small">مقدرناش نجيب النسخ دلوقتي.</p>`; }
+}
+async function restoreVersion(sha){
+  try {
+    const g = await gh(`/gists/${SYNC.gistId}/${sha}`), text = await gistText(g);
+    const doc = await decryptDoc(text);
+    closeSheet(); openChoiceSheet(doc);
+  } catch(e){ toast("مقدرناش نفتح النسخة دي"); }
+}
+function disconnectCloud(){ Object.assign(SYNC, {token:"", gistId:"", key:"", salt:"", lastSynced:0, error:"", needChoice:false}); cryptoKey = null; saveSyncCfg(); }
 
 /* replace everything on this phone with a copy from outside */
 function useDoc(doc){
@@ -90,7 +128,7 @@ function useDoc(doc){
   if (typeof applyModules === "function") applyModules();
 }
 async function pushNow(force){
-  if (!cloudOn() || pushing) return;
+  if (!cloudOn() || pushing || SYNC.needChoice) return;   // never overwrite GitHub before the user picks a copy
   if (!force && meta.updatedAt <= SYNC.lastSynced) return;
   if (!navigator.onLine){ SYNC.error = "offline"; return; }
   pushing = true;
@@ -103,7 +141,7 @@ async function pushNow(force){
 }
 /* on start: bring newer data from the cloud */
 async function pullCloud(){
-  if (!cloudOn() || !navigator.onLine) return false;
+  if (!cloudOn() || !navigator.onLine || SYNC.needChoice) return false;
   try {
     const text = await gistText(await gh(`/gists/${SYNC.gistId}`)); if (!text) return false;
     const remoteAt = +JSON.parse(text).updatedAt || 0;
@@ -181,8 +219,10 @@ window.addEventListener("online", () => { if (cloudOn()) pushNow(); });
 const agoText = t => { if (!t) return "لسه"; const m = Math.round((Date.now() - t) / 60000); return m < 1 ? "دلوقتي" : m < 60 ? `من ${m} دقيقة` : m < 1440 ? `من ${Math.round(m / 60)} ساعة` : dateText(t); };
 function syncCardHTML(){
   const cloud = cloudOn()
-    ? `<div class="kvrow"><span class="okdot ${SYNC.error ? "warn" : ""}"></span><p>أونلاين على GitHub: ${SYNC.error === "token" ? "<b>الـ token انتهى أو اتلغى</b>" : SYNC.error === "pass" ? "<b>محتاج كلمة السر تاني</b>" : SYNC.error ? "مستني النت" : "شغّال"} · آخر حفظ ${agoText(SYNC.lastPush)}</p></div>
-       <div class="actrow"><button type="button" class="btn sm" data-sync="now">احفظ دلوقتي</button><button type="button" class="btn sm ghost" data-sync="off">وقّف</button>${SYNC.error === "token" || SYNC.error === "pass" ? `<button type="button" class="btn sm primary" data-sync="setup">وصّل تاني</button>` : ""}</div>`
+    ? SYNC.needChoice ? `<div class="kvrow"><span class="okdot warn"></span><p><b>متوصّل، بس لسه محتاج تختار</b>: ترجّع اللي على GitHub ولا تحفظ اللي على الموبايل. مفيش حاجة هتتحفظ أونلاين لحد ما تختار.</p></div>
+       <div class="actrow"><button type="button" class="btn sm primary" data-sync="choose">اختار النسخة</button><button type="button" class="btn sm ghost" data-sync="off">وقّف</button></div>`
+    : `<div class="kvrow"><span class="okdot ${SYNC.error ? "warn" : ""}"></span><p>أونلاين على GitHub: ${SYNC.error === "token" ? "<b>الـ token انتهى أو اتلغى</b>" : SYNC.error === "pass" ? "<b>محتاج كلمة السر تاني</b>" : SYNC.error ? "مستني النت" : "شغّال"} · آخر حفظ ${agoText(SYNC.lastPush)}</p></div>
+       <div class="actrow"><button type="button" class="btn sm" data-sync="now">احفظ دلوقتي</button><button type="button" class="btn sm" data-versions>نسخ أقدم</button><button type="button" class="btn sm ghost" data-sync="off">وقّف</button>${SYNC.error === "token" || SYNC.error === "pass" ? `<button type="button" class="btn sm primary" data-sync="setup">وصّل تاني</button>` : ""}</div>`
     : `<p class="small" style="margin:0 0 8px">نسخة متشفّرة على حساب GitHub بتاعك، بتتحفظ لوحدها بعد كل تعديل، وتفتحها من أي جهاز.</p><button type="button" class="btn primary" data-sync="setup">شغّل الحفظ الأونلاين</button>`;
   const file = !fileSupported() ? `<p class="small" style="margin:0">المتصفح ده مش بيسمح بالكتابة في ملف. حدّث Chrome، أو استخدم النسخة الاحتياطية.</p>`
     : SYNC.fileName
@@ -217,9 +257,15 @@ const finishRestore = () => { if (needsSetup){ needsSetup = false; state.profile
 document.addEventListener("click", async e => {
   const s = e.target.closest("[data-sync]"), f = e.target.closest("[data-file]"), r = e.target.closest("[data-restore]");
   if (e.target.closest("[data-su-restore]")){ openRestoreSheet(); return; }
+  const ch = e.target.closest("[data-choose]"); if (ch){ await chooseCopy(ch.dataset.choose); return; }
+  const ver = e.target.closest("[data-ver]"); if (ver){ await restoreVersion(ver.dataset.ver); return; }
+  if (e.target.closest("[data-versions]")){ openVersions(); return; }
   if (s){
     const a = s.dataset.sync;
     if (a === "setup") openCloudSheet();
+    else if (a === "choose"){
+      try { openChoiceSheet(await decryptDoc(await gistText(await gh(`/gists/${SYNC.gistId}`)))); } catch(err){ toast("مقدرناش نجيب النسخة اللي على GitHub"); }
+    }
     else if (a === "now"){ await pushNow(true); toast(SYNC.error ? "مقدرناش نحفظ أونلاين دلوقتي" : "اتحفظ أونلاين"); renderScreen(); }
     else if (a === "off"){ disconnectCloud(); toast("الحفظ الأونلاين وقف. البيانات اللي على GitHub لسه موجودة"); renderScreen(); }
   }
@@ -238,6 +284,7 @@ document.addEventListener("submit", async e => {
   const btn = $("cfGo"); btn.disabled = true; btn.textContent = "بنوصّل…";
   try {
     const res = await connectCloud($("cfToken").value, $("cfPass").value);
+    if (res.choice){ closeSheet(); openChoiceSheet(res.remote); return; }
     toast(res.took === "remote" ? `رجّعنا بياناتك من حساب ${res.user}` : `اتوصّل بحساب ${res.user}. بياناتك اتحفظت أونلاين`);
     finishRestore();
   } catch(err){

@@ -4,7 +4,8 @@ const { chromium } = require('playwright');
 const SP = process.env.SP || require('os').tmpdir(), APP = process.env.URL || 'http://localhost:8777/';
 const out = {}, errs = [];
 const watch = (p, tag) => { p.on('pageerror', e => errs.push(tag+' page: '+e.message)); p.on('console', m => { if (m.type()==='error' && !/Failed to load resource|fonts\.g/.test(m.text())) errs.push(tag+' console: '+m.text()); }); };
-const gists = {}; let nextId = 1; const calls = [];
+const gists = {}; let nextId = 1; const calls = []; const history = {};
+const snap = id => { (history[id] = history[id] || []).unshift({version:'v' + Date.now() + Math.random().toString(36).slice(2,5), committed_at:new Date().toISOString(), change_status:{total:3}, files:JSON.parse(JSON.stringify(gists[id].files))}); };
 async function mockGitHub(ctx){
   await ctx.route('https://api.github.com/**', async route => {
     const req = route.request(), u = new URL(req.url()), auth = req.headers()['authorization'];
@@ -12,10 +13,12 @@ async function mockGitHub(ctx){
     if (auth !== 'Bearer ghp_good') return route.fulfill({status:401, contentType:'application/json', body:'{"message":"Bad credentials"}'});
     if (u.pathname === '/user') return route.fulfill({json:{login:'Ahmed1995mansour'}});
     if (u.pathname === '/gists' && req.method() === 'GET') return route.fulfill({json:Object.values(gists)});
-    if (u.pathname === '/gists' && req.method() === 'POST'){ const b = JSON.parse(req.postData()); const id = 'g' + nextId++; gists[id] = {id, description:b.description, public:b.public, files:{}}; for (const [n, f] of Object.entries(b.files)) gists[id].files[n] = {filename:n, content:f.content, truncated:false}; return route.fulfill({status:201, json:gists[id]}); }
+    if (u.pathname === '/gists' && req.method() === 'POST'){ const b = JSON.parse(req.postData()); const id = 'g' + nextId++; gists[id] = {id, description:b.description, public:b.public, files:{}}; for (const [n, f] of Object.entries(b.files)) gists[id].files[n] = {filename:n, content:f.content, truncated:false}; snap(id); return route.fulfill({status:201, json:gists[id]}); }
     const m = u.pathname.match(/^\/gists\/(\w+)$/);
     if (m && req.method() === 'GET') return route.fulfill({json:gists[m[1]]});
-    if (m && req.method() === 'PATCH'){ const b = JSON.parse(req.postData()); for (const [n, f] of Object.entries(b.files)) gists[m[1]].files[n] = {filename:n, content:f.content, truncated:false}; return route.fulfill({json:gists[m[1]]}); }
+    if (m && req.method() === 'PATCH'){ const b = JSON.parse(req.postData()); for (const [n, f] of Object.entries(b.files)) gists[m[1]].files[n] = {filename:n, content:f.content, truncated:false}; snap(m[1]); return route.fulfill({json:gists[m[1]]}); }
+    const mc = u.pathname.match(/^\/gists\/(\w+)\/commits$/); if (mc) return route.fulfill({json:history[mc[1]].map(({files, ...v}) => v)});
+    const mv = u.pathname.match(/^\/gists\/(\w+)\/(v\w+)$/); if (mv){ const v = history[mv[1]].find(x => x.version === mv[2]); return route.fulfill({json:{id:mv[1], files:v.files}}); }
     route.fulfill({status:404, body:'{}'});
   });
 }
@@ -89,6 +92,32 @@ const fakeFiles = () => {
   // reload A: still connected, nothing lost
   await p.reload(); await p.waitForTimeout(1500);
   out.aAfterReload = await p.evaluate(() => ({cloud:cloudOn(), n:state.tasks.items.length}));
+
+  // ---------- phone C: Chrome cleared, setup skipped, a few things done, THEN connects ----------
+  const C = await b.newContext({viewport:{width:390,height:844}, deviceScaleFactor:2, serviceWorkers:'block'});
+  await mockGitHub(C);
+  const r = await C.newPage(); watch(r,'C');
+  await r.goto(APP); await r.waitForTimeout(700); await r.click('[data-su-skip]'); await r.waitForTimeout(300); if (await r.isVisible('#guide')) await r.click('#obGo');
+  await r.evaluate(() => { localStorage.setItem('lb:ob','1'); addTask({text:'حاجة جديدة بعد المسح'}); state.body.w['2026-10-27'] = 98; save(); go('settings'); });
+  await r.waitForTimeout(200);
+  const patchesBefore = calls.filter(c => c.startsWith('PATCH')).length;
+  await r.click('[data-sync="setup"]'); await r.fill('#cfToken', 'ghp_good'); await r.fill('#cfPass', 'secret12'); await r.click('#cfGo'); await r.waitForTimeout(1500);
+  out.cChoice = await r.isVisible('[data-choose="remote"]');
+  out.cChoiceText = await r.$$eval('.choice', l => l.map(x => x.innerText.replace(/\s+/g,' ')));
+  await r.screenshot({path:SP+'/p5-choice.png'});
+  // nothing goes up while the choice is open, even if something changes
+  await r.evaluate(() => { addTask({text:'تعديل وهو بيختار'}); }); await r.waitForTimeout(4800);
+  out.cNoOverwrite = calls.filter(c => c.startsWith('PATCH')).length === patchesBefore;
+  await r.click('[data-choose="remote"]'); await r.waitForTimeout(400);
+  out.cRestored = await r.evaluate(() => state.tasks.items.map(x => x.text));
+  // older versions: pick the oldest and bring it back
+  await r.evaluate(() => go('settings')); await r.waitForTimeout(150);
+  await r.click('[data-versions]'); await r.waitForTimeout(500);
+  out.versions = await r.$$eval('[data-ver]', l => l.length);
+  await r.screenshot({path:SP+'/p5-versions.png'});
+  await r.click('[data-ver] >> nth=-1'); await r.waitForTimeout(600);
+  await r.click('[data-choose="remote"]'); await r.waitForTimeout(400);
+  out.cOldest = await r.evaluate(() => state.tasks.items.map(x => x.text));
   out.errors = errs;
   console.log(JSON.stringify(out, null, 1));
   await b.close();
