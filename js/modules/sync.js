@@ -73,6 +73,10 @@ async function connectCloud(token, pass){
     SYNC.salt = b64(crypto.getRandomValues(new Uint8Array(16)));
     cryptoKey = await deriveKey(pass, SYNC.salt); SYNC.key = b64(await crypto.subtle.exportKey("raw", cryptoKey));
   }
+  return linkRemote(user, remote);
+}
+/* after the keys are known: use GitHub's copy, ask, or upload this phone's */
+async function linkRemote(user, remote){
   let took = "local";
   if (remote && !hasData()){ useDoc(remote); took = "remote"; }
   else if (remote){ SYNC.lastSynced = 0; SYNC.needChoice = true; saveSyncCfg(); return {user:user.login, choice:true, remote}; }   // both have data: the user decides
@@ -104,6 +108,7 @@ async function chooseCopy(which){
   else { await pushNow(true); toast("اتحفظ اللي على الموبايل على GitHub"); }
   pendingRemote = null; SYNC.needChoice = false; SYNC.lastSynced = meta.updatedAt; SYNC.lastPush = Date.now(); saveSyncCfg();
   finishRestore();
+  if (!SYNC.keySaved) storeKeyInChrome();
 }
 /* GitHub keeps every version of the gist: list them and bring one back */
 async function openVersions(){
@@ -119,6 +124,44 @@ async function restoreVersion(sha){
     const doc = await decryptDoc(text);
     closeSheet(); openChoiceSheet(doc);
   } catch(e){ toast("مقدرناش نفتح النسخة دي"); }
+}
+/* ---------- the recovery key: everything needed to reconnect, saved in Chrome's password manager ----------
+   Clearing browsing data keeps saved passwords (and they sync with the Google account), so after a clear
+   the app finds the key there and reconnects with one tap: no new token, no passphrase. */
+const recoveryKey = () => "lb1." + btoa(JSON.stringify({t:SYNC.token, k:SYNC.key, s:SYNC.salt, g:SYNC.gistId}));
+function parseKey(str){
+  str = String(str || "").trim(); if (!str.startsWith("lb1.")) return null;
+  try { const o = JSON.parse(atob(str.slice(4))); return o.t && o.k ? o : null; } catch(e){ return null; }
+}
+const canSaveKey = () => "PasswordCredential" in window && !!(navigator.credentials && navigator.credentials.store);
+async function storeKeyInChrome(user){
+  if (!canSaveKey() || !cloudOn()) return false;
+  try { await navigator.credentials.store(new PasswordCredential({id:`LifeBase (${user || SYNC.user || "GitHub"})`, name:"LifeBase", password:recoveryKey()})); SYNC.keySaved = Date.now(); saveSyncCfg(); return true; }
+  catch(e){ return false; }
+}
+async function connectWithKey(o){
+  Object.assign(SYNC, {token:o.t, key:o.k, salt:o.s || "", gistId:o.g || "", error:""}); cryptoKey = null;
+  try {
+    const user = await gh("/user");
+    if (!SYNC.gistId) SYNC.gistId = await findGist();
+    const text = SYNC.gistId ? await gistText(await gh(`/gists/${SYNC.gistId}`)) : null;
+    let remote = null;
+    if (text){ try { remote = await decryptDoc(text); } catch(e){ throw new Error("pass"); } }
+    SYNC.user = user.login; return await linkRemote(user, remote);
+  } catch(err){ disconnectCloud(); throw err; }
+}
+/* look for a saved key in Chrome (shows Chrome's account picker); used on a fresh start and from the restore sheet */
+async function restoreFromChrome(quiet){
+  if (cloudOn() || !("PasswordCredential" in window) || !navigator.credentials) return null;
+  let c = null;
+  try { c = await navigator.credentials.get({password:true, mediation:"optional"}); } catch(e){}
+  const o = c && parseKey(c.password);
+  if (!o){ if (!quiet) toast("مفيش مفتاح LifeBase محفوظ في Chrome"); return null; }
+  try {
+    const res = await connectWithKey(o);
+    if (res.choice){ openChoiceSheet(res.remote); return res; }
+    toast(res.took === "remote" ? "رجّعنا بياناتك من GitHub بالمفتاح المحفوظ" : "رجع الحفظ الأونلاين"); finishRestore(); return res;
+  } catch(err){ toast(err.message === "token" ? "الـ token اللي في المفتاح اتلغى. اعمل واحد جديد" : "مقدرناش نوصل لـ GitHub دلوقتي"); return null; }
 }
 function disconnectCloud(){ Object.assign(SYNC, {token:"", gistId:"", key:"", salt:"", lastSynced:0, error:"", needChoice:false}); cryptoKey = null; saveSyncCfg(); }
 
@@ -222,7 +265,7 @@ function syncCardHTML(){
     ? SYNC.needChoice ? `<div class="kvrow"><span class="okdot warn"></span><p><b>متوصّل، بس لسه محتاج تختار</b>: ترجّع اللي على GitHub ولا تحفظ اللي على الموبايل. مفيش حاجة هتتحفظ أونلاين لحد ما تختار.</p></div>
        <div class="actrow"><button type="button" class="btn sm primary" data-sync="choose">اختار النسخة</button><button type="button" class="btn sm ghost" data-sync="off">وقّف</button></div>`
     : `<div class="kvrow"><span class="okdot ${SYNC.error ? "warn" : ""}"></span><p>أونلاين على GitHub: ${SYNC.error === "token" ? "<b>الـ token انتهى أو اتلغى</b>" : SYNC.error === "pass" ? "<b>محتاج كلمة السر تاني</b>" : SYNC.error ? "مستني النت" : "شغّال"} · آخر حفظ ${agoText(SYNC.lastPush)}</p></div>
-       <div class="actrow"><button type="button" class="btn sm" data-sync="now">احفظ دلوقتي</button><button type="button" class="btn sm" data-versions>نسخ أقدم</button><button type="button" class="btn sm ghost" data-sync="off">وقّف</button>${SYNC.error === "token" || SYNC.error === "pass" ? `<button type="button" class="btn sm primary" data-sync="setup">وصّل تاني</button>` : ""}</div>`
+       <div class="actrow"><button type="button" class="btn sm" data-sync="now">احفظ دلوقتي</button><button type="button" class="btn sm" data-versions>نسخ أقدم</button>${canSaveKey() ? `<button type="button" class="btn sm ${SYNC.keySaved ? "" : "primary"}" data-sync="savekey">${SYNC.keySaved ? "احفظ المفتاح تاني" : "احفظ مفتاح الرجوع في Chrome"}</button>` : ""}<button type="button" class="btn sm" data-sync="copykey">انسخ المفتاح</button><button type="button" class="btn sm ghost" data-sync="off">وقّف</button>${SYNC.error === "token" || SYNC.error === "pass" ? `<button type="button" class="btn sm primary" data-sync="setup">وصّل تاني</button>` : ""}</div>`
     : `<p class="small" style="margin:0 0 8px">نسخة متشفّرة على حساب GitHub بتاعك، بتتحفظ لوحدها بعد كل تعديل، وتفتحها من أي جهاز.</p><button type="button" class="btn primary" data-sync="setup">شغّل الحفظ الأونلاين</button>`;
   const file = !fileSupported() ? `<p class="small" style="margin:0">المتصفح ده مش بيسمح بالكتابة في ملف. حدّث Chrome، أو استخدم النسخة الاحتياطية.</p>`
     : SYNC.fileName
@@ -249,7 +292,9 @@ function openCloudSheet(){
 /* restore choices on a fresh install (from setup) */
 function openRestoreSheet(){
   openSheet(`<h2 class="sheet-t">رجّع بياناتك</h2>
-    <button type="button" class="btn primary lg" data-sync="setup">من الحفظ الأونلاين (GitHub)</button>
+    ${"PasswordCredential" in window ? `<button type="button" class="btn primary lg" data-sync="chrome">بالمفتاح المحفوظ في Chrome</button>` : ""}
+    <form id="keyForm" class="m-subline" autocomplete="off"><input class="input en" id="keyIn" placeholder="أو الزق مفتاح الرجوع (lb1.…)" aria-label="مفتاح الرجوع"><button class="btn sm soft">رجّع</button></form>
+    <button type="button" class="btn lg" data-sync="setup">بـ token وكلمة السر</button>
     <button type="button" class="btn lg" data-restore="file">من ملف أو نسخة احتياطية</button>`, "رجّع بياناتك");
 }
 const finishRestore = () => { if (needsSetup){ needsSetup = false; state.profile.setup = true; save(); } if (su){ su = null; closeSetup(); } closeSheet(); renderScreen(); };
@@ -263,6 +308,9 @@ document.addEventListener("click", async e => {
   if (s){
     const a = s.dataset.sync;
     if (a === "setup") openCloudSheet();
+    else if (a === "chrome") await restoreFromChrome(false);
+    else if (a === "savekey"){ if (!(await storeKeyInChrome())) toast("Chrome هنا مش بيحفظ المفتاح. انسخه واحفظه بنفسك"); else toast("لو Chrome سألك، دوس Save"); renderScreen(); }
+    else if (a === "copykey"){ try { await navigator.clipboard.writeText(recoveryKey()); toast("المفتاح اتنسخ. احفظه في مكان أمين"); } catch(err){ toast("مقدرناش ننسخ"); } }
     else if (a === "choose"){
       try { openChoiceSheet(await decryptDoc(await gistText(await gh(`/gists/${SYNC.gistId}`)))); } catch(err){ toast("مقدرناش نجيب النسخة اللي على GitHub"); }
     }
@@ -279,6 +327,13 @@ document.addEventListener("click", async e => {
   if (r && await restoreFromFile()) finishRestore();
 });
 document.addEventListener("submit", async e => {
+  if (e.target.id === "keyForm"){
+    e.preventDefault();
+    const o = parseKey($("keyIn").value); if (!o){ toast("ده مش مفتاح LifeBase"); return; }
+    try { const res = await connectWithKey(o); closeSheet(); if (res.choice) openChoiceSheet(res.remote); else { toast("رجّعنا بياناتك"); finishRestore(); storeKeyInChrome(res.user); } }
+    catch(err){ toast(err.message === "token" ? "الـ token اللي في المفتاح اتلغى" : "مقدرناش نوصل لـ GitHub"); }
+    return;
+  }
   if (e.target.id !== "cloudForm") return;
   e.preventDefault();
   const btn = $("cfGo"); btn.disabled = true; btn.textContent = "بنوصّل…";
@@ -286,7 +341,8 @@ document.addEventListener("submit", async e => {
     const res = await connectCloud($("cfToken").value, $("cfPass").value);
     if (res.choice){ closeSheet(); openChoiceSheet(res.remote); return; }
     toast(res.took === "remote" ? `رجّعنا بياناتك من حساب ${res.user}` : `اتوصّل بحساب ${res.user}. بياناتك اتحفظت أونلاين`);
-    finishRestore();
+    SYNC.user = res.user; saveSyncCfg(); finishRestore();
+    if (await storeKeyInChrome(res.user)) setTimeout(() => toast("لو Chrome سألك يحفظ الباسورد، دوس Save. ده مفتاح الرجوع"), 2800);
   } catch(err){
     btn.disabled = false; btn.textContent = "وصّل";
     toast(err.message === "token" ? "الـ token مش شغّال. اتأكد إنك نسخته كله" : err.message === "pass" ? "كلمة السر مش هي اللي اتشفّرت بيها البيانات" : "مقدرناش نوصل لـ GitHub. اتأكد من النت");

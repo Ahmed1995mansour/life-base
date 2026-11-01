@@ -4,6 +4,16 @@ const { chromium } = require('playwright');
 const SP = process.env.SP || require('os').tmpdir(), APP = process.env.URL || 'http://localhost:8777/';
 const out = {}, errs = [];
 const watch = (p, tag) => { p.on('pageerror', e => errs.push(tag+' page: '+e.message)); p.on('console', m => { if (m.type()==='error' && !/Failed to load resource|fonts\.g/.test(m.text())) errs.push(tag+' console: '+m.text()); }); };
+const savedCreds = [];
+const fakeChrome = async ctx => {
+  await ctx.exposeBinding('__credStore', (src, c) => { savedCreds.push(c); });
+  await ctx.exposeBinding('__credGet', () => savedCreds[savedCreds.length - 1] || null);
+  await ctx.addInitScript(() => {
+    window.PasswordCredential = class { constructor(o){ Object.assign(this, o); } };
+    navigator.credentials.store = async c => { await window.__credStore({id:c.id, name:c.name, password:c.password}); return c; };
+    navigator.credentials.get = async o => (o && o.password) ? await window.__credGet() : null;
+  });
+};
 const gists = {}; let nextId = 1; const calls = []; const history = {};
 const snap = id => { (history[id] = history[id] || []).unshift({version:'v' + Date.now() + Math.random().toString(36).slice(2,5), committed_at:new Date().toISOString(), change_status:{total:3}, files:JSON.parse(JSON.stringify(gists[id].files))}); };
 async function mockGitHub(ctx){
@@ -37,7 +47,7 @@ const fakeFiles = () => {
   const b = await chromium.launch({executablePath:'/opt/pw-browsers/chromium'});
   // ---------- phone A with data ----------
   const A = await b.newContext({viewport:{width:390,height:844}, deviceScaleFactor:2, serviceWorkers:'block'});
-  await mockGitHub(A); await A.addInitScript(fakeFiles);
+  await mockGitHub(A); await A.addInitScript(fakeFiles); await fakeChrome(A);
   const p = await A.newPage(); watch(p,'A');
   await p.goto(APP + 'manifest.webmanifest');
   await p.evaluate(() => { localStorage.clear();
@@ -118,6 +128,21 @@ const fakeFiles = () => {
   await r.click('[data-ver] >> nth=-1'); await r.waitForTimeout(600);
   await r.click('[data-choose="remote"]'); await r.waitForTimeout(400);
   out.cOldest = await r.evaluate(() => state.tasks.items.map(x => x.text));
+
+  out.credsSaved = savedCreds.map(c => c.id + ' ' + c.password.slice(0, 4));
+  // ---------- phone D: Chrome cleared again; the saved key brings it all back, no token, no passphrase ----------
+  const D = await b.newContext({viewport:{width:390,height:844}, deviceScaleFactor:2, serviceWorkers:'block'});
+  await mockGitHub(D); await fakeChrome(D);
+  const d = await D.newPage(); watch(d,'D');
+  await d.goto(APP); await d.waitForTimeout(1800);
+  out.dAuto = {setupShown:await d.isVisible('#setup'), cloud:await d.evaluate(() => cloudOn()), tasks:await d.evaluate(() => state.tasks.items.length), toast:await d.$eval('.toast', x => x.textContent).catch(() => null)};
+  // pasting the key works too (another browser)
+  const E2 = await b.newContext({viewport:{width:390,height:844}, serviceWorkers:'block'}); await mockGitHub(E2);
+  const e = await E2.newPage(); watch(e,'E');
+  await e.goto(APP); await e.waitForTimeout(800);
+  await e.click('[data-su-restore]'); await e.fill('#keyIn', savedCreds[savedCreds.length - 1].password); await e.click('#keyForm button'); await e.waitForTimeout(1500);
+  out.ePaste = {setupShown:await e.isVisible('#setup'), tasks:await e.evaluate(() => state.tasks.items.length)};
+  await e.screenshot({path:SP+'/p5-paste.png'});
   out.errors = errs;
   console.log(JSON.stringify(out, null, 1));
   await b.close();

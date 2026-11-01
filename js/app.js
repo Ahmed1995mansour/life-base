@@ -113,6 +113,7 @@ document.querySelector("main").addEventListener("touchend", e => {
   applyTheme(theme);
   await loadAll();
   if (cloudOn()) await Promise.race([pullCloud(), new Promise(r => setTimeout(r, 5000))]);   // newer data from another device
+  if (needsSetup && !cloudOn()) await restoreFromChrome(true);   // browser data was cleared: the key saved in Chrome brings everything back
   if (needsSetup) await openSetup(true);
   applyModules();
   const fromHash = (location.hash || "").slice(1), last = LS.get("lb:page") || LS.get("fit:screen");
