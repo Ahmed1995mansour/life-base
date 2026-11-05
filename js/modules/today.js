@@ -94,6 +94,9 @@ function attentionHTML(){
   const dp = duePrayer();
   if (dp) rows.push(`<div class="att"><span class="att-ic" style="color:var(--gold)">${ICO.moon}</span><span><b>صليت ${dp.name}؟</b><small>الأذان كان ${clock(dp.at)}</small></span>
     <span class="actrow"><button type="button" class="btn sm soft" data-prdue="${dp.n}">صليت</button><button type="button" class="btn sm" data-prdue="${dp.n}" data-mosque="1">في المسجد ★</button></span></div>`);
+  if (offerNewPlan())
+    rows.push(`<div class="att"><span class="att-ic" style="color:var(--accent)">${ICO.cal}</span><span><b>جدول المذاكرة الجديد جاهز</b><small>مذاكرة 5–8:15 وبالليل، شغل 9:30–11:30 و3–5، جيم 12، والماتش اتشال</small></span>
+    <span class="actrow"><button type="button" class="btn sm primary" data-newplan="apply">طبّقه</button><button type="button" class="btn sm ghost" data-newplan="no">لأ</button></span></div>`);
   if (SYNC.fileNeedsOk && SYNC.fileName)
     rows.push(`<div class="att"><span class="att-ic" style="color:var(--accent)">${ICO.list}</span><span><b>كمّل الحفظ في الملف</b><small>Chrome محتاج تأكيد منك</small></span><button type="button" class="btn sm primary" data-file="ok">تمام</button></div>`);
   if (cloudOn() && (SYNC.error === "token" || SYNC.error === "pass"))

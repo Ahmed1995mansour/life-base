@@ -46,7 +46,7 @@ function renderMyPlan(){
     <section class="card"><div class="card-h"><h2>خطة جديدة من الأول</h2></div>
       <p class="small" style="margin:0 0 10px">نسألك نفس أسئلة البداية ونعمل جدول وتمرين وعادات جديدة. بياناتك (الفلوس، والوزن، والمهام، والتذكيرات) مش هتتمسح.</p>
       <div class="actrow"><button type="button" class="btn" data-resetup>ابدأ الأسئلة</button><button type="button" class="btn ${planSure ? "danger sure" : "soft"}" data-mansplan>${planSure ? "متأكد؟ دوس تاني" : "رجّع خطة مانس الأصلية"}</button></div>
-      <p class="small" style="margin:8px 0 0">خطة مانس: Upper A الأحد، رجل الاتنين، راحة ومشي التلات، Upper B الأربع، كتف ودراع الخميس قبل الماتش، ليونة الجمعة، وتمرين الكورة في البيت السبت. الجيم 12 الضهر والغدا 1:30 بعده على طول.</p></section>`;
+      <p class="small" style="margin:8px 0 0">خطة مانس: Upper A الأحد، رجل الاتنين، راحة ومشي التلات، Upper B الأربع، كتف ودراع الخميس، ليونة الجمعة، وتمرين الوقاية في البيت السبت. الجيم 12 والغدا 1:30، ومذاكرة 5–8:15 الصبح وبالليل (حوالي 7 س أيام الشغل و10 س الجمعة والسبت).</p></section>`;
   progPreview();
 }
 
@@ -170,7 +170,7 @@ document.addEventListener("click", e => {
   if (e.target.closest("[data-mansplan]")){
     if (!planSure){ planSure = true; renderMyPlan(); setTimeout(() => { if (planSure){ planSure = false; if (page === "myplan") renderMyPlan(); } }, 4000); return; }
     planSure = false; const old = state.plan;
-    state.plan = planFromLegacy(); bindPlan(); save(); renderMyPlan();
+    state.plan = planFromLegacy(); state.prefs.planV = PLAN_VERSION; bindPlan(); save(); renderMyPlan();
     toast("رجعت خطتك الأصلية", "تراجع", () => { state.plan = old; bindPlan(); save(); renderScreen(); }); return;
   }
   if (e.target.closest("[data-resetup]")){ openSetup(false).then(() => { editDay = null; go("today"); }); }
@@ -226,6 +226,21 @@ document.addEventListener("submit", e => {
     if (exEdit.i === "new") list.push(o); else list[+exEdit.i] = o;
     planChanged(); closeSheet(); renderMyPlan(); toast("اتحفظ"); return;
   }
+});
+
+/* Mans's plan got a new version: offer it once on Today (keeps habits, targets and body goals) */
+function offerNewPlan(){
+  if (!isToday() || state.prefs.planV >= PLAN_VERSION || state.plan.mans >= PLAN_VERSION) return false;
+  return DAYS.some(d => /Upper A|Full Body|كتف ودراع/.test(d.k));
+}
+document.addEventListener("click", e => {
+  const b = e.target.closest("[data-newplan]"); if (!b) return;
+  state.prefs.planV = PLAN_VERSION;
+  if (b.dataset.newplan === "apply"){
+    const old = state.plan, fresh = planFromLegacy();
+    state.plan = Object.assign({}, old, {days:fresh.days, mans:PLAN_VERSION}); bindPlan(); save(); renderScreen();
+    toast("الجدول الجديد اتطبّق", "تراجع", () => { state.plan = old; bindPlan(); save(); renderScreen(); });
+  } else { save(); renderScreen(); toast("تمام. تقدر تطبّقه بعدين من خطتي"); }
 });
 
 /* hide what the user turned off */
