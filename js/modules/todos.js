@@ -40,16 +40,21 @@ function addTask(o){
 const byDue = (a, b) => (a.due || "9999") < (b.due || "9999") ? -1 : (a.due || "9999") > (b.due || "9999") ? 1 : a.ts - b.ts;
 
 /* the tasks that belong to a day: due that day; on today also late ones and starred ones without a date */
+/* daily tasks repeat every day from the day they were made; "done" is kept per day in doneDays */
+const isDaily = x => x.repeat === "daily";
+const onDay = (x, date) => isDaily(x) ? Object.assign({}, x, {done:!!(x.doneDays || {})[date]}) : x;
+const dailyFor = date => state.tasks.items.filter(x => isDaily(x) && iso(new Date(x.ts || 0)) <= date).map(x => onDay(x, date));
 function tasksForDay(date){
   const t = iso(today), isT = date === t;
-  return state.tasks.items.filter(x => {
+  return dailyFor(date).concat(state.tasks.items.filter(x => {
+    if (isDaily(x)) return false;
     if (x.due === date) return true;
     if (!isT) return false;
     const doneToday = x.done && x.doneAt >= today.getTime();
     if (x.due && x.due < t) return !x.done || doneToday;
     if (!x.due && x.star) return !x.done || doneToday;
     return false;
-  }).sort((a, b) => (a.done - b.done) || byDue(a, b));
+  })).sort((a, b) => (a.done - b.done) || (isDaily(b) - isDaily(a)) || byDue(a, b));
 }
 
 /* links: optional on any task. "example.com/x" becomes "https://example.com/x" */
@@ -66,44 +71,47 @@ function splitLink(text){
   const full = link.replace(/^https?:\/\/(www\.)?/, "").replace(/\/$/, "");
   return {text:rest || (full.length > 50 ? full.slice(0, 49) + "…" : full), link};
 }
-function taskRow(x, showList){
-  const late = x.due && !x.done && x.due < iso(today);
+function taskRow(x, showList, date){
+  date = date || iso(today);
+  const late = !isDaily(x) && x.due && !x.done && x.due < iso(today);
   const meta = [];
+  if (isDaily(x)) meta.push(`<span class="daily">↻ كل يوم</span>`);
   if (late) meta.push(`<span class="late">متأخرة ${daysLate(x.due) === 1 ? "يوم" : daysLate(x.due) === 2 ? "يومين" : daysLate(x.due) + " أيام"}</span>`);
   else if (x.due && x.due !== iso(today)) meta.push(esc(dayLabel(x.due)));
   if (showList && state.tasks.lists.length > 1) meta.push(esc(listOf(x.list).name));
-  return `<li class="td${x.done ? " is-done" : ""}${late ? " is-late" : ""}" data-swipe="${x.id}">
-    <input type="checkbox" class="ck" data-todo="${x.id}" id="td-${x.id}" ${x.done ? "checked" : ""} aria-label="خلصت: ${esc(x.text)}">
+  return `<li class="td${x.done ? " is-done" : ""}${late ? " is-late" : ""}" data-swipe="${x.id}" data-date="${date}">
+    <input type="checkbox" class="ck" data-todo="${x.id}" data-date="${date}" id="td-${x.id}" ${x.done ? "checked" : ""} aria-label="خلصت: ${esc(x.text)}">
     <div class="td-m"><button type="button" class="td-t" data-tedit="${x.id}"><span class="ttl">${esc(x.text)}</span>${meta.length ? `<span class="sub">${meta.join(" · ")}</span>` : ""}</button>${x.link ? `<a class="td-link en" href="${esc(x.link)}" target="_blank" rel="noopener noreferrer">${ICO.link}${esc(linkLabel(x.link))}</a>` : ""}</div>
     <button type="button" class="tdx star${x.star ? " on" : ""}" data-tstar="${x.id}" aria-label="${x.star ? "شيل النجمة" : "مهمة"}" aria-pressed="${!!x.star}">${x.star ? "★" : "☆"}</button></li>`;
 }
-const taskList = (items, showList) => `<ul class="tdl">${items.map(x => taskRow(x, showList)).join("")}</ul>`;
+const taskList = (items, showList, date) => `<ul class="tdl">${items.map(x => taskRow(x, showList, date)).join("")}</ul>`;
 const quickForm = (attrs, ph) => `<form class="tdform" data-taskform ${attrs} autocomplete="off"><input class="input" maxlength="500" placeholder="${esc(ph)}" aria-label="مهمة جديدة"><button class="btn primary" type="submit">ضيف</button></form>`;
 
 /* Today card */
 function tasksCard(){
   const date = curDate(), list = tasksForDay(date), done = list.filter(x => x.done).length, past = date < iso(today);
-  const body = (list.length ? taskList(list, true) : `<p class="small" style="margin:0 0 10px">${past ? "مفيش مهام كانت لليوم ده." : "مفيش مهام لليوم ده."}</p>`)
+  const body = (list.length ? taskList(list, true, date) : `<p class="small" style="margin:0 0 10px">${past ? "مفيش مهام كانت لليوم ده." : "مفيش مهام لليوم ده."}</p>`)
     + (past ? "" : quickForm(`data-due="${date}"`, isToday() ? "ضيف مهمة للنهارده" : "ضيف مهمة لـ" + dayLabel(date)));
   return {t: isToday() ? "مهام النهارده" : `مهام ${dayLabel(date)}`, meta: list.length ? `${done}/${list.length}` : "", body, link:`<button type="button" class="golink" data-go="tasks">كل المهام والقوايم ←</button>`};
 }
 /* for the end-of-day summary */
-function tasksDoneOn(date){ const l = state.tasks.items.filter(x => x.due === date); return {done:l.filter(x => x.done).length, all:l.length}; }
+function tasksDoneOn(date){ const l = state.tasks.items.filter(x => !isDaily(x) && x.due === date).concat(dailyFor(date)); return {done:l.filter(x => x.done).length, all:l.length}; }
 
 /* ---------- tasks page: lists on top, then the tasks grouped by when ---------- */
 function renderTasks(){
   const L = state.tasks.lists, t = iso(today), tm = tomorrowIso();
   if (taskView !== "all" && !L.some(l => l.id === taskView)) taskView = "all";
   const inView = state.tasks.items.filter(x => taskView === "all" || x.list === taskView);
-  const open = inView.filter(x => !x.done), done = inView.filter(x => x.done).sort((a, b) => b.doneAt - a.doneAt);
-  const count = id => state.tasks.items.filter(x => !x.done && (id === "all" || x.list === id)).length;
+  const daily = inView.filter(isDaily).map(x => onDay(x, t)), once = inView.filter(x => !isDaily(x));
+  const open = once.filter(x => !x.done), done = once.filter(x => x.done).sort((a, b) => b.doneAt - a.doneAt);
+  const count = id => state.tasks.items.filter(x => (id === "all" || x.list === id) && (isDaily(x) ? !(x.doneDays || {})[t] : !x.done)).length;
   let h = `<div class="tlists" role="tablist" aria-label="القوايم">
     <button type="button" class="chip" data-tview="all" aria-pressed="${taskView === "all"}">الكل <span class="num">${count("all")}</span></button>
     ${L.map(l => `<button type="button" class="chip" data-tview="${l.id}" aria-pressed="${taskView === l.id}">${esc(l.name)} <span class="num">${count(l.id)}</span></button>`).join("")}
     <button type="button" class="chip add" data-tlistnew>+ قايمة</button></div>`;
   const cur = taskView === "all" ? null : listOf(taskView);
   h += `<section class="card"><div class="card-h"><h2>${cur ? esc(cur.name) : "كل المهام"}</h2>
-      <span class="actrow">${cur ? `<button type="button" class="btn sm ghost" data-tlistedit="${cur.id}">تعديل القايمة</button>` : ""}<button type="button" class="btn sm soft" data-todonew>+ بتاريخ</button></span></div>
+      <span class="actrow">${cur ? `<button type="button" class="btn sm ghost" data-tlistedit="${cur.id}">تعديل القايمة</button>` : ""}<button type="button" class="btn sm soft" data-todonew="daily">+ كل يوم</button><button type="button" class="btn sm soft" data-todonew>+ بتاريخ</button></span></div>
     ${quickForm(cur ? `data-list="${cur.id}"` : "", cur ? `ضيف لـ${cur.name}…` : "ضيف مهمة…")}
     <p class="small" style="margin:8px 0 0">من غير تاريخ لو مش مستعجلة. ★ تخليها تظهر في النهارده. اسحب يمين تخلص، وشمال تتمسح.</p></section>`;
   const groups = [
@@ -114,6 +122,8 @@ function renderTasks(){
     ["من غير تاريخ", open.filter(x => !x.due)]
   ];
   let any = false;
+  if (daily.length){ any = true; const d = daily.filter(x => x.done).length;
+    h += `<section class="card tgroup-daily"><div class="card-h"><h2>كل يوم</h2><span class="small num">النهارده ${d}/${daily.length}</span></div>${taskList(daily.sort((a, b) => a.done - b.done || a.ts - b.ts), !cur, t)}</section>`; }
   groups.forEach(([title, items, cls]) => {
     if (!items.length) return; any = true;
     items.sort((a, b) => (b.star - a.star) || byDue(a, b));
@@ -130,16 +140,17 @@ function openTodoSheet(date, id){
   const x = id ? state.tasks.items.find(o => o.id === id) : null;
   taskEdit = x ? x.id : null;
   const t = iso(today), tm = tomorrowIso();
-  const due = x ? x.due : (date === undefined ? (screen === "today" ? t : "") : date);
+  const due = x ? x.due : (date === undefined ? (screen === "today" ? t : "") : date === "daily" ? "" : date);
   const list = x ? x.list : (taskView !== "all" && screen === "tasks" ? taskView : state.tasks.lists[0].id);
-  const dchip = (v, label) => `<button type="button" class="chip" data-tsday="${v}" aria-pressed="${due === v}">${label}</button>`;
+  const rep = !!(x && isDaily(x)) || date === "daily";
+  const dchip = (v, label) => `<button type="button" class="chip" data-tsday="${v}" aria-pressed="${v === "daily" ? rep : !rep && due === v}">${label}</button>`;
   openSheet(`<h2 class="sheet-t">${x ? "تعديل المهمة" : "مهمة جديدة"}</h2>
     <form id="todoSheet" class="form" autocomplete="off">
       <input class="input" id="tsText" maxlength="500" placeholder="محتاج تعمل إيه؟" aria-label="المهمة" value="${x ? esc(x.text) : ""}">
       <span class="lbl">القايمة</span>
       <div class="chips" role="group" aria-label="القايمة">${state.tasks.lists.map(l => `<button type="button" class="chip" data-tslist="${l.id}" aria-pressed="${l.id === list}">${esc(l.name)}</button>`).join("")}</div>
       <span class="lbl">إمتى</span>
-      <div class="chips" role="group" aria-label="إمتى">${dchip("", "من غير تاريخ")}${dchip(t, "النهارده")}${dchip(tm, "بكرة")}
+      <div class="chips" role="group" aria-label="إمتى">${dchip("daily", "↻ كل يوم")}${dchip("", "من غير تاريخ")}${dchip(t, "النهارده")}${dchip(tm, "بكرة")}
         <label class="chip"><input type="date" id="tsDate" value="${due}" aria-label="يوم تاني" style="border:0;background:transparent;font:inherit;color:inherit;padding:0;max-width:9.5em"></label></div>
       <label class="lbl">لينك (اختياري)<input class="input en" id="tsLink" type="text" inputmode="url" autocapitalize="off" spellcheck="false" maxlength="500" placeholder="https://…" value="${x && x.link ? esc(x.link) : ""}"></label>
       <label class="toggle"><span>★ مهمة: تظهر في النهارده حتى لو من غير تاريخ</span><input type="checkbox" id="tsStar" ${x && x.star ? "checked" : ""}><i></i></label>
@@ -158,9 +169,14 @@ function openListSheet(id){
 }
 
 /* ---------- changes ---------- */
-function setTodoDone(id, on){
+function setTodoDone(id, on, date){
   const x = state.tasks.items.find(o => o.id === id); if (!x) return;
-  x.done = on; x.doneAt = on ? Date.now() : 0; if (on) buzz(); save(); renderScreen();
+  if (isDaily(x)){
+    const dd = x.doneDays = x.doneDays || {}, d = date || iso(today);
+    if (on) dd[d] = true; else delete dd[d];
+    const keys = Object.keys(dd).sort(); while (keys.length > 120) delete dd[keys.shift()];
+  } else { x.done = on; x.doneAt = on ? Date.now() : 0; }
+  if (on) buzz(); save(); renderScreen();
 }
 function deleteTodo(id){
   const at = state.tasks.items.findIndex(o => o.id === id); if (at < 0) return;
@@ -170,7 +186,7 @@ function deleteTodo(id){
 document.addEventListener("click", e => {
   const pick = (sel, attr) => { const b = e.target.closest(sel); if (!b) return null; document.querySelectorAll(sel.replace(/=.*\]/, "]")).forEach(o => o.setAttribute("aria-pressed", o === b)); return b; };
   const d = pick("[data-tsday]");
-  if (d){ $("tsDate").value = d.dataset.tsday; return; }
+  if (d){ $("tsDate").value = d.dataset.tsday === "daily" ? "" : d.dataset.tsday; return; }
   if (pick("[data-tslist]")) return;
   const v = e.target.closest("[data-tview]"); if (v){ taskView = v.dataset.tview; renderTasks(); return; }
   if (e.target.closest("[data-tlistnew]")){ openListSheet(); return; }
@@ -180,20 +196,20 @@ document.addEventListener("click", e => {
     state.tasks.items.forEach(x => { if (x.list === id) x.list = to.id; });
     state.tasks.lists = state.tasks.lists.filter(o => o.id !== id); taskView = "all";
     save(); closeSheet(); renderScreen(); toast("القايمة اتمسحت"); return; }
-  if (e.target.closest("[data-todonew]")){ openTodoSheet(tomorrowIso()); return; }
+  const tn = e.target.closest("[data-todonew]"); if (tn){ openTodoSheet(tn.dataset.todonew === "daily" ? "daily" : tomorrowIso()); return; }
   const ed = e.target.closest("[data-tedit]"); if (ed){ openTodoSheet(undefined, ed.dataset.tedit); return; }
   const st = e.target.closest("[data-tstar]");
   if (st){ const x = state.tasks.items.find(o => o.id === st.dataset.tstar); if (x){ x.star = !x.star; buzz(6); save(); renderScreen(); } return; }
   const del = e.target.closest("[data-tdel]"); if (del){ closeSheet(); deleteTodo(del.dataset.tdel); return; }
   if (e.target.closest("[data-tclear]")){
-    const gone = state.tasks.items.filter(x => x.done && (taskView === "all" || x.list === taskView));
+    const gone = state.tasks.items.filter(x => !isDaily(x) && x.done && (taskView === "all" || x.list === taskView));
     state.tasks.items = state.tasks.items.filter(x => !gone.includes(x)); save(); renderScreen();
     toast(`اتمسحت ${gone.length}`, "تراجع", () => { state.tasks.items.push(...gone); save(); renderScreen(); }); return; }
 });
 document.addEventListener("change", e => {
   if (e.target.id === "tsDate") document.querySelectorAll("[data-tsday]").forEach(b => b.setAttribute("aria-pressed", b.dataset.tsday === e.target.value));
   const id = e.target.dataset && e.target.dataset.todo; if (!id) return;
-  setTodoDone(id, e.target.checked);
+  setTodoDone(id, e.target.checked, e.target.dataset.date);
 });
 document.addEventListener("submit", e => {
   const f = e.target;
@@ -210,9 +226,10 @@ document.addEventListener("submit", e => {
     const lb = document.querySelector('[data-tslist][aria-pressed="true"]');
     const rawLink = $("tsLink").value.trim(), sp = rawLink ? {text, link:cleanLink(rawLink)} : splitLink(text);
     if (rawLink && !sp.link){ toast("اللينك ده مش مظبوط"); $("tsLink").focus(); return; }
-    const o = {text:sp.text, link:sp.link, due:$("tsDate").value || "", list:lb ? lb.dataset.tslist : state.tasks.lists[0].id, star:$("tsStar").checked};
+    const daily = !!document.querySelector('[data-tsday="daily"][aria-pressed="true"]');
+    const o = {text:sp.text, link:sp.link, due:daily ? "" : ($("tsDate").value || ""), repeat:daily ? "daily" : "", list:lb ? lb.dataset.tslist : state.tasks.lists[0].id, star:$("tsStar").checked};
     if (taskEdit){ Object.assign(state.tasks.items.find(x => x.id === taskEdit) || {}, o); save(); toast("اتحفظت"); }
-    else { addTask(o); toast(o.due ? `اتضافت لـ${dayLabel(o.due)}` : `اتضافت لـ${listOf(o.list).name}`); }
+    else { addTask(o); toast(daily ? "اتضافت: هتظهر كل يوم" : o.due ? `اتضافت لـ${dayLabel(o.due)}` : `اتضافت لـ${listOf(o.list).name}`); }
     taskEdit = null; closeSheet(); renderScreen();
   } else if (f.id === "listSheet"){
     e.preventDefault();
@@ -249,8 +266,8 @@ function endSwipe(){
   if (!on) return;
   swallowClick = true; setTimeout(() => swallowClick = false, 50);
   row.classList.remove("swiping");
-  const id = row.dataset.swipe, x = state.tasks.items.find(o => o.id === id);
-  if (dx > 80) setTodoDone(id, x ? !x.done : true);
+  const id = row.dataset.swipe, x = state.tasks.items.find(o => o.id === id), d = row.dataset.date;
+  if (dx > 80) setTodoDone(id, x ? !onDay(x, d).done : true, d);
   else if (dx < -80) deleteTodo(id);
   else { row.style.transform = ""; row.classList.remove("sw-done","sw-del"); }
 }
